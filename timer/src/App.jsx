@@ -1,8 +1,19 @@
 import React, { useEffect } from 'react';
+import './App.css';
+function Device({ type }) {
+    const Component = types[type];
+    return <Component />;
+}
 
-function Timer() {
+function Stopwatch() {
     const [timer, setTimer] = React.useState(0);
     const [start, setStart] = React.useState(false);
+
+    const formatTime = (time) => {
+        let minutes = Math.floor(time / 60);
+        let seconds = time - minutes * 60;
+    };
+
 
     useEffect(() => {
         let interval = null;
@@ -21,29 +32,54 @@ function Timer() {
             <div className='timer__time'>{timer}</div>
             <button onClick={() => setStart(true)}>Start</button>
             <button onClick={() => setStart(false)}>Stop</button>
+            <button onClick={() => setTimer(0)}>Reset</button>
         </div>
     );
+}
+
+function Timer() {
+    return (
+        <div className='timer'>
+            Timer
+        </div>
+    )
 }
 
 
 export function App() {
     // Keep track of all timers
-    const [timers, setTimers] = React.useState([]);
-
-
-    const addTimer = () => {
-        setTimers([...timers, 0]);
+    const [devices, setDevices] = React.useState([]);
+    const types = {
+        timer: Timer,
+        stopwatch: Stopwatch,
     };
+
+    const addDevice = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const type = event.target.type.value;
+        setDevices([...devices, { Component: types[type] }]);
+    }
+
 
 
 
     return (
         <div className='app'>
-            <h1>Timers</h1>
-            <button onClick={addTimer}>Add Timer</button>
-            <div className='timers'>
-                {timers.map((timer, index) => (
-                    <Timer key={index} />
+            <h1>Time Devices</h1>
+            <h2>Stopwatches, timers and more...</h2>
+            <h3>Add a device...</h3>
+            <form onSubmit={addDevice}>
+                <select name='type'>
+                    <option value='timer'>Timer</option>
+                    <option value='stopwatch'>Stopwatch</option>
+                </select>
+                <button>Add Device</button>
+            </form>
+            <h3>Devices</h3>
+            <div className='devices'>
+                {devices.map(({Component}, index) => (
+                    <Component key={index} />
                 ))}
             </div>
         </div>
