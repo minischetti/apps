@@ -6,7 +6,7 @@ function Device({ type }) {
 }
 
 function Stopwatch() {
-    const [timer, setTimer] = React.useState(0);
+    const [time, setTime] = React.useState(0);
     const [start, setStart] = React.useState(false);
 
     const formatTime = (time) => {
@@ -19,32 +19,56 @@ function Stopwatch() {
         let interval = null;
         if (start) {
             interval = setInterval(() => {
-                setTimer((timer) => timer + 1);
+                setTime((timer) => timer + 1);
             }, 1000);
-        } else if (!start && timer !== 0) {
+        } else if (!start && time !== 0) {
             clearInterval(interval);
         }
         return () => clearInterval(interval);
-    }, [start, timer]);
+    }, [start, time]);
 
     return (
-        <div className='timer'>
-            <div className='timer__time'>{timer}</div>
+        <div className='device'>
+            <div className='title'>Stopwatch</div>
+            <div className='time'>{time}</div>
             <button onClick={() => setStart(true)}>Start</button>
             <button onClick={() => setStart(false)}>Stop</button>
-            <button onClick={() => setTimer(0)}>Reset</button>
+            <button onClick={() => setTime(0)}>Reset</button>
         </div>
     );
 }
 
 function Timer() {
-    return (
-        <div className='timer'>
-            Timer
-        </div>
-    )
-}
+    const [time, setTime] = React.useState(0);
+    const [start, setStart] = React.useState(false);
 
+    const formatTime = (time) => {
+        let minutes = Math.floor(time / 60);
+        let seconds = time - minutes * 60;
+    };
+
+    useEffect(() => {
+        let interval = null;
+        if (start) {
+            interval = setInterval(() => {
+                setTime((timer) => timer + 1);
+            }, 1000);
+        } else if (!start && time !== 0) {
+            clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+    }, [start, time]);
+
+    return (
+        <div className='device'>
+            <div className='title'>Timer</div>
+            <div className='time'>{time}</div>
+            <button onClick={() => setStart(true)}>Start</button>
+            <button onClick={() => setStart(false)}>Stop</button>
+            <button onClick={() => setTime(0)}>Reset</button>
+        </div>
+    );
+}
 
 export function App() {
     // Keep track of all timers
