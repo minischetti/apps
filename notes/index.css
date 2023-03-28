@@ -1,0 +1,83 @@
+@import url('src/styles/components/buttons.css');
+@import url('src/styles/components/tree.css');
+@import url('src/styles/components/toolbar.css');
+@import url('src/styles/components/labels.css');
+@import url('src/styles/components/inputs.css');
+@import url('src/styles/components/reset.css');
+@import url('src/styles/components/tabs.css');
+@import url('src/styles/variables.css');
+@import url('src/styles/components/panes.css');
+@import url('src/styles/components/calendar.css');
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;800&display=swap');
+
+html,
+body {
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+body {
+    overflow: hidden;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    display: flex;
+    flex-direction: row;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.divider--h {
+    width: 90%;
+    height: 1px;
+    background-color: #ddd;
+    margin: 1rem auto;
+}
+
+.section {
+    padding: 1rem;
+    background-color: #eee;
+}
+
+.sidebar {
+    min-width: fit-content;
+}
+
+.responsive--v {
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow: scroll;
+}
+
+.responsive--h {
+    resize: horizontal;
+}
+
+.number {
+    font-size: .75rem;
+    color: #000;
+}

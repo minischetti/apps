@@ -1,0 +1,81 @@
+.calendar {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    background-color: #eee;
+}
+
+.calendar__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem;
+    background-color: #fff;
+    outline: 1px solid #ddd;
+}
+
+.calendar__weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar__body {
+}
+
+.calendar__day-item-inline {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.calendar__days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar__item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: #fff;
+    outline: 1px solid #ddd;
+}
+
+.calendar__weekday {
+    font-weight: bold;
+}
+
+.calendar__day {
+    cursor: pointer;
+}
+
+.calendar__day:hover {
+    background-color: #eee;
+}
+
+.calendar__day--today {
+    /* background-color: #eee; */
+}
+
+.calendar__side-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: #fff;
+    outline: 1px solid #ddd;
+}
+
+.has-items--added {
+    background-color: green;
+}
+
+.has-items--modified {
+    background-color: yellow;
+}

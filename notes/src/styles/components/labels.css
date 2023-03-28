@@ -1,0 +1,8 @@
+.counter--icon {
+    display: flex;
+    gap: .25rem;
+    align-items: center;
+    padding: .25rem .5rem;
+    border: 1px solid #ddd;
+    border-radius: .25rem;
+}

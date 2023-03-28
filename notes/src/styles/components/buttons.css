@@ -1,0 +1,58 @@
+.btn--icon {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    gap: .25rem;
+    background-color: #eee;
+    padding: .25rem .5rem;
+    border-radius: .25rem;
+}
+
+.btn--icon.disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.btn--icon-icon {
+
+}
+
+.btn--icon-label {
+}
+
+.btn {
+    cursor: pointer;
+    display: flex;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: .25rem 1rem;
+    border-radius: .25rem;
+    align-items: center;
+    appearance: none;
+    border: none;
+    background-color:hsl(0, 0%, 50%);
+}
+.btn:focus {
+    outline: 2px solid hsla(206, 100%, 100%, 50%);
+    box-shadow:hsl(0, 0%, 50%) 0 0 10px;
+}
+.btn-stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.btn-text {
+    flex: 1;
+}
+.btn-shortcut {
+    font-size: .5rem;
+}
+.btn--positive {
+    background-color: hsl(140, 75%, 50%);
+}
+
+.btn--negative {
+    background-color: hsl(0, 0%, 50%);
+}

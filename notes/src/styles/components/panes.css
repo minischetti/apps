@@ -1,0 +1,53 @@
+.panes {
+    display: flex;
+    gap: 1rem;
+    flex-flow: row wrap;
+    padding: 1rem;
+    height: 100vh;
+    overflow: scroll;
+}
+
+/* .panes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit);
+    grid-gap: 1rem;
+    padding: 1rem;
+} */
+
+.pane {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    outline: 1px solid #eee;
+    border-radius: 0.25rem;
+}
+
+.pane-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+
+}
+
+.pane-content {
+    padding: 1rem;
+}
+
+.pane-name {
+    flex: 1;
+}
+
+.pane-icon--close {
+    cursor: pointer;
+}
+
+.pane-icon--close:hover {
+    color: #f00;
+}
+.pane-icon--minimize.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: blur(1px);
+}

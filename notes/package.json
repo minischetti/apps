@@ -1,0 +1,85 @@
+{
+  "name": "notes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/main.js",
+  "targets": {
+    "electron": {
+      "context": "browser",
+      "distDir": "dist",
+      "publicUrl": "./",
+      "includeNodeModules": true,
+      "optimize": false,
+      "source": [
+        "index.html"
+      ]
+    },
+    "electron-preload": {
+      "context": "node",
+      "distDir": "dist",
+      "publicUrl": "./",
+      "includeNodeModules": true,
+      "optimize": false,
+      "source": [
+        "preload.js"
+      ]
+    },
+    "electron-renderer": {
+      "context": "electron-renderer",
+      "distDir": "dist",
+      "publicUrl": "./",
+      "includeNodeModules": true,
+      "optimize": false,
+      "source": [
+        "index.js"
+      ]
+    },
+    "electron-main": {
+      "context": "electron-main",
+      "distDir": "dist",
+      "publicUrl": "./",
+      "optimize": false,
+      "source": [
+        "main.js"
+      ]
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf dist && mkdir dist",
+    "build": "npm run clean && parcel build",
+    "start": "electron .",
+    "watch": "npm run clean && parcel watch",
+    "start--fast": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.20.5",
+    "@babel/preset-env": "^7.20.2",
+    "@parcel/babel-preset-env": "^2.8.0",
+    "@parcel/config-default": "^2.8.0",
+    "@parcel/core": "^2.8.0",
+    "buffer": "^5.7.1",
+    "parcel": "^2.8.0",
+    "path-browserify": "^1.0.1",
+    "prettier": "2.8.1",
+    "process": "^0.11.10",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@parcel/watcher": "^2.0.7",
+    "chokidar": "^3.5.3",
+    "commonmark": "^0.30.0",
+    "dayjs": "^1.11.7",
+    "electron": "^21.3.1",
+    "globby": "^13.1.2",
+    "markdown-it": "^13.0.1",
+    "monaco-editor": "^0.34.1",
+    "phosphor-react": "^1.4.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

@@ -1,0 +1,43 @@
+.toolbar {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.toolbar--inline {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .25rem .5rem;
+}
+
+.toolbar--shelf {
+    padding: .5rem;
+    margin: .5rem;
+    /* background-color: #ddd; */
+    border-radius: .25rem;
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    overflow: scroll;
+    position: relative;
+}
+
+.toolbar-overflow-shade {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    content: "";
+    position: sticky;
+    right: 0;
+    padding: 1rem;
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(1px);
+    /* mask the background to a soft circle */
+    /* mask-image: radial-gradient(white 0%, transparent 50%); */
+    border-radius: .5rem;
+    user-select: none;
+    pointer-events: none;
+}
