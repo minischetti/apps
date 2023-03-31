@@ -1,0 +1,21 @@
+{
+    "name": "Dominic Minischetti",
+    "title": "Senior Software Engineer",
+    "email": "domminischetti@gmail.com",
+    "phone": "516-824-2070",
+    "location": "Rocklin, CA",
+    "experience": [
+        {
+            "company": "Williams-Sonoma, Inc.",
+            "title": "Senior Software Engineer",
+            "start": "April 2017",
+            "end": "January 2023",
+            "location": "Rocklin, Remote",
+            "description": "Front-end and back-end software architecture, development and tooling for a multi-brand e-commerce platform.",
+            "highlights": [
+                "New rewards program, The Key Rewards"
+                
+            ]
+        }
+    ]
+}

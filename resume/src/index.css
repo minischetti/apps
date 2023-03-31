@@ -1,0 +1,35 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    padding: 0;
+    margin: 0;
+}
+
+ul {
+    padding: 0;
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.layout__letter {
+    width: 8.5in;
+    height: 11in;
+}
+
+.style__letter {
+    padding: 1rem;
+    border: 1px solid black;
+    box-shadow : 0 0 0.5rem 0.5rem rgba(0, 0, 0, 0.5);
+}
