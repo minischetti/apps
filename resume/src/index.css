@@ -23,6 +23,14 @@ ul {
     gap: 1rem;
 }
 
+.color-scheme__light {
+    color-scheme: light;
+}
+
+.color-scheme__dark {
+    color-scheme: dark;
+}
+
 .layout__letter {
     width: 8.5in;
     height: 11in;
@@ -32,4 +40,19 @@ ul {
     padding: 1rem;
     border: 1px solid black;
     box-shadow : 0 0 0.5rem 0.5rem rgba(0, 0, 0, 0.5);
+    background-color: white;
 }
+
+/* @media (prefers-color-scheme: dark) {
+    .style__letter {
+        background-color: black;
+        color: white;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .style__letter {
+        background-color: white;
+        color: black;
+    }
+} */
