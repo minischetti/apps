@@ -1,4 +1,11 @@
 import React, { useEffect, FormEvent } from 'react';
+import mockMedications from './data/medications.js';
+import mockUsers from './data/users.js';
+
+type Dosage = {
+    time: string;
+    amount: string;
+};
 
 type Medication = {
     id: string;
@@ -7,8 +14,7 @@ type Medication = {
 
 interface Prescription extends Medication {
     dosage: string;
-    frequency: string;
-    times: string[];
+    frequency: string[];
 };
 
 interface MedicationForm extends FormEvent<HTMLFormElement> {
@@ -30,8 +36,14 @@ interface PrescriptionForm extends FormEvent<HTMLFormElement> {
 
 
 export function App() {
-    const [medications, setMedications] = React.useState<Medication[]>([]);
+    const [user, setUser] = React.useState(mockUsers[0]);
+    const [medications, setMedications] = React.useState<Medication[]>(mockMedications);
     const [prescriptions, setPrescriptions] = React.useState<Prescription[]>([]);
+
+    useEffect(() => {
+        console.log(user);
+        console.log(medications);
+    }, [user, medications]);
 
     const addMedication = (event: MedicationForm) => {
         event.preventDefault();
@@ -85,7 +97,6 @@ export function App() {
                 name,
                 dosage,
                 frequency,
-                times: [],
             },
         ]);
     };
