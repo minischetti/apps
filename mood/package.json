@@ -1,0 +1,38 @@
+{
+  "name": "flashcards",
+  "version": "1.0.0",
+  "description": "",
+  "targets": {
+    "main": {
+      "context": "browser",
+      "source": "src/index.html"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf dist && mkdir dist",
+    "build": "parcel build",
+    "start": "parcel src/index.html",
+    "watch": "parcel watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@parcel/transformer-mdx": "^2.8.1",
+    "parcel": "^2.8.1",
+    "process": "^0.11.10",
+    "typescript": "^5.0.3"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@fontsource/roboto": "^4.5.8",
+    "@mdx-js/react": "^2.3.0",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.11.16",
+    "@xstate/react": "^3.0.1",
+    "phosphor-react": "^1.4.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "xstate": "^4.35.0"
+  }
+}
