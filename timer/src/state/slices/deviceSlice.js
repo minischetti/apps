@@ -1,18 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 export const deviceSlice = createSlice({
-  name: 'device',
+  name: 'devices',
   initialState: {
-    devices: []
+    value: []
   },
   reducers: {
     add: (state, action) => {
       // TODO: Check for correct payload
-      state.devices.push(action.payload)
+      state.devices.value.push(action.payload)
     },
     remove: (state, action) => {
       // TODO: Check for correct payload
-      state.devices = state.devices.filter(device => device.id !== action.payload.id)
+      state.devices.value = state.devices.value.filter(device => device.id !== action.payload.id)
     },
   }
 })

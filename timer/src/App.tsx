@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import { useSelector, useDispatch } from 'react-redux';
 import deviceSlice, { add } from './state/slices/deviceSlice';
 import { Box, Clock, Text } from 'grommet';
+import { Button, Container } from '@mui/material';
 
 const types = {
     timer: Timer,
@@ -107,7 +108,7 @@ function AddDevice() {
         const seconds = event.target.seconds.value;
         const duration = hours * 60 * 60 + minutes * 60 + seconds;
         const durationInMilliseconds = duration * 1000;
-        const direction = event.target.direction.value;
+        // const direction = event.target.direction.value;
         const timerEnd = Date.now() + durationInMilliseconds;
 
         // Send an alert when the timer ends
@@ -118,40 +119,60 @@ function AddDevice() {
         dispatch(
             add(
                 {
-                    type: 'timer',
                     duration,
-                    direction,
+                    // direction,
                     timerEnd,
                 }
             )
         );
     };
 
+    const timeElements = [
+        {
+            name: 'hours',
+            value: hours,
+            onChange: handleHoursChange,
+        },
+        {
+            name: 'minutes',
+            value: minutes,
+            onChange: handleMinutesChange,
+        },
+        {
+            name: 'seconds',
+            value: seconds,
+            onChange: handleSecondsChange,
+        },
+    ];
+
     return (
         <form onSubmit={AddDevice}>
             <Stack spacing={2} direction={"row"} alignContent={'center'}>
-                <Input id="outlined-basic" name='hours' title='Hours' value={hours} onChange={handleHoursChange} type='number' />
-                <Input id="outlined-basic" name='minutes' title='Minutes' value={minutes} onChange={handleMinutesChange} type='number' />
-                <Input id="outlined-basic" name='seconds' title='Seconds' value={seconds} onChange={handleSecondsChange} type='number' />
+                {timeElements.map((element, index) => (
+                    <Stack key={index} spacing={2} direction={"column"} alignContent={'center'}>
+                        <label htmlFor={element.name}>{element.name}</label>
+                        <Input name={element.name} value={element.value} onChange={element.onChange} type='number' />
+                    </Stack>
+                ))}
             </Stack>
-
-            <select name='direction' title='Count Direction'>
+            {/* <select name='direction' title='Count Direction'>
                 <option value={Direction.Up}>Up</option>
                 <option value={Direction.Down}>Down</option>
-            </select>
-            <button type="submit">Add Device</button>
+            </select> */}
+            <Stack alignContent={"center"}>
+                <Button type='submit' variant='contained'>Start  Timer</Button>
+            </Stack>
         </form>
     );
 }
 
 export function App() {
-    const devices = useSelector((state) => state.devices);
+    const devices = useSelector((state) => state.devices.value);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        // dispatch(add({ type: 'timer' }));
-        console.log(devices);
-    }, []);
+        console.log('devices', devices)
+    }, [devices]);
 
     return (
         <div className='app'>
@@ -159,6 +180,9 @@ export function App() {
             <AddDevice />
             <h3>Devices</h3>
             <div className='devices'>
+                {devices.map((device, index) => (
+                    <Device key={index} type={device.type} />
+                ))}
             </div>
         </div>
     );
