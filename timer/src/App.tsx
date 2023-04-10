@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import Slider from '@mui/material/Slider';
+import Input from '@mui/material/Input';
 import TextField from '@mui/material/TextField';
 import { useSelector, useDispatch } from 'react-redux';
 import deviceSlice, { add } from './state/slices/deviceSlice';
@@ -101,28 +102,39 @@ function AddDevice() {
 
     const AddDevice = (event) => {
         event.preventDefault();
-        const duration = event.target.duration.value;
+        const hours = event.target.hours.value;
+        const minutes = event.target.minutes.value;
+        const seconds = event.target.seconds.value;
+        const duration = hours * 60 * 60 + minutes * 60 + seconds;
+        const durationInMilliseconds = duration * 1000;
         const direction = event.target.direction.value;
+        const timerEnd = Date.now() + durationInMilliseconds;
+
+        // Send an alert when the timer ends
+        setTimeout(() => {
+            alert('Timer ended');
+        }, durationInMilliseconds);
 
         dispatch(
             add(
-                { duration, direction }
+                {
+                    type: 'timer',
+                    duration,
+                    direction,
+                    timerEnd,
+                }
             )
         );
     };
 
     return (
         <form onSubmit={AddDevice}>
-            <Stack spacing={2} alignContent={'center'}>
-                <TextField id="outlined-basic" label="Hours" variant="outlined" name='hours' title='Hours' value={hours} onChange={handleHoursChange} type='number' />
-                <Slider aria-label="Duration" value={hours} onChange={handleHoursChange} />
-
-                <TextField id="outlined-basic" label="Minutes" variant="outlined" name='minutes' title='Minutes' value={minutes} onChange={handleMinutesChange} type='number' />
-                <Slider aria-label="Minutes" value={minutes} onChange={handleMinutesChange} />
-
-                <TextField id="outlined-basic" label="Seconds" variant="outlined" name='seconds' title='Seconds' value={seconds} onChange={handleSecondsChange} type='number' />
-                <Slider aria-label="Seconds" value={seconds} onChange={handleSecondsChange} />
+            <Stack spacing={2} direction={"row"} alignContent={'center'}>
+                <Input id="outlined-basic" name='hours' title='Hours' value={hours} onChange={handleHoursChange} type='number' />
+                <Input id="outlined-basic" name='minutes' title='Minutes' value={minutes} onChange={handleMinutesChange} type='number' />
+                <Input id="outlined-basic" name='seconds' title='Seconds' value={seconds} onChange={handleSecondsChange} type='number' />
             </Stack>
+
             <select name='direction' title='Count Direction'>
                 <option value={Direction.Up}>Up</option>
                 <option value={Direction.Down}>Down</option>
