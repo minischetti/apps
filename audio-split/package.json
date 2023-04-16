@@ -1,0 +1,24 @@
+{
+  "name": "audio-split",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite src",
+    "build": "vite build src",
+    "serve": "vite preview src",
+    "api": "vite build src/Server.ts && node Server.ts"
+  },
+  "dependencies": {
+    "@hapi/hapi": "^21.3.1",
+    "@types/node": "^18.15.11",
+    "@vitejs/plugin-react": "^3.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "vite": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.35",
+    "@types/react-dom": "^18.0.11"
+  }
+}
