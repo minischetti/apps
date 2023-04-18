@@ -2,31 +2,20 @@
   "name": "resume",
   "version": "1.0.0",
   "description": "",
-  "targets": {
-    "main": {
-      "context": "browser",
-      "source": "src/index.html"
-    }
-  },
   "scripts": {
-    "clean": "rm -rf dist && mkdir dist",
-    "build": "parcel build",
-    "start": "parcel src/index.html",
-    "watch": "parcel watch"
+    "dev": "vite src",
+    "build": "vite build src",
+    "serve": "vite preview src"
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "@parcel/transformer-mdx": "^2.8.1",
-    "parcel": "^2.8.1",
-    "process": "^0.11.10"
-  },
   "dependencies": {
     "@mdx-js/react": "^2.3.0",
     "@xstate/react": "^3.0.1",
     "phosphor-react": "^1.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "vite": "^4.2.1",
     "xstate": "^4.35.0"
   }
 }
