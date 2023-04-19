@@ -55,12 +55,28 @@ function EditMedications({ medications, editMedication }) {
 }
 
 function Medications({ medications, addMedication, editMedication }) {
+    const styles = {
+        pills: {
+            display: 'grid',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '10px',
+        },
+        pill: {
+            backgroundColor: 'blue',
+            color: 'white',
+            borderRadius: '100px',
+            display: 'inline-block',
+            textAlign: 'center',
+            padding: '5px 10px',
+        },
+    };
     return (
         <div className='medications'>
             <div className='title'>Medications</div>
-            <div className='medications-list'>
+            <div style={styles.pills}>
                 {medications.map((medication) => (
-                    <div className='medication' key={medication.id}>
+                    <div style={styles.pill} key={medication.id}>
                         <div className='medication-name'>{medication.name}</div>
                     </div>
                 ))}
@@ -218,6 +234,16 @@ export function App() {
             {medications.map((medication: Medication, index) => (
                 <div key={index}>
                     <h3>{medication.name}</h3>
+                    <form onSubmit={editMedication}>
+                        <input type="hidden" title="id" id="id" value={medication.id} />
+                        <label htmlFor="name">Name</label>
+                        <input type="text" title="name" id="name" defaultValue={medication.name} />
+                        <label htmlFor="dosage">Dosage</label>
+                        <input type="text" title="dosage" id="dosage" defaultValue={medication.dosage} />
+                        <label htmlFor="frequency">Frequency</label>
+                        <input type="text" title="frequency" id="frequency" defaultValue={medication.frequency} />
+                        <button type="submit">Edit Medication</button>
+                    </form>
                 </div>
             ))}
             {/* My Prescriptions */}
