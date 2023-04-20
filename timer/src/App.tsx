@@ -72,7 +72,6 @@ function AddDevice() {
     const [seconds, setSeconds] = React.useState(0);
     const [direction, setDirection] = React.useState(Direction.Up);
     const dispatch = useDispatch();
-    const devices = useSelector((state) => state.devices);
 
     const handleHoursChange = (event) => {
         if (event.target.value === '') {
@@ -160,7 +159,7 @@ function AddDevice() {
                 <option value={Direction.Down}>Down</option>
             </select> */}
             <Stack alignContent={"center"}>
-                <Button type='submit' variant='contained'>Start  Timer</Button>
+                <Button type='submit' variant='contained'>Start Timer</Button>
             </Stack>
         </form>
     );
@@ -181,7 +180,7 @@ export function App() {
             <h3>Devices</h3>
             <div className='devices'>
                 {devices.map((device, index) => (
-                    <Device key={index} type={device.type} />
+                    <div key={index}>Time Device</div>
                 ))}
             </div>
         </div>

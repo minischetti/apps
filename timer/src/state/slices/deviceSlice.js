@@ -8,11 +8,15 @@ export const deviceSlice = createSlice({
   reducers: {
     add: (state, action) => {
       // TODO: Check for correct payload
-      state.devices.value.push(action.payload)
+      console.log('state', state)
+      console.log('add', action.payload)
+      state.value.push(action.payload)
     },
     remove: (state, action) => {
       // TODO: Check for correct payload
-      state.devices.value = state.devices.value.filter(device => device.id !== action.payload.id)
+      console.log('state', state)
+      console.log('remove', action.payload)
+      state.value = state.value.filter(device => device.id !== action.payload.id)
     },
   }
 })
