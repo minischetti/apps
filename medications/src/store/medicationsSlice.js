@@ -5,14 +5,14 @@ export const medicationsSlice = createSlice({
     initialState: [],
     reducers: {
         add: (state, action) => {
-            state.medications.push(action.payload)
+            state.push(action.payload)
         },
         remove: (state, action) => {
-            state.medications = state.medications.filter(medication => medication.id !== action.payload)
+            state = state.filter(medication => medication.id !== action.payload)
         },
         update: (state, action) => {
-            const index = state.medications.findIndex(medication => medication.id === action.payload.id)
-            state.medications[index] = action.payload
+            const index = state.findIndex(medication => medication.id === action.payload.id)
+            state[index] = action.payload
         }
     }
 })

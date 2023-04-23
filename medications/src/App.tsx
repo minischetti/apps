@@ -3,13 +3,14 @@ import mockMedications from './data/medications.js';
 import mockUsers from './data/users.js';
 import { NavLink, Route, Routes } from "react-router-dom";
 import Context from './context';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Outlet } from 'react-router-dom';
 import { Medications } from './templates/views/Medications.jsx';
 import { EditMedications } from './templates/views/EditMedications.jsx';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { House, Eye, Pencil } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { Search } from './templates/partials/Search.jsx';
 
 type Dosage = {
     time: string;
@@ -53,6 +54,8 @@ export function Home() {
 
 
 export function App() {
+    // use react router outlet
+
     const [user, setUser] = React.useState(mockUsers[0]);
     const [time, setTime] = React.useState(new Date());
     const medications = useSelector((state: any) => state.medications);
@@ -145,14 +148,17 @@ export function App() {
         {
             pathname: '/',
             title: 'Home',
+            icon: <House />,
         },
         {
             pathname: '/medications',
-            title: 'View Medications',
+            title: 'Medications',
+            icon: <Eye />,
         },
         {
-            pathname: '/medications/edit',
-            title: 'Edit Medications',
+            pathname: '/prescriptions',
+            title: 'Prescriptions',
+            icon: <Pencil />,
         },
     ];
 
@@ -161,28 +167,12 @@ export function App() {
             <BottomNavigation
                 showLabels
             >
-                <BottomNavigationAction label="Home" icon={<House />} data-location="/" onClick={navigateTo} />
-                <BottomNavigationAction label="View" icon={<Eye />} data-location="/medications" onClick={navigateTo} />
-                <BottomNavigationAction label="Edit" icon={<Pencil />} data-location="/medications/edit" onClick={navigateTo} />
+                {locations.map((location, index) => (
+                    <BottomNavigationAction key={index} component={NavLink} label={location.title} icon={location.icon} to={location.pathname} />
+                ))}
             </BottomNavigation>
-            <Routes>
-                <Route
-                    path="*"
-                    element={<Home />}
-                />
-                <Route
-                    path="medications"
-                >
-                    <Route
-                        index={true}
-                        element={<Medications />}
-                    />
-                    <Route
-                        path="edit"
-                        element={<EditMedications />}
-                    />
-                </Route>
-            </Routes>
+            <Search />
+            <Outlet />
         </div>
     );
 }

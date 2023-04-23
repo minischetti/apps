@@ -21,17 +21,6 @@ const router = createBrowserRouter(
                 {
                     path: "medications",
                     element: <Medications />,
-                    children: [
-                        {
-                            index: true,
-                            element: <Spinner />,
-
-                        },
-                        {
-                            path: "edit",
-                            element: <EditMedications />,
-                        },
-                    ],
                 }
             ],
         },
