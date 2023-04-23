@@ -10,20 +10,32 @@
   },
   "scripts": {
     "dev": "vite src",
-    "build": "vite build src"
+    "build": "vite build src",
+    "api-watch": "tsc --watch api/index.ts",
+    "api-build": "tsc api/index.ts",
+    "api-start": "node api/index.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^18.15.12",
     "typescript": "^5.0.3"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@hapi/hapi": "^21.3.1",
     "@mdx-js/react": "^2.3.0",
+    "@mui/material": "^5.12.1",
+    "@phosphor-icons/react": "^2.0.8",
+    "@reduxjs/toolkit": "^1.9.5",
     "@xstate/react": "^3.0.1",
+    "graphql": "^16.6.0",
     "phosphor-react": "^1.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-native": "^0.71.6",
+    "react-redux": "^8.0.5",
     "react-router-dom": "^6.10.0",
     "vite": "^4.2.2",
     "xstate": "^4.35.0"

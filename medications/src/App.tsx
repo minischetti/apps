@@ -6,6 +6,10 @@ import Context from './context';
 import { useLocation } from 'react-router-dom';
 import { Medications } from './templates/views/Medications.jsx';
 import { EditMedications } from './templates/views/EditMedications.jsx';
+import { BottomNavigation, BottomNavigationAction } from '@mui/material';
+import { House, Eye, Pencil } from '@phosphor-icons/react';
+import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 
 type Dosage = {
     time: string;
@@ -50,9 +54,11 @@ export function Home() {
 
 export function App() {
     const [user, setUser] = React.useState(mockUsers[0]);
-    const { medications } = React.useContext(Context);
+    const [time, setTime] = React.useState(new Date());
+    const medications = useSelector((state: any) => state.medications);
     const [prescriptions, setPrescriptions] = React.useState<Prescription[]>([]);
     const location = useLocation();
+    const navigate = useNavigate();
     // const [sidebar, setSidebar] = React.useState(
     //     [
     //         {
@@ -68,7 +74,12 @@ export function App() {
         console.log(user);
         console.log(medications);
         console.log(location)
-    }, [user, medications]);
+        // timer
+        const interval = setInterval(() => setTime(new Date()), 1000);
+        return () => {
+            clearInterval(interval);
+        }
+    }, [user, medications, location]);
 
     // const handleShowSidebar = (event: FormEvent<HTMLButtonElement>) => {
     //     event.preventDefault();
@@ -99,6 +110,15 @@ export function App() {
         ]);
     };
 
+    const navigateTo = (event: FormEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const location = event.currentTarget.getAttribute('data-location');
+        console.log(location);
+        navigate(location);
+    };
+
     const styles = {
         container: {
             flex: 1,
@@ -121,11 +141,30 @@ export function App() {
         }
     };
 
+    const locations = [
+        {
+            pathname: '/',
+            title: 'Home',
+        },
+        {
+            pathname: '/medications',
+            title: 'View Medications',
+        },
+        {
+            pathname: '/medications/edit',
+            title: 'Edit Medications',
+        },
+    ];
+
     return (
         <div className='app' style={styles.container}>
-            <NavLink to="/">Home</NavLink>
-            <NavLink to="/medications">View Medications</NavLink>
-            <NavLink to="/medications/edit">Edit Medications</NavLink>
+            <BottomNavigation
+                showLabels
+            >
+                <BottomNavigationAction label="Home" icon={<House />} data-location="/" onClick={navigateTo} />
+                <BottomNavigationAction label="View" icon={<Eye />} data-location="/medications" onClick={navigateTo} />
+                <BottomNavigationAction label="Edit" icon={<Pencil />} data-location="/medications/edit" onClick={navigateTo} />
+            </BottomNavigation>
             <Routes>
                 <Route
                     path="*"
@@ -136,11 +175,11 @@ export function App() {
                 >
                     <Route
                         index={true}
-                        element={<Medications/>}
+                        element={<Medications />}
                     />
                     <Route
                         path="edit"
-                        element={<EditMedications/>}
+                        element={<EditMedications />}
                     />
                 </Route>
             </Routes>

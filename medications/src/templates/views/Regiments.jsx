@@ -1,8 +1,8 @@
 import {Context} from "../../context";
 import React, { useContext } from "react";
 
-export function EditMedications() {
-    const { medications, editMedication } = useContext(Context);
+export function Regiments() {
+    const { regiments } = useContext(Context);
 
     return (
         <div className='medications'>

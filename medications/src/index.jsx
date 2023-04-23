@@ -9,9 +9,8 @@ import {
 import { EditMedications } from "./templates/views/EditMedications";
 import { Medications } from "./templates/views/Medications";
 import { Spinner } from "./templates/components/Spinner";
-import { Context } from "./context";
-import mockMedications from "./data/medications";
-
+import { Provider as ReduxProvider } from 'react-redux'
+import store from './store/store'
 
 const router = createBrowserRouter(
     [
@@ -42,39 +41,7 @@ const router = createBrowserRouter(
 const container = document.getElementById("root");
 const root = createRoot(container)
 root.render(
-    <Context.Provider
-        value={{
-            medications: [...mockMedications],
-            addMedication: (event, context) => {
-                console.log("addMedication");
-                const name = event.target.name.value;
-                const id = name.toLowerCase().replace(' ', '-');
-                if (
-                    name.length === 0 ||
-                    name === ' ' ||
-                    context.medications.find((medication) => medication.id === id)
-                ) {
-                    return;
-                }
-
-            },
-            editMedication: (event, context) => {
-                const name = event.target.name.value;
-                const dosage = event.target.dosage.value;
-                const frequency = event.target.frequency.value;
-                // Find the medication
-                const medication = medications.find((medication) => medication.id === event.target.id.value);
-                // Update the medication
-                if (medication) {
-                    medication.name = name;
-                    medication.dosage = dosage;
-                    medication.frequency = frequency;
-                }
-            }
-        }}
-    >
-        <RouterProvider router={router}>
-            <App></App>
-        </RouterProvider>
-    </Context.Provider>
+    <ReduxProvider store={store}>
+        <RouterProvider router={router}/>
+    </ReduxProvider>
 );

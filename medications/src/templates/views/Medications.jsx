@@ -1,10 +1,11 @@
 import React, { useContext, useEffect } from 'react';
 import { Context } from '../../context';
 import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 export function Medications() {
     // use context to get medications
-    const { medications, addMedication } = useContext(Context);
+    const medications = useSelector((state) => state.medications);
     const { location } = useLocation();
 
     useEffect(() => {
@@ -40,7 +41,7 @@ export function Medications() {
         <div style={styles.container}>
             <div className='title'>Medications</div>
             <div>A list of medications you're taking.</div>
-            <form onSubmit={addMedication}>
+            <form>
                 <input type='text' name='name' placeholder='Medication Name' />
                 <button type='submit'>Add Medication</button>
             </form>
