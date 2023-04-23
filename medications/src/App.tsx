@@ -1,16 +1,13 @@
 import React, { useEffect, FormEvent } from 'react';
-import mockMedications from './data/medications.js';
 import mockUsers from './data/users.js';
 import { NavLink, Route, Routes } from "react-router-dom";
-import Context from './context';
 import { useLocation, Outlet } from 'react-router-dom';
-import { Medications } from './templates/views/Medications.jsx';
-import { EditMedications } from './templates/views/EditMedications.jsx';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { House, Eye, Pencil } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Search } from './templates/partials/Search.jsx';
+import { Modal } from './templates/partials/Modal.jsx';
 
 type Dosage = {
     time: string;
@@ -59,7 +56,7 @@ export function App() {
     const [user, setUser] = React.useState(mockUsers[0]);
     const [time, setTime] = React.useState(new Date());
     const medications = useSelector((state: any) => state.medications);
-    const [prescriptions, setPrescriptions] = React.useState<Prescription[]>([]);
+    const modal = useSelector((state: any) => state.modal);
     const location = useLocation();
     const navigate = useNavigate();
     // const [sidebar, setSidebar] = React.useState(
@@ -83,35 +80,6 @@ export function App() {
             clearInterval(interval);
         }
     }, [user, medications, location]);
-
-    // const handleShowSidebar = (event: FormEvent<HTMLButtonElement>) => {
-    //     event.preventDefault();
-    //     event.stopPropagation();
-    //     console.log('showSidebar', showSidebar)
-    //     setShowSidebar(!showSidebar);
-    // };
-
-    const addPrescription = (event: PrescriptionForm) => {
-        event.preventDefault();
-        event.stopPropagation();
-        const name = event.target.name.value;
-        const dosage = event.target.dosage.value;
-        const frequency = event.target.frequency.value;
-        if (prescriptions.find((prescription) => prescription.id === event.target.id.value)) {
-            return;
-        }
-        const id = name.toLowerCase() + "-" + dosage.toLowerCase() + "-" + frequency.toLowerCase().replace(' ', '-');
-        console.log(id);
-        setPrescriptions([
-            ...prescriptions,
-            {
-                id,
-                name,
-                dosage,
-                frequency,
-            },
-        ]);
-    };
 
     const navigateTo = (event: FormEvent<HTMLButtonElement>) => {
         event.preventDefault();
@@ -172,6 +140,9 @@ export function App() {
                 ))}
             </BottomNavigation>
             <Search />
+            {modal.open ? 
+                <Modal content={<div>Hello there!</div>} />
+            : null}
             <Outlet />
         </div>
     );

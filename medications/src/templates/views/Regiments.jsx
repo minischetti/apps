@@ -6,16 +6,16 @@ export function Regiments() {
     // use context to get medications
     const medications = useSelector((state) => state.medications);
     const regiments = useSelector((state) => state.regiments);
-    const [frequency, setFrequency] = useState(0);
+    const [frequency, setFrequency] = useState(1);
     const { location } = useLocation();
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log('Medications mounted');
+        console.log('Regiments mounted');
         console.log(medications);
         console.log(location)
         return () => {
-            console.log('Medications unmounted');
+            console.log('Regiments unmounted');
         };
     }, []);
 
@@ -42,9 +42,15 @@ export function Regiments() {
         dispatch(add(medication))
     }
 
-    const handleFrequencyChange = (event) => {
+    const removeTime = (event) => {
         event.preventDefault();
-        setFrequency(event.target.value);
+        setFrequency(frequency - 1);
+    }
+
+    const addTime = (event) => {
+        event.preventDefault();
+        setFrequency(frequency + 1);
+        // setFrequency(event.target.value);
     };
 
     const styles = {
@@ -56,12 +62,14 @@ export function Regiments() {
     return (
         <div style={styles.container}>
             <h1>Regiments</h1>
-            <p>Here you can add, remove, and edit your medication regiments.</p>
+            <p>Add, remove, and edit your medication regiments.</p>
             <form onSubmit={handleAddRegiment}>
                 <h2>Regiment</h2>
                 {/* select field with options of each medication */}
                 {medications && medications.length > 0 ? (
                     <div>
+                        <h3>Add a regiment</h3>
+                        <p>What medication do you want to add to your regiment?</p>
                         <select name='name'>
                             {medications.map((medication) => (
                                 <option key={medication.id} value={medication.name}>
@@ -70,9 +78,12 @@ export function Regiments() {
                             ))}
                         </select>
                         <p>How many times do you take this medication?</p>
-                        <input onChange={handleFrequencyChange} type='number' name='frequency' placeholder='Frequency' />
                         <div>
                             <h3>Times</h3>
+                            <p>When do you take this medication?</p>
+                            <footer>You may add multiple times.</footer>
+                            <button type="button" onClick={removeTime}>Add</button>
+                            <button type="button" onClick={addTime}>Add</button>
                             {Array.from({ length: frequency }).map((_, index) => (
                                 <input key={`time_${index}`} type='time' name={`time_${index}`} />
                             ))}

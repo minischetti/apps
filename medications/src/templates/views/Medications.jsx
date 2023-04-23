@@ -3,14 +3,14 @@ import { Context } from '../../context';
 import { useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { add, remove, update } from '../../store/medicationsSlice';
+import { set } from '../../store/modalSlice.js';
 import { Alarm } from '@phosphor-icons/react';
 import { Medication } from '../partials/Medication';
+import { Table, TableBody, TableHead } from '@mui/material';
 
 export function NewMedication() {
-    // use context to get medications
     const { location } = useLocation();
     const medications = useSelector((state) => state.medications);
-    const [frequency, setFrequency] = useState(0);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -44,11 +44,6 @@ export function NewMedication() {
         };
         dispatch(add(medication))
     }
-
-    const handleFrequencyChange = (event) => {
-        event.preventDefault();
-        setFrequency(event.target.value);
-    };
 
     const styles = {
         container: {
@@ -100,12 +95,30 @@ function MedicationsList() {
 }
 
 export function Medications() {
-    // use context to get medications
     const { location } = useLocation();
     const medications = useSelector((state) => state.medications);
-    const [frequency, setFrequency] = useState(0);
+    const [editing, setEditing] = useState([]);
     const dispatch = useDispatch();
 
+    const editMedication = (event, medicationId) => {
+        event.preventDefault();
+        const form = event.target;
+        console.log('edit medication', medicationId);
+
+        setEditing([...editing, medicationId]);
+
+        const medication = {
+            id: medicationId,
+            name: form.name.value,
+        };
+        dispatch(update(medication))
+    }
+
+    const deleteMedication = (event, medicationId) => {
+        event.preventDefault();
+        console.log('delete medication', medicationId);
+        dispatch(remove(medicationId))
+    }
     useEffect(() => {
         console.log('Medications mounted');
         console.log(medications);
@@ -113,7 +126,7 @@ export function Medications() {
         return () => {
             console.log('Medications unmounted');
         };
-    }, []);
+    }, [medications]);
 
     const styles = {
         container: {
@@ -127,6 +140,58 @@ export function Medications() {
             <p>Here you can add, remove, and edit your medications.</p>
             <MedicationsList />
             <NewMedication />
+            <Table>
+                <TableHead>
+                    <tr>
+                        <th>Medication</th>
+                        <th>Dosage</th>
+                        <th>Frequency</th>
+                        <th>Actions</th>
+                    </tr>
+                </TableHead>
+                {medications.map((medication) => (
+                    editing.includes(_ => _ === medication.id) ? (
+                        <form onSubmit={(event) => editMedication()} key={medication.id}>
+                            <TableBody>
+                                <tr>
+                                    <th>
+                                        <input type='text' name='name' placeholder='Medication Name' />
+                                    </th>
+                                    <th>
+                                        <input type='text' name='dosage' placeholder='Dosage' />
+                                    </th>
+                                    <th>
+                                        <input type='text' name='frequency' placeholder='Frequency' />
+                                    </th>
+                                    <th>
+                                        <button type='submit'>
+                                            Save
+                                        </button>
+                                        <button type='button' onClick={(event) => deleteMedication(event, medication.id)}>
+                                            Delete
+                                        </button>
+                                    </th>
+                                </tr>
+                            </TableBody>
+                        </form>
+                    ) : (
+                        <TableBody key={medication.id}>
+                            <tr>
+                                <th>{medication.name}</th>
+                                <th>{medication.dosage}</th>
+                                <th>{medication.frequency}</th>
+                                <th>
+                                    <button type='button' onClick={(event) => editMedication(event, medication.id)}>
+                                        Edit
+                                    </button>
+                                    <button type='button' onClick={(event) => deleteMedication(event, medication.id)}>
+                                        Delete
+                                    </button>
+                                </th>
+                            </tr>
+                        </TableBody>
+                    )))}
+            </Table>
         </div>
     );
 }
