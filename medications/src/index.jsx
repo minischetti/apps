@@ -11,6 +11,7 @@ import { Medications } from "./templates/views/Medications";
 import { Spinner } from "./templates/components/Spinner";
 import { Provider as ReduxProvider } from 'react-redux'
 import store from './store/store'
+import { Regiments } from "./templates/views/Regiments";
 
 const router = createBrowserRouter(
     [
@@ -21,7 +22,11 @@ const router = createBrowserRouter(
                 {
                     path: "medications",
                     element: <Medications />,
-                }
+                },
+                {
+                    path: "regiments",
+                    element: <Regiments />
+                },
             ],
         },
     ],

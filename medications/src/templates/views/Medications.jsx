@@ -6,7 +6,7 @@ import { add, remove, update } from '../../store/medicationsSlice';
 import { Alarm } from '@phosphor-icons/react';
 import { Medication } from '../partials/Medication';
 
-export function Medications() {
+export function NewMedication() {
     // use context to get medications
     const { location } = useLocation();
     const medications = useSelector((state) => state.medications);
@@ -55,6 +55,22 @@ export function Medications() {
             border: '1px solid black',
             padding: '10px',
         },
+    };
+    return (
+        <div style={styles.container}>
+            <h1>Add Medication</h1>
+            <p>Here you can add, remove, and edit your medications.</p>
+            <form onSubmit={handleAddMedication}>
+                <input type='text' name='name' placeholder='Medication Name' />
+                <button type='submit'>Add Medication</button>
+            </form>
+        </div>
+    );
+}
+
+function MedicationsList() {
+    const medications = useSelector((state) => state.medications);
+    const styles = {
         pills: {
             display: 'grid',
             flexDirection: 'column',
@@ -71,34 +87,46 @@ export function Medications() {
         },
     };
     return (
+        <div style={styles.pills}>
+            {medications.map((medication) => (
+                <div style={styles.pill} key={medication.id}>
+                    <div className='medication-name'>{medication.name}</div>
+                    <div className='medication-dosage'></div>
+                    <div className='medication-frequency'></div>
+                </div>
+            ))}
+        </div>
+    )
+}
+
+export function Medications() {
+    // use context to get medications
+    const { location } = useLocation();
+    const medications = useSelector((state) => state.medications);
+    const [frequency, setFrequency] = useState(0);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        console.log('Medications mounted');
+        console.log(medications);
+        console.log(location)
+        return () => {
+            console.log('Medications unmounted');
+        };
+    }, []);
+
+    const styles = {
+        container: {
+            border: '1px solid black',
+            padding: '10px',
+        },
+    };
+    return (
         <div style={styles.container}>
             <h1>Medicine Cabinet</h1>
             <p>Here you can add, remove, and edit your medications.</p>
-            <form onSubmit={handleAddMedication}>
-                <input type='text' name='name' placeholder='Medication Name' />
-                <h2>Regiment</h2>
-                <p>How many times do you take this medication?</p>
-                <input onChange={handleFrequencyChange} type='number' name='frequency' placeholder='Frequency' />
-                <div>
-                    <h3>Times</h3>
-                    {Array.from({ length: frequency }).map((_, index) => (
-                        <input key={`time_${index}`} type='time' name={`time_${index}`} />
-                    ))}
-                    {/* <select name='medication'>
-                    <option key={_} value={_}>{_}</option>
-                </select> */}
-                </div>
-                <button type='submit'>Add Medication</button>
-            </form>
-            <div style={styles.pills}>
-                {medications.map((medication) => (
-                    <div style={styles.pill} key={medication.id}>
-                        <div className='medication-name'>{medication.name}</div>
-                        <div className='medication-dosage'></div>
-                        <div className='medication-frequency'></div>
-                    </div>
-                ))}
-            </div>
+            <MedicationsList />
+            <NewMedication />
         </div>
     );
 }

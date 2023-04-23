@@ -156,8 +156,8 @@ export function App() {
             icon: <Eye />,
         },
         {
-            pathname: '/prescriptions',
-            title: 'Prescriptions',
+            pathname: '/regiments',
+            title: 'Regiments',
             icon: <Pencil />,
         },
     ];
