@@ -100,16 +100,16 @@ export function Medications() {
     const [editing, setEditing] = useState([]);
     const dispatch = useDispatch();
 
-    const editMedication = (event, medicationId) => {
+    const editMedication = (event) => {
         event.preventDefault();
         const form = event.target;
-        console.log('edit medication', medicationId);
-
-        setEditing([...editing, medicationId]);
+        console.log('edit medication', form.id.value);
 
         const medication = {
-            id: medicationId,
+            id: form.id.value,
             name: form.name.value,
+            dosage: form.dosage.value,
+            frequency: form.frequency.value,
         };
         dispatch(update(medication))
     }
@@ -140,58 +140,44 @@ export function Medications() {
             <p>Here you can add, remove, and edit your medications.</p>
             <MedicationsList />
             <NewMedication />
-            <Table>
-                <TableHead>
-                    <tr>
-                        <th>Medication</th>
-                        <th>Dosage</th>
-                        <th>Frequency</th>
-                        <th>Actions</th>
-                    </tr>
-                </TableHead>
-                {medications.map((medication) => (
-                    editing.includes(_ => _ === medication.id) ? (
-                        <form onSubmit={(event) => editMedication()} key={medication.id}>
-                            <TableBody>
-                                <tr>
-                                    <th>
-                                        <input type='text' name='name' placeholder='Medication Name' />
-                                    </th>
-                                    <th>
-                                        <input type='text' name='dosage' placeholder='Dosage' />
-                                    </th>
-                                    <th>
-                                        <input type='text' name='frequency' placeholder='Frequency' />
-                                    </th>
-                                    <th>
-                                        <button type='submit'>
-                                            Save
-                                        </button>
-                                        <button type='button' onClick={(event) => deleteMedication(event, medication.id)}>
-                                            Delete
-                                        </button>
-                                    </th>
-                                </tr>
-                            </TableBody>
-                        </form>
-                    ) : (
+            <form onSubmit={(event) => editMedication(event)}>
+                <Table>
+                    <TableHead>
+                        <tr>
+                            <th>Medication</th>
+                            <th>Dosage</th>
+                            <th>Frequency</th>
+                            <th>Actions</th>
+                        </tr>
+                    </TableHead>
+                    {medications.map((medication) => (
+                        // editing.includes(_ => _ === medication.id) ? (
+
                         <TableBody key={medication.id}>
                             <tr>
-                                <th>{medication.name}</th>
-                                <th>{medication.dosage}</th>
-                                <th>{medication.frequency}</th>
                                 <th>
-                                    <button type='button' onClick={(event) => editMedication(event, medication.id)}>
-                                        Edit
+                                    <input type='text' name='name' placeholder='Medication Name' defaultValue={medication.name} />
+                                </th>
+                                <th>
+                                    <input type='text' name='dosage' placeholder='Dosage' defaultValue={medication.dosage} />
+                                </th>
+                                <th>
+                                    <input type='text' name='frequency' placeholder='Frequency' defaultValue={medication.frequency} />
+                                </th>
+                                <th>
+                                    <button type='submit'>
+                                        Update
                                     </button>
                                     <button type='button' onClick={(event) => deleteMedication(event, medication.id)}>
                                         Delete
                                     </button>
+                                    <input type='hidden' name='id' value={medication.id} />
                                 </th>
                             </tr>
                         </TableBody>
-                    )))}
-            </Table>
+                    ))}
+                </Table>
+            </form>
         </div>
     );
 }
