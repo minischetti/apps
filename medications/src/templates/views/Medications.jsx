@@ -95,9 +95,8 @@ function MedicationsList() {
 }
 
 export function Medications() {
-    const { location } = useLocation();
     const medications = useSelector((state) => state.medications);
-    const [editing, setEditing] = useState([]);
+    const regiments = useSelector((state) => state.regiments);
     const dispatch = useDispatch();
 
     const editMedication = (event) => {
@@ -109,7 +108,7 @@ export function Medications() {
             id: form.id.value,
             name: form.name.value,
             dosage: form.dosage.value,
-            frequency: form.frequency.value,
+            time: form.time.value,
         };
         dispatch(update(medication))
     }
@@ -121,8 +120,7 @@ export function Medications() {
     }
     useEffect(() => {
         console.log('Medications mounted');
-        console.log(medications);
-        console.log(location)
+        console.log("regiments", regiments);
         return () => {
             console.log('Medications unmounted');
         };
@@ -146,7 +144,7 @@ export function Medications() {
                         <tr>
                             <th>Medication</th>
                             <th>Dosage</th>
-                            <th>Frequency</th>
+                            <th>Time</th>
                             <th>Actions</th>
                         </tr>
                     </TableHead>
@@ -160,7 +158,18 @@ export function Medications() {
                                     <input type='text' name='dosage' placeholder='Dosage' defaultValue={medication.dosage} />
                                 </th>
                                 <th>
-                                    <input type='text' name='frequency' placeholder='Frequency' defaultValue={medication.frequency} />
+                                    <input type='time' name='time' placeholder='Time' defaultValue={medication.time} />
+                                    {/* regiments */}
+                                    {/* {regiments.filter((regiment) => regiment.medicationId === medication.id).length > 0 ? (
+                                        
+                                        regiments.map((regiment) => (
+                                            regiment.times.length > 0 ? regiment.times.map((time) => (
+                                                <Alarm />
+                                            )) : null
+                                        ))
+                                    ) : (
+                                        "No times set"
+                                    )} */}
                                 </th>
                                 <th>
                                     <button type='submit'>

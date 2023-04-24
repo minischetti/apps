@@ -112,7 +112,6 @@ export function Regiments() {
                 ) : (
                     <p>No medications found. Add a medication to your medicine cabinet to create a regiment.</p>
                 )}
-
             </form>
         </div>
     );

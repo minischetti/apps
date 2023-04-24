@@ -59,16 +59,6 @@ export function App() {
     const modal = useSelector((state: any) => state.modal);
     const location = useLocation();
     const navigate = useNavigate();
-    // const [sidebar, setSidebar] = React.useState(
-    //     [
-    //         {
-    //             title: 'Medications App',
-    //             subtitle: 'My Medications',
-    //         }
-
-    //     ]
-    // );
-    // const [showSidebar, setShowSidebar] = React.useState(false);
 
     useEffect(() => {
         console.log(user);
@@ -81,32 +71,15 @@ export function App() {
         }
     }, [user, medications, location]);
 
-    const navigateTo = (event: FormEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const location = event.currentTarget.getAttribute('data-location');
-        console.log(location);
-        navigate(location);
-    };
-
     const styles = {
         container: {
             flex: 1,
-            // flexDirection: 'row',
+            flexDirection: 'column',
+            gap: "1rem",
             backgroundColor: '#fff',
             alignItems: 'center',
             justifyContent: 'center',
         },
-        // sidebar: {
-        //     position: 'absolute',
-        //     flex: 1,
-        //     backgroundColor: '#fff',
-        //     alignItems: 'center',
-        //     justifyContent: 'center',
-        //     // box
-        //     boxShadow: '0 0 20px 0 rgba(0, 0, 0, 0.5)',
-        // },
         modal: {
             position: 'absolute',
         }
@@ -131,7 +104,7 @@ export function App() {
     ];
 
     return (
-        <div className='app' style={styles.container}>
+        <div style={styles.container}>
             <BottomNavigation
                 showLabels
             >

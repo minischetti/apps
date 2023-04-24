@@ -27,12 +27,6 @@ ul {
     padding: 0;
 }
 
-.app {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
 input, select {
     border: 2px solid var(--color-dark);
     border-radius: 4px;
