@@ -8,35 +8,35 @@ import { Alarm } from '@phosphor-icons/react';
 import { Medication } from '../partials/Medication';
 import { Table, TableBody, TableHead } from '@mui/material';
 
-export function NewMedication() {
-    const { location } = useLocation();
+export function Medications() {
     const medications = useSelector((state) => state.medications);
+    const regiments = useSelector((state) => state.regiments);
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        console.log('Medications mounted');
-        console.log(medications);
-        console.log(location)
-        return () => {
-            console.log('Medications unmounted');
-        };
-    }, []);
-
-    const handleAddMedication = (event) => {
+    const handleFormSubmit = (event, type) => {
         event.preventDefault();
         const form = event.target;
 
-        // check if medication name is empty
-        if (!form.name.value) {
-            alert('Please enter a medication name.');
-            return;
+        if (type === 'add') {
+            addMedication(event);
+        } else if (type === 'edit') {
+            editMedication(event);
+        } else if (type === 'delete') {
+            deleteMedication(event, form.id.value);
         }
+    }
 
-        // check if medication already exists
-        if (medications.find((medication) => medication.name === form.name.value)) {
-            alert('Medication already exists.');
-            return;
-        }
+    const addMedication = (event) => {
+        event.preventDefault();
+        console.log(event);
+        const form = event.target;
+
+
+        // // check if medication already exists
+        // if (medications.find((medication) => medication.name === form.name.value)) {
+        //     alert('Medication already exists.');
+        //     return;
+        // }
 
         const medication = {
             id: medications.length + 1,
@@ -44,60 +44,6 @@ export function NewMedication() {
         };
         dispatch(add(medication))
     }
-
-    const styles = {
-        container: {
-            border: '1px solid black',
-            padding: '10px',
-        },
-    };
-    return (
-        <div style={styles.container}>
-            <h1>Add Medication</h1>
-            <p>Here you can add, remove, and edit your medications.</p>
-            <form onSubmit={handleAddMedication}>
-                <input type='text' name='name' placeholder='Medication Name' />
-                <button type='submit'>Add Medication</button>
-            </form>
-        </div>
-    );
-}
-
-function MedicationsList() {
-    const medications = useSelector((state) => state.medications);
-    const styles = {
-        pills: {
-            display: 'grid',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '10px',
-        },
-        pill: {
-            backgroundColor: 'blue',
-            color: 'white',
-            borderRadius: '100px',
-            display: 'inline-block',
-            textAlign: 'center',
-            padding: '5px 10px',
-        },
-    };
-    return (
-        <div style={styles.pills}>
-            {medications.map((medication) => (
-                <div style={styles.pill} key={medication.id}>
-                    <div className='medication-name'>{medication.name}</div>
-                    <div className='medication-dosage'></div>
-                    <div className='medication-frequency'></div>
-                </div>
-            ))}
-        </div>
-    )
-}
-
-export function Medications() {
-    const medications = useSelector((state) => state.medications);
-    const regiments = useSelector((state) => state.regiments);
-    const dispatch = useDispatch();
 
     const editMedication = (event) => {
         event.preventDefault();
@@ -110,6 +56,7 @@ export function Medications() {
             dosage: form.dosage.value,
             time: form.time.value,
         };
+        console.log('medication', medication);
         dispatch(update(medication))
     }
 
@@ -137,8 +84,9 @@ export function Medications() {
             <h1>Medicine Cabinet</h1>
             <p>Here you can add, remove, and edit your medications.</p>
             {/* <MedicationsList /> */}
-            <NewMedication />
-            <form onSubmit={(event) => editMedication(event)}>
+            {/* <NewMedication /> */}
+            {/* FIXME */}
+            <form onChange={editMedication}>
                 <Table>
                     <TableHead>
                         <tr>
@@ -146,11 +94,12 @@ export function Medications() {
                             <th>Dosage</th>
                             <th>Time</th>
                             <th>Actions</th>
+                            <th><button onClick={addMedication}>Add</button> </th>
                         </tr>
                     </TableHead>
-                    {medications.map((medication) => (
-                        <TableBody key={medication.id}>
-                            <tr>
+                    <TableBody>
+                        {medications.map((medication) => (
+                            <tr key={medication.id}>
                                 <th>
                                     <input type='text' name='name' placeholder='Medication Name' defaultValue={medication.name} />
                                 </th>
@@ -172,17 +121,14 @@ export function Medications() {
                                     )} */}
                                 </th>
                                 <th>
-                                    <button type='submit'>
-                                        Update
-                                    </button>
                                     <button type='button' onClick={(event) => deleteMedication(event, medication.id)}>
                                         Delete
                                     </button>
                                     <input type='hidden' name='id' value={medication.id} />
                                 </th>
                             </tr>
-                        </TableBody>
-                    ))}
+                        ))}
+                    </TableBody>
                 </Table>
             </form>
         </div>

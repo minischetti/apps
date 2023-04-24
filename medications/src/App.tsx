@@ -104,7 +104,7 @@ export function App() {
     ];
 
     return (
-        <div style={styles.container}>
+        <div className='app'>
             <BottomNavigation
                 showLabels
             >
