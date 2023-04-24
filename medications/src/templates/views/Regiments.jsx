@@ -44,13 +44,15 @@ export function Regiments() {
 
     const removeTime = (event) => {
         event.preventDefault();
+        if (frequency <= 1) {
+            return;
+        }
         setFrequency(frequency - 1);
     }
 
     const addTime = (event) => {
         event.preventDefault();
         setFrequency(frequency + 1);
-        // setFrequency(event.target.value);
     };
 
     const styles = {
@@ -82,8 +84,8 @@ export function Regiments() {
                             <h3>Times</h3>
                             <p>When do you take this medication?</p>
                             <footer>You may add multiple times.</footer>
-                            <button type="button" onClick={removeTime}>Add</button>
-                            <button type="button" onClick={addTime}>Add</button>
+                            <button type="button" onClick={removeTime}>Remove a time</button>
+                            <button type="button" onClick={addTime}>Add a time</button>
                             {Array.from({ length: frequency }).map((_, index) => (
                                 <input key={`time_${index}`} type='time' name={`time_${index}`} />
                             ))}

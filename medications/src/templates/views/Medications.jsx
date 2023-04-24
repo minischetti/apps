@@ -138,7 +138,7 @@ export function Medications() {
         <div style={styles.container}>
             <h1>Medicine Cabinet</h1>
             <p>Here you can add, remove, and edit your medications.</p>
-            <MedicationsList />
+            {/* <MedicationsList /> */}
             <NewMedication />
             <form onSubmit={(event) => editMedication(event)}>
                 <Table>
@@ -151,8 +151,6 @@ export function Medications() {
                         </tr>
                     </TableHead>
                     {medications.map((medication) => (
-                        // editing.includes(_ => _ === medication.id) ? (
-
                         <TableBody key={medication.id}>
                             <tr>
                                 <th>
