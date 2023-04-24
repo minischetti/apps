@@ -54,7 +54,7 @@ input, select {
     cursor: pointer;
   }
 
-  button:hover {
+  button:hover:not(:disabled) {
     background-color: var(--color-dark);
     color: var(--color-light);
   }
