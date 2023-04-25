@@ -30,6 +30,13 @@ export function Medications() {
         event.preventDefault();
         console.log(event);
         const form = event.target;
+        console.log(form);
+
+        // // check if form is valid
+        if (!form.checkValidity()) {
+            alert('Form is invalid.');
+            return;
+        }
 
 
         // // check if medication already exists

@@ -32,11 +32,11 @@ export function Medication({medication = {}, view = MedicationView.Default, addM
     }
     const AddView = () => {
         return (
-        <form className="medication">
-            <input type='text' name='name' placeholder='Medication Name' />
-            <input type='text' name='dosage' placeholder='Dosage' />
-            <input type='time' name='time' placeholder='Time' />
-            <button type='submit' onClick={addMedication}>Add</button>
+        <form className="medication" onSubmit={addMedication}>
+            <input type='text' name='name' placeholder='Medication Name' required />
+            <input type='text' name='dosage' placeholder='Dosage' required />
+            <input type='time' name='time' placeholder='Time' required />
+            <button type='submit'>Add</button>
         </form>
         )
     }
