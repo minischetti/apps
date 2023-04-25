@@ -6,7 +6,15 @@ enum MedicationView {
     Add = 'add'
 }
 
+type Medication = {
+    id: number,
+    name: string,
+    dosage: string,
+    time: string
+}
+
 export function Medication({medication = {}, view = MedicationView.Default, addMedication, updateMedication, deleteMedication}) {
+    const [currentView, setView] = useState(view);
     const EditView = () => {
         return (
             <form className="medication">
@@ -26,6 +34,7 @@ export function Medication({medication = {}, view = MedicationView.Default, addM
                 <h2>{medication.name}</h2>
                 <p>{medication.dosage}</p>
                 <p>{medication.time}</p>
+                <button type='button' onClick={() => setView(MedicationView.Edit)}>Edit</button>
             </div>
         </div>
         )
@@ -42,7 +51,7 @@ export function Medication({medication = {}, view = MedicationView.Default, addM
     }
 
     const Template = () => {
-        switch(view) {
+        switch(currentView) {
             case MedicationView.Edit:
                 return <EditView />
             case MedicationView.Add:
