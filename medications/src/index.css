@@ -5,6 +5,8 @@
     --color-dark: #333;
     --color-medium: #666;
     --color-light: #fff;
+    --radius-small: 6px;
+    --radius-medium: 12px;
 }
 
 html, body {
@@ -35,9 +37,9 @@ ul {
     background-color: var(--color-light);
 }
 
-input, select {
+input, select, button {
     border: 2px solid var(--color-dark);
-    border-radius: 12px;
+    border-radius: var(--radius-small);
     padding: 0.75rem .75rem;
     outline: none;
     margin: 0;
@@ -50,8 +52,6 @@ input, select {
     /* background: transparent; */
     font-size: inherit;
     font-weight: bold;
-    border: 2px solid var(--color-dark);
-    border-radius: 12px;
     background: var(--color-light);
     color: var(--color-dark);
     padding: 0.75rem 1.5rem;
@@ -62,4 +62,13 @@ input, select {
   button:hover:not(:disabled) {
     background-color: var(--color-dark);
     color: var(--color-light);
+  }
+
+  .medication {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 2px solid var(--color-dark);
+    border-radius: 12px;
   }

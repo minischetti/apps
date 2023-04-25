@@ -20,7 +20,7 @@ export function Medications() {
         if (type === 'add') {
             addMedication(event);
         } else if (type === 'edit') {
-            editMedication(event);
+            updateMedication(event);
         } else if (type === 'delete') {
             deleteMedication(event, form.id.value);
         }
@@ -41,11 +41,13 @@ export function Medications() {
         const medication = {
             id: medications.length + 1,
             name: form.name.value,
+            dosage: form.dosage.value,
+            time: form.time.value,
         };
         dispatch(add(medication))
     }
 
-    const editMedication = (event) => {
+    const updateMedication = (event) => {
         event.preventDefault();
         const form = event.target;
         console.log('edit medication', form.id.value);
@@ -79,6 +81,7 @@ export function Medications() {
             padding: '10px',
         },
     };
+
     return (
         <div style={styles.container}>
             <h1>Medicine Cabinet</h1>
@@ -86,51 +89,26 @@ export function Medications() {
             {/* <MedicationsList /> */}
             {/* <NewMedication /> */}
             {/* FIXME */}
-            <form onChange={editMedication}>
-                <Table>
-                    <TableHead>
-                        <tr>
-                            <th>Medication</th>
-                            <th>Dosage</th>
-                            <th>Time</th>
-                            <th>Actions</th>
-                            <th><button onClick={addMedication}>Add</button> </th>
-                        </tr>
-                    </TableHead>
-                    <TableBody>
-                        {medications.map((medication) => (
-                            <tr key={medication.id}>
-                                <th>
-                                    <input type='text' name='name' placeholder='Medication Name' defaultValue={medication.name} />
-                                </th>
-                                <th>
-                                    <input type='text' name='dosage' placeholder='Dosage' defaultValue={medication.dosage} />
-                                </th>
-                                <th>
-                                    <input type='time' name='time' placeholder='Time' defaultValue={medication.time} />
-                                    {/* regiments */}
-                                    {/* {regiments.filter((regiment) => regiment.medicationId === medication.id).length > 0 ? (
-                                        
-                                        regiments.map((regiment) => (
-                                            regiment.times.length > 0 ? regiment.times.map((time) => (
-                                                <Alarm />
-                                            )) : null
-                                        ))
-                                    ) : (
-                                        "No times set"
-                                    )} */}
-                                </th>
-                                <th>
-                                    <button type='button' onClick={(event) => deleteMedication(event, medication.id)}>
-                                        Delete
-                                    </button>
-                                    <input type='hidden' name='id' value={medication.id} />
-                                </th>
-                            </tr>
-                        ))}
-                    </TableBody>
-                </Table>
-            </form>
+            <div className='medications'>
+
+                <Medication
+                    view='add'
+                    addMedication={addMedication}
+                    updateMedication={updateMedication}
+                    deleteMedication={deleteMedication}
+                />
+                {medications.map((medication) => {
+                    return (
+                        <Medication
+                            key={medication.id}
+                            medication={medication}
+                            addMedication={addMedication}
+                            updateMedication={updateMedication}
+                            deleteMedication={deleteMedication}
+                        />
+                    );
+                })}
+            </div>
         </div>
     );
 }
