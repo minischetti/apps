@@ -1,9 +1,10 @@
 import React from 'react';
-export function Modal({content}) {
+export function Modal({children, closeAction}) {
     return (
         <div className='modal'>
+            <button className='modal-close' onClick={closeAction}>Close</button>
             <div className='modal-content'>
-                {content}
+                {children}
             </div>
         </div>
     );

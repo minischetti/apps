@@ -29,6 +29,7 @@
     "@mui/material": "^5.12.1",
     "@phosphor-icons/react": "^2.0.8",
     "@reduxjs/toolkit": "^1.9.5",
+    "@vitejs/plugin-react": "^4.0.0",
     "@xstate/react": "^3.0.1",
     "graphql": "^16.6.0",
     "phosphor-react": "^1.4.1",

@@ -7,10 +7,14 @@ import { set } from '../../store/modalSlice.js';
 import { Alarm } from '@phosphor-icons/react';
 import { Medication } from '../partials/Medication';
 import { Table, TableBody, TableHead } from '@mui/material';
+import { Eye, ListPlus } from 'phosphor-react';
+import { Modal } from '../partials/Modal';
 
 export function Medications() {
     const medications = useSelector((state) => state.medications);
     const regiments = useSelector((state) => state.regiments);
+    const [showAddMedicationModal, setShowAddMedicationModal] = useState(false);
+    const [showAddMedicationForm, setShowAddMedicationForm] = useState(false);
     const dispatch = useDispatch();
 
     const handleFormSubmit = (event, type) => {
@@ -32,7 +36,7 @@ export function Medications() {
         const form = event.target;
         console.log(form);
 
-
+        // TODO: Add custom validations
         // // check if medication already exists
         // if (medications.find((medication) => medication.name === form.name.value)) {
         //     alert('Medication already exists.');
@@ -46,6 +50,8 @@ export function Medications() {
             time: form.time.value,
         };
         dispatch(add(medication))
+        setShowAddMedicationForm(false);
+        setShowAddMedicationModal(false);
     }
 
     const updateMedication = (event) => {
@@ -90,14 +96,27 @@ export function Medications() {
             {/* <MedicationsList /> */}
             {/* <NewMedication /> */}
             {/* FIXME */}
-            <div className='medications'>
-
+            <button onClick={() => setShowAddMedicationModal(!showAddMedicationModal)}><ListPlus />Add Medication</button>
+            {showAddMedicationModal && (
+                <Modal closeAction={() => setShowAddMedicationModal(false)}>
+                    <Medication
+                        view='add'
+                        addMedication={addMedication}
+                        updateMedication={updateMedication}
+                        deleteMedication={deleteMedication}
+                    />
+                </Modal>
+            )}
+            <button onClick={() => setShowAddMedicationForm(!showAddMedicationForm)}><ListPlus />Add Medication</button>
+            {showAddMedicationForm && (
                 <Medication
                     view='add'
                     addMedication={addMedication}
                     updateMedication={updateMedication}
                     deleteMedication={deleteMedication}
                 />
+            )}
+            <div className='medications'>
                 {medications.map((medication) => {
                     return (
                         <Medication

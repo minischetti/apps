@@ -1,4 +1,6 @@
+import { Eraser, FloppyDisk, Pencil } from '@phosphor-icons/react';
 import React, { useState } from 'react';
+import { Modal } from './Modal';
 
 enum MedicationView {
     Default = 'default',
@@ -22,26 +24,40 @@ export function Medication({medication = {}, view = MedicationView.Default, addM
         updateMedication(event);
         setView(MedicationView.Default);
     }
+
+    const handleCloseModal = () => {
+        setView(MedicationView.Default);
+    }
     const EditView = () => {
         return (
+            <div>
+            <Modal closeAction={handleCloseModal}>
             <form className="medication" onSubmit={handleUpdateMedication}>
+                <label htmlFor='name'>Name</label>
                 <input type='text' name='name' placeholder='Medication Name' defaultValue={medication.name} />
+                <label htmlFor='dosage'>Dosage</label>
                 <input type='text' name='dosage' placeholder='Dosage' defaultValue={medication.dosage} />
+                <label htmlFor='time'>Time</label>
                 <input type='time' name='time' placeholder='Time' defaultValue={medication.time} />
-                <button type='submit'>Update</button>
-                <button type='button' onClick={(event) => deleteMedication(event, medication.id)}>Delete</button>
+                <div className="button-container">
+                    <button type='submit'><FloppyDisk/>Update</button>
+                    <button type='button' className="button--icon" onClick={(event) => deleteMedication(event, medication.id)}><Eraser/>Delete</button>
+                </div>
                 <input type='hidden' name='id' value={medication.id} />
             </form>
+            </Modal>
+            <DefaultView />
+            </div>
         )
     }
     const DefaultView = () => {
         return (
         <div>
             <div className='medication'>
-                <h2>{medication.name}</h2>
+                <h3>{medication.name}</h3>
                 <p>{medication.dosage}</p>
                 <p>{medication.time}</p>
-                <button type='button' onClick={() => setView(MedicationView.Edit)}>Edit</button>
+                <button type='button' onClick={() => setView(MedicationView.Edit)}><Pencil/>Edit</button>
             </div>
         </div>
         )
@@ -49,10 +65,13 @@ export function Medication({medication = {}, view = MedicationView.Default, addM
     const AddView = () => {
         return (
         <form className="medication" onSubmit={addMedication}>
-            <input type='text' name='name' placeholder='Medication Name' required />
+            <label htmlFor='name'>Name</label>
+            <input type='text' name='name' placeholder='Name' required />
+            <label htmlFor='dosage'>Dosage</label>
             <input type='text' name='dosage' placeholder='Dosage' required />
+            <label htmlFor='time'>Time</label>
             <input type='time' name='time' placeholder='Time' required />
-            <button type='submit'>Add</button>
+            <button type='submit'><FloppyDisk/>Save</button>
         </form>
         )
     }

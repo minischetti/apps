@@ -31,7 +31,6 @@ interface MedicationForm extends FormEvent<HTMLFormElement> {
     };
 }
 
-
 interface PrescriptionForm extends FormEvent<HTMLFormElement> {
     target: HTMLFormElement & {
         id: HTMLInputElement;
@@ -41,16 +40,7 @@ interface PrescriptionForm extends FormEvent<HTMLFormElement> {
     };
 }
 
-export function Home() {
-    return (
-        <div>
-            <h1>Home</h1>
-        </div>
-    );
-}
-
-
-export function App() {
+function App() {
     // use react router outlet
 
     const [user, setUser] = React.useState(mockUsers[0]);
@@ -120,3 +110,5 @@ export function App() {
         </div>
     );
 }
+
+export default App;

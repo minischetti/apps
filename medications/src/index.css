@@ -47,10 +47,15 @@ input, select, button {
   }
 
   button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     appearance: none;
     cursor: pointer;
     /* background: transparent; */
     font-size: inherit;
+    font-size: 16px;
     font-weight: bold;
     background: var(--color-light);
     color: var(--color-dark);
@@ -59,9 +64,18 @@ input, select, button {
     margin: 0;
   }
 
+  button svg {
+    font-size: 32px;
+  }
+
   button:hover:not(:disabled) {
     background-color: var(--color-dark);
     color: var(--color-light);
+  }
+
+  .medications {
+    display: flex;
+    gap: 1rem;
   }
 
   .medication {
@@ -71,4 +85,28 @@ input, select, button {
     padding: 1rem;
     border: 2px solid var(--color-dark);
     border-radius: 12px;
+    background-color: var(--color-light)
   }
+
+  .modal {
+    position: absolute;
+    bottom: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    backdrop-filter: blur(10px);
+    left: 0;
+    background-color: rgba(0,0,0,.5);
+}
+
+.modal-close {
+  position: absolute;
+  bottom: 0;
+}
+
+.button-container {
+  display: flex;
+  gap: 1rem;
+}
