@@ -32,12 +32,6 @@ export function Medications() {
         const form = event.target;
         console.log(form);
 
-        // // check if form is valid
-        if (!form.checkValidity()) {
-            alert('Form is invalid.');
-            return;
-        }
-
 
         // // check if medication already exists
         // if (medications.find((medication) => medication.name === form.name.value)) {

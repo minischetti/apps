@@ -15,13 +15,20 @@ type Medication = {
 
 export function Medication({medication = {}, view = MedicationView.Default, addMedication, updateMedication, deleteMedication}) {
     const [currentView, setView] = useState(view);
+
+    const handleUpdateMedication = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        console.log(event);
+        updateMedication(event);
+        setView(MedicationView.Default);
+    }
     const EditView = () => {
         return (
-            <form className="medication">
+            <form className="medication" onSubmit={handleUpdateMedication}>
                 <input type='text' name='name' placeholder='Medication Name' defaultValue={medication.name} />
                 <input type='text' name='dosage' placeholder='Dosage' defaultValue={medication.dosage} />
                 <input type='time' name='time' placeholder='Time' defaultValue={medication.time} />
-                <button type='button' onClick={(event) => updateMedication(event, medication.id)}>Update</button>
+                <button type='submit'>Update</button>
                 <button type='button' onClick={(event) => deleteMedication(event, medication.id)}>Delete</button>
                 <input type='hidden' name='id' value={medication.id} />
             </form>
