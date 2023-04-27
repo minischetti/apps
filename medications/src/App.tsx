@@ -124,7 +124,7 @@ function App() {
             </div>
             <div className="body">
                 <Timeline />
-                <Search />
+                {/* <Search /> */}
                 <Outlet />
             </div>
             </div>
