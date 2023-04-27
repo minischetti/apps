@@ -27,7 +27,7 @@ export function Search() {
 
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="search">
             <input type='text' name="search" placeholder='Search' />
             <button type='submit'>Search</button>
         </form>

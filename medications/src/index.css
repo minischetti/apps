@@ -1,104 +1,147 @@
 /* @import url(./styles/variables.css); */
 
 :root {
-    --color-accent: blue;
-    --color-dark: #333;
-    --color-medium: #666;
-    --color-light: #fff;
-    --radius-small: 6px;
-    --radius-medium: 12px;
+  --gradient-accent: linear-gradient(90deg, #FFC371 0%, #FF5F6D 100%);
+  /* Pastel blue and green linear gradient */
+  --gradient-accent-light: linear-gradient(90deg, #74EBD5 0%, #9FACE6 100%);
+  --color-accent: blue;
+  --color-dark: #333;
+  --color-medium: #666;
+  --color-light: #eee;
+  --color-lighter: #fff;
+  --radius-small: 6px;
+  --radius-medium: 12px;
+  --spacing-small: 0.5rem;
+  --spacing-medium: 1rem;
+  --spacing-large: 2rem;
 }
 
-html, body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--color-medium);
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-medium);
 }
 
 body {
-    font-family: 'Inter', sans-serif;
-    line-height: 1.6;
-    font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  font-size: 16px;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    padding: 0;
-    margin: 0;
+html, body, #root, .app, .content {
+  height: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding: 0;
+  margin: 0;
 }
 
 ul {
-    padding: 0;
+  padding: 0;
 }
 
 .app {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    background-color: var(--color-light);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--color-light);
+  height: 100%;
 }
 
-input, select, button {
-    border: 2px solid var(--color-dark);
-    border-radius: var(--radius-small);
-    padding: 0.75rem .75rem;
-    outline: none;
-    margin: 0;
-    font-size: inherit;
-  }
+.content {
+  display: flex;
+}
 
-  button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    appearance: none;
-    cursor: pointer;
-    /* background: transparent; */
-    font-size: inherit;
-    font-size: 16px;
-    font-weight: bold;
-    background: var(--color-light);
-    color: var(--color-dark);
-    padding: 0.75rem 1.5rem;
-    outline: none;
-    margin: 0;
-  }
+input,
+select,
+button {
+  border: 2px solid var(--color-dark);
+  border-radius: var(--radius-small);
+  padding: 0.5rem 1rem;
+  outline: none;
+  margin: 0;
+  font-size: inherit;
+}
 
-  button svg {
-    font-size: 32px;
-  }
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  appearance: none;
+  cursor: pointer;
+  /* background: transparent; */
+  font-size: inherit;
+  font-size: 16px;
+  font-weight: bold;
+  background: var(--color-light);
+  color: var(--color-dark);
+  outline: none;
+  margin: 0;
+}
 
-  button:hover:not(:disabled) {
-    background-color: var(--color-dark);
-    color: var(--color-light);
-  }
+button svg {
+  font-size: 32px;
+}
 
-  .medications {
-    display: flex;
-    gap: 1rem;
-  }
+button:hover:not(:disabled) {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+}
 
-  .medication {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1rem;
-    border: 2px solid var(--color-dark);
-    border-radius: 12px;
-    background-color: var(--color-light)
-  }
+.button--icon {
+  border: 0;
+  font-size: 14px;
+  padding: 0.25rem 0.5rem;
+  /* mask the background as text */
+  background: var(--gradient-accent);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
 
-  .modal {
-    position: absolute;
-    bottom: 0;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    backdrop-filter: blur(10px);
-    left: 0;
-    background-color: rgba(0,0,0,.5);
+.button--icon:hover:not(:disabled) {
+  color: transparent;
+}
+
+.button--icon svg {
+  color: transparent;
+  font-size: 28px;
+}
+
+.medications {
+  display: flex;
+  gap: 1rem;
+}
+
+.medication {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 2px solid var(--color-dark);
+  border-radius: 12px;
+  background-color: var(--color-light)
+}
+
+.modal {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  backdrop-filter: blur(10px);
+  left: 0;
+  background-color: rgba(0, 0, 0, .5);
+  z-index: 1;
 }
 
 .modal-close {
@@ -108,5 +151,108 @@ input, select, button {
 
 .button-container {
   display: flex;
+  gap:
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.date {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  /* border: 2px solid var(--color-dark); */
+  border-radius: 12px;
+}
+
+.day.current {
+  /* Linear gradient with bold colors */
+  background: var(--gradient-accent);
+  /* Lol dude leave this comment to recollect that it came up with exactly the colors you had in mind when AI auto-completed this */
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.medication {
+  position: relative;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  border-bottom: 2px solid var(--color-dark);
+}
+
+.drawer {
+  /* position: absolute; */
+  /* bottom: 0; */
+  height: 100%;
+  display: flex;
+  /* align-items: center; */
+  /* justify-content: center; */
+  /* width: 100%; */
+  backdrop-filter: blur(10px);
+  /* left: 0; */
+  background-color: var(--color-lighter);
+  border-right: 2px solid var(--color-dark);
+  padding: 1rem;
+  /* z-index: 1; */
+}
+
+.drawer--content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.drawer--link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-small);
+  background-color: var(--color-light);
+  color: var(--color-dark);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.drawer--link.active {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  width: 100%;
 }

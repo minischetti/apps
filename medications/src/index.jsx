@@ -12,6 +12,7 @@ import { Spinner } from "./templates/components/Spinner";
 import { Provider as ReduxProvider } from 'react-redux'
 import store from './store/store'
 import { Regiments } from "./templates/views/Regiments";
+import { Home } from "./templates/views/Home";
 
 const router = createBrowserRouter(
     [
@@ -19,6 +20,10 @@ const router = createBrowserRouter(
             path: "/",
             element: <App />,
             children: [
+                {
+                    path: "/",
+                    element: <Home />,
+                },
                 {
                     path: "medications",
                     element: <Medications />,

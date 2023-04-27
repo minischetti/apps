@@ -2,21 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { add, remove, update } from '../../store/regimentsSlice';
+
 export function Regiments() {
     // use context to get medications
     const medications = useSelector((state) => state.medications);
     const regiments = useSelector((state) => state.regiments);
     const [frequency, setFrequency] = useState(1);
-    const { location } = useLocation();
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        console.log('Regiments mounted');
-        console.log(regiments);
-        return () => {
-            console.log('Regiments unmounted');
-        };
-    }, [regiments]);
 
     const handleAddRegiment = (event) => {
         event.preventDefault();
@@ -96,6 +88,9 @@ export function Regiments() {
                                 <option key={medication.id} id={medication.id} value={medication.id} label={medication.name}/>
                             ))}
                         </select>
+                        <h3>Dosage</h3>
+                        <p>How much do you take each time?</p>
+                        <input type='text' name='dosage' />
                         <p>How many times do you take this medication?</p>
                         <div>
                             <h3>Times</h3>

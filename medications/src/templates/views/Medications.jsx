@@ -1,13 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Context } from '../../context';
-import { useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { add, remove, update } from '../../store/medicationsSlice';
-import { set } from '../../store/modalSlice.js';
-import { Alarm } from '@phosphor-icons/react';
 import { Medication } from '../partials/Medication';
-import { Table, TableBody, TableHead } from '@mui/material';
-import { Eye, ListPlus } from 'phosphor-react';
+import { Eye, ListPlus, Pencil } from 'phosphor-react';
 import { Modal } from '../partials/Modal';
 
 export function Medications() {
@@ -16,6 +11,12 @@ export function Medications() {
     const [showAddMedicationModal, setShowAddMedicationModal] = useState(false);
     const [showAddMedicationForm, setShowAddMedicationForm] = useState(false);
     const dispatch = useDispatch();
+    const [viewMode, setViewMode] = useState('default');
+
+    useEffect(() => {
+        console.log('medications', medications);
+        console.log('regiments', regiments);
+    }, [medications, regiments, viewMode]);
 
     const handleFormSubmit = (event, type) => {
         event.preventDefault();
@@ -46,8 +47,8 @@ export function Medications() {
         const medication = {
             id: medications.length + 1,
             name: form.name.value,
-            dosage: form.dosage.value,
-            time: form.time.value,
+            // dosage: form.dosage.value,
+            // time: form.time.value,
         };
         dispatch(add(medication))
         setShowAddMedicationForm(false);
@@ -62,8 +63,6 @@ export function Medications() {
         const medication = {
             id: form.id.value,
             name: form.name.value,
-            dosage: form.dosage.value,
-            time: form.time.value,
         };
         console.log('medication', medication);
         dispatch(update(medication))
@@ -96,32 +95,19 @@ export function Medications() {
             {/* <MedicationsList /> */}
             {/* <NewMedication /> */}
             {/* FIXME */}
-            <button onClick={() => setShowAddMedicationModal(!showAddMedicationModal)}><ListPlus />Add Medication</button>
-            {showAddMedicationModal && (
-                <Modal closeAction={() => setShowAddMedicationModal(false)}>
-                    <Medication
-                        view='add'
-                        addMedication={addMedication}
-                        updateMedication={updateMedication}
-                        deleteMedication={deleteMedication}
-                    />
-                </Modal>
-            )}
-            <button onClick={() => setShowAddMedicationForm(!showAddMedicationForm)}><ListPlus />Add Medication</button>
-            {showAddMedicationForm && (
-                <Medication
-                    view='add'
-                    addMedication={addMedication}
-                    updateMedication={updateMedication}
-                    deleteMedication={deleteMedication}
-                />
-            )}
+            <form onSubmit={(event) => handleFormSubmit(event, 'add')}>
+                {/* <label htmlFor='name'>Name</label> */}
+                <input type='text' id='name' name='name' placeholder='Name' required />
+                <button type='submit'>Add Medication</button>
+            </form>
+            {/* View mode toggle radio */}
             <div className='medications'>
                 {medications.map((medication) => {
                     return (
                         <Medication
                             key={medication.id}
                             medication={medication}
+                            view={viewMode}
                             addMedication={addMedication}
                             updateMedication={updateMedication}
                             deleteMedication={deleteMedication}
