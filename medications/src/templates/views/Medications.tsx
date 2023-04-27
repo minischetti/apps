@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { add, remove, update } from '../../store/medicationsSlice';
 import { Medication } from '../partials/Medication';
-import { Eye, ListPlus, Pencil } from 'phosphor-react';
+import { Eye, ListPlus, Pencil, Plus } from 'phosphor-react';
 import { Modal } from '../partials/Modal';
 
 export function Medications() {
@@ -38,7 +38,7 @@ export function Medications() {
         console.log(form);
 
         // TODO: Add custom validations
-        // // check if medication already exists
+        // check if medication already exists
         // if (medications.find((medication) => medication.name === form.name.value)) {
         //     alert('Medication already exists.');
         //     return;
@@ -46,7 +46,7 @@ export function Medications() {
 
         const medication = {
             id: medications.length + 1,
-            name: form.name.value,
+            // name: form.name.value,
             // dosage: form.dosage.value,
             // time: form.time.value,
         };
@@ -63,6 +63,11 @@ export function Medications() {
         const medication = {
             id: form.id.value,
             name: form.name.value,
+            dosage: form.dosage.value,
+            when: form.when.value,
+            time: form.time.value,
+            // food: form.food.value,
+            notes: form.notes.value,
         };
         console.log('medication', medication);
         dispatch(update(medication))
@@ -81,33 +86,20 @@ export function Medications() {
         };
     }, [medications]);
 
-    const styles = {
-        container: {
-            border: '1px solid black',
-            padding: '10px',
-        },
-    };
-
     return (
-        <div style={styles.container}>
-            <h1>Medicine Cabinet</h1>
-            <p>Here you can add, remove, and edit your medications.</p>
-            {/* <MedicationsList /> */}
-            {/* <NewMedication /> */}
-            {/* FIXME */}
-            <form onSubmit={(event) => handleFormSubmit(event, 'add')}>
-                {/* <label htmlFor='name'>Name</label> */}
-                <input type='text' id='name' name='name' placeholder='Name' required />
-                <button type='submit'>Add Medication</button>
-            </form>
+        <div className="container">
+            <header>
+                <button onClick={addMedication}><Plus /></button>
+                <h1>Your Medications ({medications.length})</h1>
+            </header>
             {/* View mode toggle radio */}
             <div className='medications'>
+                {/* How many medications */}
                 {medications.map((medication) => {
                     return (
                         <Medication
                             key={medication.id}
                             medication={medication}
-                            view={viewMode}
                             addMedication={addMedication}
                             updateMedication={updateMedication}
                             deleteMedication={deleteMedication}

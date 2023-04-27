@@ -117,7 +117,6 @@ function App() {
                     <h4>Places</h4>
                     {locations.map((location, index) => (
                         <NavLink className="drawer--link" key={index} to={location.pathname}>
-                            {location.icon}
                             {location.title}
                         </NavLink>
                     ))}

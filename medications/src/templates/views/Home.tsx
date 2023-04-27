@@ -9,17 +9,7 @@ export function Home() {
 
     return (
         <div className='medications'>
-        {medications.map((medication) => {
-            return (
-                <Medication
-                    key={medication.id}
-                    medication={medication}
-                    addMedication={addMedication}
-                    updateMedication={updateMedication}
-                    deleteMedication={deleteMedication}
-                />
-            );
-        })}
-    </div>
+
+        </div>
     )
 }

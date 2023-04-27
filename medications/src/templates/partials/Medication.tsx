@@ -8,6 +8,16 @@ enum MedicationView {
     Add = 'add'
 }
 
+enum MedicationTime {
+    Specific = 'specific',
+    Awakening = 'awakening',
+    Morning = 'morning',
+    Afternoon = 'afternoon',
+    Evening = 'evening',
+    Night = 'night',
+    Bedtime = 'bedtime',
+}
+
 type Medication = {
     id: number,
     name: string,
@@ -15,8 +25,10 @@ type Medication = {
     time: string
 }
 
-export function Medication({medication = {}, view = MedicationView.Default, addMedication, updateMedication, deleteMedication}) {
+export function Medication({medication = {}, view = MedicationView.Edit, addMedication, updateMedication, deleteMedication}) {
     const [currentView, setView] = useState(view);
+    const [specificTime, setSpecificTime] = useState(false);
+    const [time, setTime] = useState(MedicationTime.Specific);
 
     const handleUpdateMedication = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -28,18 +40,44 @@ export function Medication({medication = {}, view = MedicationView.Default, addM
     const handleCloseModal = () => {
         setView(MedicationView.Default);
     }
+
+    const medicationTimeOptions = {
+        [MedicationTime.Specific]: 'I\'ll choose a specific time',
+        [MedicationTime.Awakening]: 'Upon awakening',
+        [MedicationTime.Morning]: 'Morning',
+        [MedicationTime.Afternoon]: 'Afternoon',
+        [MedicationTime.Evening]: 'Evening',
+        [MedicationTime.Night]: 'Night',
+        [MedicationTime.Bedtime]: 'Bedtime',
+    }
+
+
     const EditView = () => {
         return (
             <form className="medication" onSubmit={handleUpdateMedication}>
-                <input type='text' name='name' placeholder='Medication Name' defaultValue={medication.name} />
+                <label htmlFor='name'>Name</label>
+                <input type='text' name='name' placeholder='Name' defaultValue={medication.name} />
                 <label htmlFor='dosage'>Dosage</label>
                 <input type='text' name='dosage' placeholder='Dosage' defaultValue={medication.dosage} />
+                <label htmlFor='when'>When</label>
+                {/* Select with options for awakening and bedtime */}
+                <select name='when' defaultValue={medication.when}>
+                    {Object.entries(medicationTimeOptions).map(([key, value]) => {
+                        return <option key={key} value={key}>{value}</option>
+                    })}
+                </select>
                 <label htmlFor='time'>Time</label>
-                <input type='time' name='time' placeholder='Time' defaultValue={medication.time} />
+                <input type='time' name='time' defaultValue={medication.time} />
+                {/* Checkmark for food */}
+                {/* <label htmlFor='food'>Take this with food?</label> */}
+                {/* <input type='checkbox' name='food' defaultChecked={medication.food} /> */}
+                {/* Special notes */}
+                <label htmlFor='notes'>Notes</label>
+                <textarea name='notes' placeholder='Notes' defaultValue={medication.notes} />
                 <div className="button-container">
-                    <button type='submit'>Update</button>
+                    <button type='button' onClick={() => setView(MedicationView.Default)}>Back</button>
                     <button type='button' onClick={(event) => deleteMedication(event, medication.id)}>Delete</button>
-                    <button type='button' onClick={() => setView(MedicationView.Default)}>Cancel</button>
+                    <button type='submit'>Save</button>
                 </div>
                 <input type='hidden' name='id' value={medication.id} />
             </form>
@@ -49,6 +87,11 @@ export function Medication({medication = {}, view = MedicationView.Default, addM
         return (
             <div className='medication' data-id={medication.id}>
                 <h3>{medication.name}</h3>
+                {medication.dosage && <p>{medication.dosage}</p>}
+                {medication.when && <p>{medicationTimeOptions[medication.when]}</p>}
+                {medication.time && <p>{medication.time}</p>}
+                {medication.food && <p>Take with food</p>}
+                {medication.notes && <p>{medication.notes}</p>}
                 <Pencil onClick={() => setView(MedicationView.Edit)} />
             </div>
         )
@@ -57,7 +100,7 @@ export function Medication({medication = {}, view = MedicationView.Default, addM
         return (
             <form className="medication" onSubmit={addMedication}>
                 <label htmlFor='name'>Name</label>
-                <input type='text' name='name' placeholder='Name' required />                
+                <input type='text' name='name' placeholder='Name' required />
                 <button type='submit'>Save</button>
             </form>
         )
