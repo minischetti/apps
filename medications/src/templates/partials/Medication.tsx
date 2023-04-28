@@ -59,13 +59,13 @@ export function Medication({medication = {}, view = MedicationView.Edit, addMedi
                 <input type='text' name='name' placeholder='Name' defaultValue={medication.name} />
                 <label htmlFor='dosage'>Dosage</label>
                 <input type='text' name='dosage' placeholder='Dosage' defaultValue={medication.dosage} />
-                <label htmlFor='when'>When</label>
+                {/* <label htmlFor='when'>When</label> */}
                 {/* Select with options for awakening and bedtime */}
-                <select name='when' defaultValue={medication.when}>
+                {/* <select name='when' defaultValue={medication.when}>
                     {Object.entries(medicationTimeOptions).map(([key, value]) => {
                         return <option key={key} value={key}>{value}</option>
                     })}
-                </select>
+                </select> */}
                 <label htmlFor='time'>Time</label>
                 <input type='time' name='time' defaultValue={medication.time} />
                 {/* Checkmark for food */}
@@ -85,14 +85,13 @@ export function Medication({medication = {}, view = MedicationView.Edit, addMedi
     }
     const DefaultView = () => {
         return (
-            <div className='medication' data-id={medication.id}>
+            <div className='medication' data-id={medication.id} onClick={() => setView(MedicationView.Edit)}>
                 <h3>{medication.name}</h3>
                 {medication.dosage && <p>{medication.dosage}</p>}
-                {medication.when && <p>{medicationTimeOptions[medication.when]}</p>}
+                {/* {medication.when && <p>{medicationTimeOptions[medication.when]}</p>} */}
                 {medication.time && <p>{medication.time}</p>}
                 {medication.food && <p>Take with food</p>}
                 {medication.notes && <p>{medication.notes}</p>}
-                <Pencil onClick={() => setView(MedicationView.Edit)} />
             </div>
         )
     }

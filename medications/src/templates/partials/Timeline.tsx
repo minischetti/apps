@@ -1,7 +1,11 @@
+import { ArrowDown, ArrowUp } from 'phosphor-react';
 import * as React from 'react';
+import { useSelector } from 'react-redux';
 
 export function Timeline() {
     const [currentDate, setCurrentDate] = React.useState(new Date());
+    const [hours, setHours] = React.useState<{ hour: Date, medications: any[] }[]>([]);
+    const medications = useSelector((state) => state.medications);
 
     const createDateList = (date: Date) => {
         // Get today's date and also include the previous 2 days and the next two days
@@ -14,17 +18,35 @@ export function Timeline() {
         return dates;
     };
 
-    // Scroll to the current hour of the day
     React.useEffect(() => {
-        const currentHour = document.querySelector('.hour.current');
-        if (currentHour) {
-            currentHour.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center',
-                inline: 'center'
+        // Making the timeline
+        // Get the hours of the day
+        // Get the medication times
+        // Combine the two arrays
+        const hours = Array.from(Array(24).keys())
+        // For each hour, check if there is a medication time
+        // If there is, add the medication to the hour
+        const hoursWithMedications = hours.map((hour) => {
+            const medicationsForHour = medications.filter((medication) => {
+                // const medicationTime = new Date();
+                // console.log(medicationTime);
+                // medicationTime.setHours(parseInt(medication.time.split(':')[0]));
+                return parseInt(medication.time.split(':')[0]) === hour;
+                // return medicationTime.getHours() === hour.getHours();
             });
+            return {
+                hour,
+                medicationIds: medicationsForHour.map((medication) => medication.id),
+            };
+        });
+
+        console.log(hoursWithMedications);
+
+        setHours(hoursWithMedications);
+
+        return () => {
         }
-    }, [currentDate]);
+    }, [currentDate, medications]);
 
     return (
         <div className="timeline">
@@ -42,19 +64,31 @@ export function Timeline() {
                     </div>
                 ))}
             </div>
-            <div className='hours'>
-                {/* Button to scroll left by 3 hours */}
-                <button className="float float--left" onClick={() => {
+            <div className="toolbar">
+                {/* Button to scroll up */}
+                <button onClick={() => {
                     const hours = document.querySelector('.hours');
                     if (hours) {
                         hours.scrollBy({
                             behavior: 'smooth',
-                            left: -hours.clientWidth / 3,
-                            top: 0
+                            top: -hours.clientHeight / 6,
                         });
                     }
-                }}>&lt;</button>
-                {Array.from(Array(24).keys()).map((hour, index) => {
+                }}><ArrowUp /></button>
+                <button onClick={() => setCurrentDate(new Date())}>Scroll to the current hour</button>
+                {/* Button to scroll bottom */}
+                <button className="" onClick={() => {
+                    const hours = document.querySelector('.hours');
+                    if (hours) {
+                        hours.scrollBy({
+                            behavior: 'smooth',
+                            top: hours.clientHeight / 6,
+                        });
+                    }
+                }}><ArrowDown /></button>
+            </div>
+            <div className='hours'>
+                {hours.map(({hour, medicationIds}, index) => {
                     const localizedHour = (hour: number) => {
                         const date = currentDate;
                         date.setHours(hour);
@@ -80,22 +114,34 @@ export function Timeline() {
                         <div key={index} className={`hour${isCurrentHour(hour) ? ' current' : ''}`}>
                             {/* Get the locale string for the hour in 12 hour format using today's date */}
                             <h2>{localizedHour(hour)}</h2>
+                            <div className="medications">
+                                {medicationIds.map((medicationId, index) => {
+                                    const medication = medications.find((medication) => medication.id === medicationId);
+                                    if (medication) {
+                                        return (
+                                            <div key={index} className={`medication${isPastHour(hour) ? ' past' : ''}${isFutureHour(hour) ? ' future' : ''}`}>
+                                                <h3>{medication.name}</h3>
+                                            </div>
+                                        )
+                                    }
+                                })}
+                            </div>
+                            
+                            {/* Display the medication for the hour */}
+                            {/* {medications.map((medication, index) => {
+                                const medicationHour = new Date(medication.time).getHours();
+                                if (medicationHour === hour) {
+                                    return (
+                                        <div key={index} className={`medication${isPastHour(hour) ? ' past' : ''}${isFutureHour(hour) ? ' future' : ''}`}>
+                                            <h3>{medication.name}</h3>
+                                        </div>
+                                    )
+                                }
+                            })} */}
                         </div>
                     )
                 })}
-                {/* Button to scroll right by 3 hours */}
-                <button className="float float--right" onClick={() => {
-                    const hours = document.querySelector('.hours');
-                    if (hours) {
-                        hours.scrollBy({
-                            behavior: 'smooth',
-                            left: hours.clientWidth / 3,
-                            top: 0
-                        });
-                    }
-                }}>&gt;</button>
             </div>
-            <button onClick={() => setCurrentDate(new Date())}>Scroll to the current hour</button>
         </div>
     )
 }

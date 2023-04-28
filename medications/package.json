@@ -38,6 +38,7 @@
     "react-native": "^0.71.6",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.10.0",
+    "string-to-color": "^2.2.2",
     "vite": "^4.2.2",
     "xstate": "^4.35.0"
   }

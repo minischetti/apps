@@ -64,7 +64,7 @@ export function Medications() {
             id: form.id.value,
             name: form.name.value,
             dosage: form.dosage.value,
-            when: form.when.value,
+            // when: form.when.value,
             time: form.time.value,
             // food: form.food.value,
             notes: form.notes.value,

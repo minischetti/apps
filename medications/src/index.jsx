@@ -13,6 +13,7 @@ import { Provider as ReduxProvider } from 'react-redux'
 import store from './store/store'
 import { Regiments } from "./templates/views/Regiments";
 import { Home } from "./templates/views/Home";
+import { Schedule } from "./templates/views/Schedule";
 
 const router = createBrowserRouter(
     [
@@ -31,6 +32,10 @@ const router = createBrowserRouter(
                 {
                     path: "regiments",
                     element: <Regiments />
+                },
+                {
+                    path: "schedule",
+                    element: <Schedule />
                 },
             ],
         },

@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Search } from './templates/partials/Search.jsx';
 import { Modal } from './templates/partials/Modal.jsx';
 import { Timeline } from './templates/partials/Timeline.js';
+import { Calendar } from 'phosphor-react';
 
 type Dosage = {
     time: string;
@@ -94,39 +95,40 @@ function App() {
             title: 'Regiments',
             icon: <Pencil />,
         },
+        {
+            pathname: '/schedule',
+            title: 'Schedule',
+            icon: <Calendar />,
+        },
     ];
 
     return (
         <div className='app'>
             <div className="header">
-                    {/* <button onClick={() => setShowSidebar(!showSidebar)}>Menu</button> */}
-                    {/* <h1>{currentDate.toLocaleDateString('en-US', { month: 'long' })} {currentDate.toLocaleDateString('en-US', { day: 'numeric' })}, {currentDate.toLocaleDateString('en-US', { year: 'numeric' })}</h1> */}
-                    {/* Fake weather */}
+                {/* <button onClick={() => setShowSidebar(!showSidebar)}>Menu</button> */}
+                {/* <h1>{currentDate.toLocaleDateString('en-US', { month: 'long' })} {currentDate.toLocaleDateString('en-US', { day: 'numeric' })}, {currentDate.toLocaleDateString('en-US', { year: 'numeric' })}</h1> */}
+                {/* Fake weather */}
+                <div className="row container">
+
                     <h2>Rx Tracker</h2>
-                    {/* <h2>72°</h2> */}
-                    <h2>{user.name}</h2>
-            </div>
-            {/* {showSidebar && ( */}
-            <div className="content">
-            <div className="drawer drawer--left">
-                {/* <button onClick={() => setShowSidebar(!showSidebar)}>Close</button> */}
-                {/* <div className="drawer--header">
-                    <h2>Menu</h2>
-                </div> */}
-                <div className="drawer--content">
-                    <h4>Places</h4>
                     {locations.map((location, index) => (
                         <NavLink className="drawer--link" key={index} to={location.pathname}>
                             {location.title}
                         </NavLink>
                     ))}
                 </div>
+                {/* <h2>72°</h2> */}
+                <div className="avatar">
+                    <h2>{user.name}</h2>
+                    {/* <img src={user.avatar} alt={user.name} /> */}
+                </div>
             </div>
-            <div className="body">
-                <Timeline />
+            {/* {showSidebar && ( */}
+            <div className="content">
                 {/* <Search /> */}
-                <Outlet />
-            </div>
+                <div className="body">
+                    <Outlet />
+                </div>
             </div>
             {/* )} */}
 
