@@ -105,11 +105,7 @@ function App() {
     return (
         <div className='app'>
             <div className="header">
-                {/* <button onClick={() => setShowSidebar(!showSidebar)}>Menu</button> */}
-                {/* <h1>{currentDate.toLocaleDateString('en-US', { month: 'long' })} {currentDate.toLocaleDateString('en-US', { day: 'numeric' })}, {currentDate.toLocaleDateString('en-US', { year: 'numeric' })}</h1> */}
-                {/* Fake weather */}
                 <div className="row container">
-
                     <h2>Rx Tracker</h2>
                     {locations.map((location, index) => (
                         <NavLink className="drawer--link" key={index} to={location.pathname}>

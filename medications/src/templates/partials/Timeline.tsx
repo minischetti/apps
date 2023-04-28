@@ -112,7 +112,6 @@ export function Timeline() {
 
                     return (
                         <div key={index} className={`hour${isCurrentHour(hour) ? ' current' : ''}`}>
-                            {/* Get the locale string for the hour in 12 hour format using today's date */}
                             <h2>{localizedHour(hour)}</h2>
                             <div className="medications">
                                 {medicationIds.map((medicationId, index) => {
@@ -126,18 +125,6 @@ export function Timeline() {
                                     }
                                 })}
                             </div>
-                            
-                            {/* Display the medication for the hour */}
-                            {/* {medications.map((medication, index) => {
-                                const medicationHour = new Date(medication.time).getHours();
-                                if (medicationHour === hour) {
-                                    return (
-                                        <div key={index} className={`medication${isPastHour(hour) ? ' past' : ''}${isFutureHour(hour) ? ' future' : ''}`}>
-                                            <h3>{medication.name}</h3>
-                                        </div>
-                                    )
-                                }
-                            })} */}
                         </div>
                     )
                 })}
