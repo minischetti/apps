@@ -10,7 +10,7 @@ export function Timeline() {
     const createDateList = (date: Date) => {
         // Get today's date and also include the previous 2 days and the next two days
         const dates: Date[] = [];
-        for (let i = -2; i < 3; i++) {
+        for (let i = -3; i < 4; i++) {
             const newDate = new Date(date);
             newDate.setDate(newDate.getDate() + i);
             dates.push(newDate);
@@ -28,6 +28,9 @@ export function Timeline() {
         // If there is, add the medication to the hour
         const hoursWithMedications = hours.map((hour) => {
             const medicationsForHour = medications.filter((medication) => {
+                if (!medication.time) {
+                    return false;
+                }
                 // const medicationTime = new Date();
                 // console.log(medicationTime);
                 // medicationTime.setHours(parseInt(medication.time.split(':')[0]));
@@ -50,20 +53,84 @@ export function Timeline() {
 
     return (
         <div className="timeline">
-            {/* The month and year */}
             <div className='date'>
                 <h1>{currentDate.toLocaleDateString('en-US', { month: 'long' })}</h1>
                 <h1>{currentDate.toLocaleDateString('en-US', { year: 'numeric' })}</h1>
             </div>
-            {/* The days of the week */}
-            <div className='days'>
-                {createDateList(currentDate).map((date, index) => (
-                    <div key={index} className={`day${date.toLocaleDateString('en-US', { weekday: 'short' }) === currentDate.toLocaleDateString('en-US', { weekday: 'short' }) ? ' current' : ''}`}>
-                        <h2>{date.toLocaleDateString('en-US', { weekday: 'short' })}</h2>
-                        <h3>{date.toLocaleDateString('en-US', { day: 'numeric' })}</h3>
-                    </div>
-                ))}
-            </div>
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        {createDateList(currentDate).map((date, index) => {
+                            const isToday = (date: Date) => {
+                                const today = new Date();
+                                return date.getDate() === today.getDate();
+                            };
+                            return (
+                                <th key={index} className={`day${isToday(date) ? ' current' : ''}`}>
+                                    <div className="">{date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                                    <div className="">{date.getDate()}</div>
+                                </th>
+                            );
+                        })}
+                    </tr>
+                </thead>
+                <tbody>
+                    {hours.map(({ hour, medicationIds }, index) => {
+                        const localizedHour = (hour: number) => {
+                            const date = currentDate;
+                            date.setHours(hour);
+                            return date.toLocaleString('en-US', { hour: 'numeric', hour12: true });
+                        };
+
+                        const isCurrentHour = (hour: number) => {
+                            const date = new Date();
+                            return date.getHours() === hour;
+                        };
+
+                        const isPastHour = (hour: number) => {
+                            const date = new Date();
+                            return date.getHours() > hour;
+                        };
+
+                        const isFutureHour = (hour: number) => {
+                            const date = new Date();
+                            return date.getHours() < hour;
+                        };
+
+                        return (
+                            // Get the day that corresponds to this column
+                            <tr key={index} data-hour={hour} className={`hour${isCurrentHour(hour) ? ' current' : ''}${isPastHour(hour) ? ' past' : ''}${isFutureHour(hour) ? ' future' : ''}`}>
+                                <td className="hour">{localizedHour(hour)}</td>
+                                {createDateList(currentDate).map((date, index) => {
+                                    const isToday = (date: Date) => {
+                                        const today = new Date();
+                                        return date.getDate() === today.getDate();
+                                    };
+                                    return (
+                                        <td key={index} data-date={date.getDate()} className={`time-slot${isToday(date) ? ' current' : ''}`}>
+                                            {medicationIds.map((medicationId) => {
+                                                const medication = medications.find((medication) => medication.id === medicationId);
+                                                if (!medication) {
+                                                    return null;
+                                                }
+                                                return (
+                                                    <div key={medicationId} className="medication">
+                                                        <div className="name">{medication.name}</div>
+                                                        <div className="dose">{medication.dosage}</div>
+                                                        <div className="dose">{medication.time}</div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </td>
+                                    );
+                                }
+                                )}
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
             <div className="toolbar">
                 {/* Button to scroll up */}
                 <button onClick={() => {
@@ -87,48 +154,6 @@ export function Timeline() {
                     }
                 }}><ArrowDown /></button>
             </div>
-            <div className='hours'>
-                {hours.map(({hour, medicationIds}, index) => {
-                    const localizedHour = (hour: number) => {
-                        const date = currentDate;
-                        date.setHours(hour);
-                        return date.toLocaleString('en-US', { hour: 'numeric', hour12: true });
-                    }
-
-                    const isCurrentHour = (hour: number) => {
-                        const date = new Date();
-                        return date.getHours() === hour;
-                    }
-
-                    const isPastHour = (hour: number) => {
-                        const date = new Date();
-                        return date.getHours() > hour;
-                    }
-
-                    const isFutureHour = (hour: number) => {
-                        const date = new Date();
-                        return date.getHours() < hour;
-                    }
-
-                    return (
-                        <div key={index} className={`hour${isCurrentHour(hour) ? ' current' : ''}`}>
-                            <h2>{localizedHour(hour)}</h2>
-                            <div className="medications">
-                                {medicationIds.map((medicationId, index) => {
-                                    const medication = medications.find((medication) => medication.id === medicationId);
-                                    if (medication) {
-                                        return (
-                                            <div key={index} className={`medication${isPastHour(hour) ? ' past' : ''}${isFutureHour(hour) ? ' future' : ''}`}>
-                                                <h3>{medication.name}</h3>
-                                            </div>
-                                        )
-                                    }
-                                })}
-                            </div>
-                        </div>
-                    )
-                })}
-            </div>
-        </div>
+        </div >
     )
 }

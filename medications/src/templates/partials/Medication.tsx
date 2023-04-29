@@ -25,7 +25,7 @@ type Medication = {
     time: string
 }
 
-export function Medication({medication = {}, view = MedicationView.Edit, addMedication, updateMedication, deleteMedication}) {
+export function Medication({medication = {}, view = MedicationView.Default, addMedication, updateMedication, deleteMedication}) {
     const [currentView, setView] = useState(view);
     const [specificTime, setSpecificTime] = useState(false);
     const [time, setTime] = useState(MedicationTime.Specific);

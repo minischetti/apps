@@ -29,6 +29,8 @@ export function Medications() {
         } else if (type === 'delete') {
             deleteMedication(event, form.id.value);
         }
+
+        form.reset();
     }
 
     const addMedication = (event) => {
@@ -46,13 +48,13 @@ export function Medications() {
 
         const medication = {
             id: medications.length + 1,
-            // name: form.name.value,
+            name: form.name.value,
             // dosage: form.dosage.value,
             // time: form.time.value,
         };
         dispatch(add(medication))
-        setShowAddMedicationForm(false);
-        setShowAddMedicationModal(false);
+        // setShowAddMedicationForm(false);
+        // setShowAddMedicationModal(false);
     }
 
     const updateMedication = (event) => {
@@ -88,9 +90,19 @@ export function Medications() {
 
     return (
         <div className="container">
-            <header>
-                <button onClick={addMedication}><Plus /></button>
-                <h1>Your Medications ({medications.length})</h1>
+            <header className='col'>
+
+                <div className="row">
+                    {/* {showAddMedicationForm && (
+                        <input type="text" placeholder="Add Medication" />
+                    )} */}
+                    <h1>Your Medications ({medications.length})</h1>
+                </div>
+                    <form className='row distribute' onSubmit={(event) => handleFormSubmit(event, 'add')}>
+                            <input type="text" name="name" placeholder="Medication Name" required />
+                            <button type="submit">Add</button>
+                        </form>
+
             </header>
             {/* View mode toggle radio */}
             <div className='medications'>
