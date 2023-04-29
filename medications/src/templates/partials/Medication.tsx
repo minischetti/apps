@@ -1,6 +1,7 @@
 import { Eraser, FloppyDisk, Pencil } from '@phosphor-icons/react';
 import React, { useState } from 'react';
 import { Modal } from './Modal';
+import { ArrowDown } from 'phosphor-react';
 
 enum MedicationView {
     Default = 'default',
@@ -25,7 +26,7 @@ type Medication = {
     time: string
 }
 
-export function Medication({medication = {}, view = MedicationView.Default, addMedication, updateMedication, deleteMedication}) {
+export function Medication({ medication = {}, view = MedicationView.Default, addMedication, updateMedication, deleteMedication }) {
     const [currentView, setView] = useState(view);
     const [specificTime, setSpecificTime] = useState(false);
     const [time, setTime] = useState(MedicationTime.Specific);
@@ -84,14 +85,26 @@ export function Medication({medication = {}, view = MedicationView.Default, addM
         )
     }
     const DefaultView = () => {
+        const [showContent, setShowContent] = useState(false);
         return (
-            <div className='medication' data-id={medication.id} onClick={() => setView(MedicationView.Edit)}>
-                <h3>{medication.name}</h3>
-                {medication.dosage && <p>{medication.dosage}</p>}
-                {/* {medication.when && <p>{medicationTimeOptions[medication.when]}</p>} */}
-                {medication.time && <p>{medication.time}</p>}
-                {medication.food && <p>Take with food</p>}
-                {medication.notes && <p>{medication.notes}</p>}
+            <div className='medication' data-id={medication.id}>
+                <header>
+                    <h3>{medication.name}</h3>
+                    <div className="button-container">
+                        <div className='button button-icon' onClick={() => setView(MedicationView.Edit)}>Add Details<Pencil /></div>
+                        <div className='button button-icon' onClick={(event) => setShowContent(!showContent)}>See Details<ArrowDown /></div>
+                    </div>
+                </header>
+                {showContent && (
+                    <div>
+                        {medication.dosage && <p>{medication.dosage}</p>}
+                        {/* {medication.when && <p>{medicationTimeOptions[medication.when]}</p>} */}
+                        {medication.time && <p>{medication.time}</p>}
+                        {medication.food && <p>Take with food</p>}
+                        {medication.notes && <p>{medication.notes}</p>}
+                    </div>
+                )}
+                {/* Accordion */}
             </div>
         )
     }
