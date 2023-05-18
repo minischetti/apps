@@ -33,13 +33,11 @@ function NewItemForm({ addCard }) {
                 </div>
                 <div>
                     <button
-
                         onClick={() => {
                             addCard({ name, definition, tags });
                             setName('');
                             setDescription('');
                             setTags('');
-                            setShowForm(false);
                         }}
                     >
                         Add Card
@@ -50,7 +48,7 @@ function NewItemForm({ addCard }) {
     )
 }
 
-function Card({ card }) {
+function Item({ item }) {
     const [showDescription, setShowDescription] = React.useState(false);
 
     const toggleDescription = () => {
@@ -65,14 +63,14 @@ function Card({ card }) {
     }, []);
 
     return (
-        <div className='card'>
-            <h1>{card.name}</h1>
+        <div className='item'>
+            <h1>{item.name}</h1>
             <div onClick={toggleDescription}>Show/Hide Definition</div>
             <div className='definition'>
-                {showDescription && card.definition}
+                {showDescription && item.definition}
             </div>
             <div className='tags'>
-                {card.tags.map((tag, index) => (
+                {item.tags.map((tag, index) => (
                     <div className="tag" key={index}>#{tag}</div>
                 ))}
             </div>
@@ -81,22 +79,55 @@ function Card({ card }) {
 }
 
 export function App() {
-    const [cards, setCards] = React.useState(data);
+    const [items, setItems] = React.useState(data);
     const [showForm, setShowForm] = React.useState(false);
 
-    const addCard = (card) => {
-        setCards([...cards, card]);
+    const tags = items.reduce((acc, item) => {
+        item.tags.forEach((tag) => {
+            if (!acc.includes(tag)) {
+                acc.push(tag);
+            }
+        });
+        return acc;
+    }, []);
+
+    const tagsWithCount = tags.map((tag) => {
+        const count = items.reduce((acc, item) => {
+            if (item.tags.includes(tag)) {
+                acc++;
+            }
+            return acc;
+        }, 0);
+        return { tag, count };
+    });
+
+    const addItem = (item) => {
+        setItems([...items, item]);
     }
 
     return (
         <div className='app'>
-            <h1>Flashcards</h1>
-            <div onClick={() => setShowForm(!showForm)}>Add New Item</div>
-            {showForm ? <NewItemForm addCard={addCard} /> : null}
-            <h2>Terms</h2>
+            <div className='header'>
+                <h1>Items</h1>
+            </div>
+            <div className='sidebar'>
+                <h2>Tags</h2>
+            <div className='tags'>
+                {tags.map((tag, index) => (
+                    <div className="tag" key={index}>#{tag}</div>
+                ))}
+            </div>
+            </div>
+            {/* <div className='tags'>
+                {tagsWithCount.map((tag, index) => (
+                    <div className="tag" key={index}>#{tag.tag} ({tag.count})</div>
+                ))}
+            </div> */}
+            <button onClick={() => setShowForm(!showForm)}>Add New Item</button>
+            {showForm ? <NewItemForm addItem={addItem} /> : null}
             <ul>
-                {cards.map((card, index) => (
-                    <Card card={card} key={index} />
+                {items.map((item, index) => (
+                    <Item item={item} key={index} />
                 ))}
             </ul>
         </div>

@@ -1,5 +1,4 @@
 @import url(./styles/variables.css);
-@import url(./styles/cards.css);
 
 html, body {
     margin: 0;
@@ -28,7 +27,7 @@ ul {
 
 /* TODO: To move to cards.css  */
 
-.card {
+.item {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -45,8 +44,10 @@ ul {
 
 .tag {
     padding: 0.25rem 0.5rem;
-    border: 1px solid blue;
-    border-radius: 0.25rem;
+    background-color: blue;
+    color: white;
+    border-radius: 0.5rem;
+    font-size: 75%;
 }
 
 button {
