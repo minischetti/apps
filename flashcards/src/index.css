@@ -36,3 +36,23 @@ ul {
     border: 1px solid blue;
     border-radius: 0.5rem;;
 }
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid blue;
+    border-radius: 0.25rem;
+}
+
+button {
+    padding: 0.5rem 1rem;
+    border: 1px solid blue;
+    border-radius: 0.25rem;
+    background-color: white;
+    cursor: pointer;
+}

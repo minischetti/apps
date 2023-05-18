@@ -1,52 +1,44 @@
 import React, { useEffect } from 'react';
 import data from './data/cards';
 
-
-
-function NewCardForm({addCard}) {
-    const [term, setTerm] = React.useState('');
-    const [definition, setDefinition] = React.useState('');
-    const [clozes, setClozes] = React.useState('');
-    const [showForm, setShowForm] = React.useState(false);
-    function addCard(card) {
-        data.push(card);
-    }
+function NewItemForm({ addCard }) {
+    const [name, setName] = React.useState('');
+    const [definition, setDescription] = React.useState('');
+    const [tags, setTags] = React.useState('');
 
     return (
         <div className='new-card-form'>
-            <div onClick={() => setShowForm(!showForm)}>Add New Card</div>
-            {showForm && (
+            <div>
                 <div>
-                    <div>
-                        <label>Term</label>
-                        <input
-                            value={term}
-                            onChange={(e) => setTerm(e.target.value)}
-                        />
-                    </div>
-                <div>
-                    <label>Definition</label>
+                    <label>Item</label>
                     <input
-                        value={definition}
-                        onChange={(e) => setDefinition(e.target.value)}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                     />
                 </div>
                 <div>
-                    <label>Clozes</label>
+                    <label>Description</label>
+                    <input
+                        value={definition}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
+                </div>
+                <div>
+                    <label>Tags</label>
                     <input
 
-                        value={clozes}
-                        onChange={(e) => setClozes(e.target.value)}
+                        value={tags}
+                        onChange={(e) => setTags(e.target.value)}
                     />
                 </div>
                 <div>
                     <button
 
                         onClick={() => {
-                            addCard({term, definition, clozes});
-                            setTerm('');
-                            setDefinition('');
-                            setClozes('');
+                            addCard({ name, definition, tags });
+                            setName('');
+                            setDescription('');
+                            setTags('');
                             setShowForm(false);
                         }}
                     >
@@ -54,16 +46,15 @@ function NewCardForm({addCard}) {
                     </button>
                 </div>
             </div>
-            )}
         </div>
     )
 }
 
-function Card({card}) {
-    const [showDefinition, setShowDefinition] = React.useState(false);
+function Card({ card }) {
+    const [showDescription, setShowDescription] = React.useState(false);
 
-    const toggleDefinition = () => {
-        setShowDefinition(!showDefinition);
+    const toggleDescription = () => {
+        setShowDescription(!showDescription);
     }
 
     useEffect(() => {
@@ -75,10 +66,15 @@ function Card({card}) {
 
     return (
         <div className='card'>
-            <h1>{card.term}</h1>
-            <div onClick={toggleDefinition}>Show/Hide Definition</div>
+            <h1>{card.name}</h1>
+            <div onClick={toggleDescription}>Show/Hide Definition</div>
             <div className='definition'>
-                {showDefinition && card.definition}
+                {showDescription && card.definition}
+            </div>
+            <div className='tags'>
+                {card.tags.map((tag, index) => (
+                    <div className="tag" key={index}>#{tag}</div>
+                ))}
             </div>
         </div>
     )
@@ -86,11 +82,17 @@ function Card({card}) {
 
 export function App() {
     const [cards, setCards] = React.useState(data);
+    const [showForm, setShowForm] = React.useState(false);
+
+    const addCard = (card) => {
+        setCards([...cards, card]);
+    }
 
     return (
         <div className='app'>
             <h1>Flashcards</h1>
-            <NewCardForm />
+            <div onClick={() => setShowForm(!showForm)}>Add New Item</div>
+            {showForm ? <NewItemForm addCard={addCard} /> : null}
             <h2>Terms</h2>
             <ul>
                 {cards.map((card, index) => (
