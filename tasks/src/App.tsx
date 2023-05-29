@@ -8,7 +8,6 @@ import { NewTagsForm } from './components/NewTagsForm';
 export function App() {
     const items = useSelector((state: any) => state.items);
     const tags = useSelector((state: any) => state.tags);
-    const [showForm, setShowForm] = React.useState(false);
     const dispatch = useDispatch();
 
 
@@ -23,16 +22,13 @@ export function App() {
             </div>
             <div className='sidebar'>
                 <div className='section section-tags'>
-                        <h2>Tags</h2>
-
+                    <h2>Tags</h2>
                     <div className='tags column'>
                         <NewTagsForm />
-
                     </div>
                 </div>
             </div>
-            <button onClick={() => setShowForm(!showForm)}>Add New Item</button>
-            {showForm ? <NewItemForm addItem={addItem} tags={tags} /> : null}
+            <NewItemForm addItem={addItem} tags={tags} />
             <ul>
                 {items.map((item, index) => (
                     <Item item={item} key={index} />

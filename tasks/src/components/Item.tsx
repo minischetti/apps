@@ -8,6 +8,7 @@ export function Item({ item }) {
                     <th>Item</th>
                     <th>Tags</th>
                     <th>Date</th>
+                    <th>Time</th>
                 </tr>
             </thead>
             <tbody>
@@ -15,6 +16,7 @@ export function Item({ item }) {
                     <td>{item.name}</td>
                     <td>{item.tags}</td>
                     <td>{item.date}</td>
+                    <td>{item.time}</td>
                 </tr>
             </tbody>
         </table>
