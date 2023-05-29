@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import data from './data/cards';
 
-function NewItemForm({ addCard }) {
+function NewItemForm({ addItem }) {
     const [name, setName] = React.useState('');
     const [definition, setDescription] = React.useState('');
     const [tags, setTags] = React.useState('');
@@ -34,13 +34,13 @@ function NewItemForm({ addCard }) {
                 <div>
                     <button
                         onClick={() => {
-                            addCard({ name, definition, tags });
+                            addItem({ name, definition, tags });
                             setName('');
                             setDescription('');
                             setTags('');
                         }}
                     >
-                        Add Card
+                        Add Item
                     </button>
                 </div>
             </div>
@@ -64,11 +64,7 @@ function Item({ item }) {
 
     return (
         <div className='item'>
-            <h1>{item.name}</h1>
-            <div onClick={toggleDescription}>Show/Hide Definition</div>
-            <div className='definition'>
-                {showDescription && item.definition}
-            </div>
+            <div className='item-name'>{item.name}</div>
             <div className='tags'>
                 {item.tags.map((tag, index) => (
                     <div className="tag" key={index}>#{tag}</div>
@@ -79,8 +75,19 @@ function Item({ item }) {
 }
 
 export function App() {
-    const [items, setItems] = React.useState(data);
+    const [items, setItems] = React.useState([]);
+    // use nested array to allow for sub-tags
+    const [presets, setPresets] = React.useState([
+        { name: 'Guitar', tags: ['music'] },
+        { name: 'Dishes', tags: ['chores'] },
+        { name: 'Laundry', tags: ['chores'] },
+    ])
+    // const [search, setSearch] = React.useState('');
     const [showForm, setShowForm] = React.useState(false);
+
+    // const filteredItems = items.filter((item) => {
+    //     return item.name.toLowerCase().includes(search.toLowerCase());
+    // });
 
     const tags = items.reduce((acc, item) => {
         item.tags.forEach((tag) => {
@@ -111,12 +118,26 @@ export function App() {
                 <h1>Items</h1>
             </div>
             <div className='sidebar'>
+                <h2>Presets</h2>
+                <div className='presets'>
+                    {presets.map((preset, index) => (
+                        <div className="preset" key={index} onClick={() => addItem(preset)}>{preset.name}</div>
+                    ))}
+                </div>
+                <div className='date'>
+                    <h2>Date</h2>
+                    <select name="date" id="date" title="date">
+                        <option value="unscheduled">Unscheduled</option>
+                        <option value="today">Today</option>
+                        <option value="tomorrow">Tomorrow</option>
+                    </select>
+                </div>
                 <h2>Tags</h2>
-            <div className='tags'>
-                {tags.map((tag, index) => (
-                    <div className="tag" key={index}>#{tag}</div>
-                ))}
-            </div>
+                <div className='tags'>
+                    {tags.map((tag, index) => (
+                        <div className="tag" key={index}>#{tag}</div>
+                    ))}
+                </div>
             </div>
             {/* <div className='tags'>
                 {tagsWithCount.map((tag, index) => (
