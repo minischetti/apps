@@ -1,26 +1,77 @@
 import React, { useEffect } from 'react';
 import data from './data/cards';
 
-function NewItemForm({ addItem }) {
-    const [name, setName] = React.useState('');
-    const [definition, setDescription] = React.useState('');
-    const [tags, setTags] = React.useState('');
+function NewItemForm({ addItem, tags }) {
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const form = e.target;
+        const name = form.name.value;
+        const tags = form.tags.value;
+        const date = form.date.value;
+        const item = {
+            name,
+            tags,
+            date,
+        };
+
+        addItem(item);
+    }
+
+
 
     return (
-        <div className='new-card-form'>
+        <form onSubmit={handleSubmit}>
             <div>
                 <div>
                     <label>Item</label>
                     <input
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        name='name'
+                        id='name'
+                        title='name'
+                        type='text'
                     />
                 </div>
                 <div>
-                    <label>Description</label>
+                    <label>Tags</label>
+                    <select name="tags" id="tags" title="tags">
+                        {tags.map((tag, index) => (
+                            <option value={tag} key={index}>{tag}</option>
+                        ))}
+                    </select>
+                </div>
+                <label>Date</label>
+                <select name="date" id="date" title="date">
+                    <option value="unscheduled">Unscheduled</option>
+                    <option value="today">Today</option>
+                    <option value="tomorrow">Tomorrow</option>
+                </select>
+                <div>
+                    <button
+                        type='submit'
+                        tabIndex={0}
+                    >
+                        Add Item
+                    </button>
+                </div>
+            </div>
+        </form>
+    )
+}
+
+const NewPresetForm = ({ addPreset }) => {
+    const [name, setName] = React.useState('');
+    const [tags, setTags] = React.useState('');
+
+    return (
+        <div className='new-preset-form'>
+            <div>
+                <div>
+                    <label>Name</label>
                     <input
-                        value={definition}
-                        onChange={(e) => setDescription(e.target.value)}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                     />
                 </div>
                 <div>
@@ -33,14 +84,14 @@ function NewItemForm({ addItem }) {
                 </div>
                 <div>
                     <button
+
                         onClick={() => {
-                            addItem({ name, definition, tags });
+                            addPreset({ name, tags });
                             setName('');
-                            setDescription('');
                             setTags('');
                         }}
                     >
-                        Add Item
+                        Add Preset
                     </button>
                 </div>
             </div>
@@ -49,33 +100,26 @@ function NewItemForm({ addItem }) {
 }
 
 function Item({ item }) {
-    const [showDescription, setShowDescription] = React.useState(false);
-
-    const toggleDescription = () => {
-        setShowDescription(!showDescription);
-    }
-
-    useEffect(() => {
-        console.log('Card mounted');
-        return () => {
-            console.log('Card unmounted');
-        }
-    }, []);
-
     return (
         <div className='item'>
             <div className='item-name'>{item.name}</div>
-            <div className='tags'>
-                {item.tags.map((tag, index) => (
-                    <div className="tag" key={index}>#{tag}</div>
-                ))}
+            <div className='item-date'>{item.date}</div>
+            <div className='item-tag'>
+                {item.tag}
             </div>
         </div>
     )
 }
 
 export function App() {
-    const [items, setItems] = React.useState([]);
+    const [items, setItems] = React.useState([
+    ]);
+    const [tags, setTags] = React.useState([
+        'music',
+        'chores',
+        'work',
+        'learning',
+    ]);
     // use nested array to allow for sub-tags
     const [presets, setPresets] = React.useState([
         { name: 'Guitar', tags: ['music'] },
@@ -89,24 +133,24 @@ export function App() {
     //     return item.name.toLowerCase().includes(search.toLowerCase());
     // });
 
-    const tags = items.reduce((acc, item) => {
-        item.tags.forEach((tag) => {
-            if (!acc.includes(tag)) {
-                acc.push(tag);
-            }
-        });
-        return acc;
-    }, []);
+    // const allTags = items.reduce((acc, item) => {
+    //     item.tags.forEach((tag) => {
+    //         if (!acc.includes(tag)) {
+    //             acc.push(tag);
+    //         }
+    //     });
+    //     return acc;
+    // }, []);
 
-    const tagsWithCount = tags.map((tag) => {
-        const count = items.reduce((acc, item) => {
-            if (item.tags.includes(tag)) {
-                acc++;
-            }
-            return acc;
-        }, 0);
-        return { tag, count };
-    });
+    // const tagsWithCount = tags.map((tag) => {
+    //     const count = items.reduce((acc, item) => {
+    //         if (item.tags.includes(tag)) {
+    //             acc++;
+    //         }
+    //         return acc;
+    //     }, 0);
+    //     return { tag, count };
+    // });
 
     const addItem = (item) => {
         setItems([...items, item]);
@@ -118,34 +162,29 @@ export function App() {
                 <h1>Items</h1>
             </div>
             <div className='sidebar'>
-                <h2>Presets</h2>
-                <div className='presets'>
-                    {presets.map((preset, index) => (
-                        <div className="preset" key={index} onClick={() => addItem(preset)}>{preset.name}</div>
-                    ))}
-                </div>
-                <div className='date'>
-                    <h2>Date</h2>
-                    <select name="date" id="date" title="date">
-                        <option value="unscheduled">Unscheduled</option>
-                        <option value="today">Today</option>
-                        <option value="tomorrow">Tomorrow</option>
-                    </select>
-                </div>
-                <h2>Tags</h2>
-                <div className='tags'>
-                    {tags.map((tag, index) => (
-                        <div className="tag" key={index}>#{tag}</div>
-                    ))}
+                <div className='section section-tags'>
+                        <h2>Tags</h2>
+
+                    <div className='tags column'>
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const form = e.target;
+                            const tag = form.tag.value;
+                            setTags([...tags, tag]);
+                            form.tag.value = '';
+                        }}>
+                            <input type="text" name="tag" id="tag" required />
+                            <button type="submit">Add Tag</button>
+                        </form>
+                        {tags.map((tag, index) => (
+                            <div className="tag" key={index}>{tag}</div>
+                        ))}
+                    </div>
                 </div>
             </div>
-            {/* <div className='tags'>
-                {tagsWithCount.map((tag, index) => (
-                    <div className="tag" key={index}>#{tag.tag} ({tag.count})</div>
-                ))}
-            </div> */}
             <button onClick={() => setShowForm(!showForm)}>Add New Item</button>
-            {showForm ? <NewItemForm addItem={addItem} /> : null}
+            {showForm ? <NewItemForm addItem={addItem} tags={tags} /> : null}
             <ul>
                 {items.map((item, index) => (
                     <Item item={item} key={index} />
