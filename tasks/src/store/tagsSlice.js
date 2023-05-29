@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const tagsSlice = createSlice({
-    name: 'items',
+    name: 'tags',
     initialState: [],
     reducers: {
         add: (state, action) => {

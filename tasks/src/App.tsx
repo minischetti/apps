@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { add, remove, update } from './store/itemsSlice';
 import { Item } from './components/Item';
 import { NewItemForm } from './components/NewItemForm';
 import { NewTagsForm } from './components/NewTagsForm';
@@ -7,48 +8,12 @@ import { NewTagsForm } from './components/NewTagsForm';
 export function App() {
     const items = useSelector((state: any) => state.items);
     const tags = useSelector((state: any) => state.tags);
-    // const [items, setItems] = React.useState([
-    // ]);
-    // const [tags, setTags] = React.useState([
-    //     'music',
-    //     'chores',
-    //     'work',
-    //     'learning',
-    // ]);
-    // use nested array to allow for sub-tags
-    // const [presets, setPresets] = React.useState([
-    //     { name: 'Guitar', tags: ['music'] },
-    //     { name: 'Dishes', tags: ['chores'] },
-    //     { name: 'Laundry', tags: ['chores'] },
-    // ])
-    // const [search, setSearch] = React.useState('');
     const [showForm, setShowForm] = React.useState(false);
+    const dispatch = useDispatch();
 
-    // const filteredItems = items.filter((item) => {
-    //     return item.name.toLowerCase().includes(search.toLowerCase());
-    // });
-
-    // const allTags = items.reduce((acc, item) => {
-    //     item.tags.forEach((tag) => {
-    //         if (!acc.includes(tag)) {
-    //             acc.push(tag);
-    //         }
-    //     });
-    //     return acc;
-    // }, []);
-
-    // const tagsWithCount = tags.map((tag) => {
-    //     const count = items.reduce((acc, item) => {
-    //         if (item.tags.includes(tag)) {
-    //             acc++;
-    //         }
-    //         return acc;
-    //     }, 0);
-    //     return { tag, count };
-    // });
 
     const addItem = (item) => {
-        setItems([...items, item]);
+        dispatch(add(item));
     }
 
     return (

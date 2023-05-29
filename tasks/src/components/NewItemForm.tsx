@@ -1,6 +1,9 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { add } from '../store/itemsSlice';
 
 export function NewItemForm({ addItem, tags }) {
+    const dispatch = useDispatch();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -15,7 +18,7 @@ export function NewItemForm({ addItem, tags }) {
             date,
         };
 
-        addItem(item);
+        dispatch(add(item));
     }
 
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { add, remove, update } from '../store/itemsSlice';
+import { add, remove, update } from '../store/tagsSlice';
 
 export function NewTagsForm() {
     const tags = useSelector((state: any) => state.tags);
