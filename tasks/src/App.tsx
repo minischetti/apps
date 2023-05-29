@@ -20,20 +20,24 @@ export function App() {
             <div className='header'>
                 <h1>Items</h1>
             </div>
-            <div className='sidebar'>
-                <div className='section section-tags'>
-                    <h2>Tags</h2>
-                    <div className='tags column'>
-                        <NewTagsForm />
+            <div className='content'>
+                <div className='sidebar'>
+                    <div className='section section-tags'>
+                        <h2>Tags</h2>
+                        <div className='tags column'>
+                            <NewTagsForm />
+                        </div>
                     </div>
                 </div>
+                <div>
+                    <NewItemForm addItem={addItem} tags={tags} />
+                    <ul>
+                        {items.map((item, index) => (
+                            <Item item={item} key={index} />
+                        ))}
+                    </ul>
+                </div>
             </div>
-            <NewItemForm addItem={addItem} tags={tags} />
-            <ul>
-                {items.map((item, index) => (
-                    <Item item={item} key={index} />
-                ))}
-            </ul>
         </div>
     );
 }
