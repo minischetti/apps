@@ -5,19 +5,12 @@ import { add, remove, update } from '../store/tagsSlice';
 export function NewTagsForm() {
     const tags = useSelector((state: any) => state.tags);
     const dispatch = useDispatch();
-    // const [tags, setTags] = React.useState([
-    //     'music',
-    //     'chores',
-    //     'work',
-    //     'learning',
-    // ]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         e.stopPropagation();
         const form = e.target;
         const tag = form.tag.value;
-        // setTags([...tags, tag]);
         dispatch(add(tag));
         form.tag.value = '';
     }

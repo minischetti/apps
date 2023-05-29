@@ -33,6 +33,7 @@ export function NewItemForm({ addItem, tags }) {
                         id='name'
                         title='name'
                         type='text'
+                        required
                     />
                 </div>
                 <div>
