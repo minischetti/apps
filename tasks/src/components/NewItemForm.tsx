@@ -2,6 +2,20 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { add } from '../store/itemsSlice';
 
+enum Status {
+    Pending = 'pending',
+    Completed = 'completed',
+    Canceled = 'canceled',
+}
+
+type Item = {
+    name: string,
+    tags: string,
+    date: string,
+    time: string,
+    status: Status,
+}
+
 export function NewItemForm({ addItem, tags }) {
     const dispatch = useDispatch();
     const [date, setDate] = React.useState(new Date());
@@ -19,7 +33,8 @@ export function NewItemForm({ addItem, tags }) {
             name,
             tags,
             date,
-            time
+            time,
+            status: Status.Pending,
         };
 
         dispatch(add(item));

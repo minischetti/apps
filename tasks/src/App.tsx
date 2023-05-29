@@ -4,6 +4,7 @@ import { add, remove, update } from './store/itemsSlice';
 import { Item } from './components/Item';
 import { NewItemForm } from './components/NewItemForm';
 import { NewTagsForm } from './components/NewTagsForm';
+import { Items } from './components/Items';
 
 export function App() {
     const items = useSelector((state: any) => state.items);
@@ -32,9 +33,11 @@ export function App() {
                 <div>
                     <NewItemForm addItem={addItem} tags={tags} />
                     <ul>
-                        {items.map((item, index) => (
-                            <Item item={item} key={index} />
-                        ))}
+                        <Items>
+                            {items.map((item, index) => (
+                                <Item item={item} key={index} />
+                            ))}
+                        </Items>
                     </ul>
                 </div>
             </div>
