@@ -1,23 +1,26 @@
 import React, { useEffect } from 'react';
-import data from './data/cards';
+import { useSelector } from 'react-redux';
 import { Item } from './components/Item';
 import { NewItemForm } from './components/NewItemForm';
+import { NewTagsForm } from './components/NewTagsForm';
 
 export function App() {
-    const [items, setItems] = React.useState([
-    ]);
-    const [tags, setTags] = React.useState([
-        'music',
-        'chores',
-        'work',
-        'learning',
-    ]);
+    const items = useSelector((state: any) => state.items);
+    const tags = useSelector((state: any) => state.tags);
+    // const [items, setItems] = React.useState([
+    // ]);
+    // const [tags, setTags] = React.useState([
+    //     'music',
+    //     'chores',
+    //     'work',
+    //     'learning',
+    // ]);
     // use nested array to allow for sub-tags
-    const [presets, setPresets] = React.useState([
-        { name: 'Guitar', tags: ['music'] },
-        { name: 'Dishes', tags: ['chores'] },
-        { name: 'Laundry', tags: ['chores'] },
-    ])
+    // const [presets, setPresets] = React.useState([
+    //     { name: 'Guitar', tags: ['music'] },
+    //     { name: 'Dishes', tags: ['chores'] },
+    //     { name: 'Laundry', tags: ['chores'] },
+    // ])
     // const [search, setSearch] = React.useState('');
     const [showForm, setShowForm] = React.useState(false);
 
@@ -58,20 +61,8 @@ export function App() {
                         <h2>Tags</h2>
 
                     <div className='tags column'>
-                        <form onSubmit={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            const form = e.target;
-                            const tag = form.tag.value;
-                            setTags([...tags, tag]);
-                            form.tag.value = '';
-                        }}>
-                            <input type="text" name="tag" id="tag" required />
-                            <button type="submit">Add Tag</button>
-                        </form>
-                        {tags.map((tag, index) => (
-                            <div className="tag" key={index}>{tag}</div>
-                        ))}
+                        <NewTagsForm />
+
                     </div>
                 </div>
             </div>
