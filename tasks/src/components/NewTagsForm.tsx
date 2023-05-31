@@ -15,6 +15,13 @@ export function NewTagsForm() {
         form.tag.value = '';
     }
 
+    const handleRemove = (e, tag) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('tag', tag);
+        dispatch(remove(tag));
+    }
+
     return (
         <div className='tags column'>
             <form onSubmit={handleSubmit}>
@@ -22,7 +29,11 @@ export function NewTagsForm() {
                 <button type="submit">Add Tag</button>
             </form>
             {tags.map((tag, index) => (
-                <div className="tag" key={index}>{tag}</div>
+                <div className="tag"
+                    key={index}>
+                    <span>{tag}</span>
+                    <button onClick={(e) => handleRemove(e, tag)}>X</button>
+                </div>
             ))}
         </div>
     );

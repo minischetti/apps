@@ -29,6 +29,7 @@ export function NewItemForm({ addItem, tags }) {
         const tags = form.tags.value;
         const date = form.date.value;
         const time = form.time.value;
+        
         const item = {
             name,
             tags,

@@ -5,13 +5,15 @@ export const tagsSlice = createSlice({
     initialState: [],
     reducers: {
         add: (state, action) => {
+            // if the tag already exists, don't add it
+            if (state.includes(action.payload)) {
+                return state
+            }
+            // otherwise, add it
             state.push(action.payload)
         },
         remove: (state, action) => {
-            // splice returns an array of the removed elements
-            // so we need to get the first element of the array
-            // and return that
-            return state.filter(item => item.id != action.payload)
+            return state.filter(tags => tags != action.payload)
         },
         update: (state, action) => {
             const index = state.findIndex(item => item.id == action.payload.id)

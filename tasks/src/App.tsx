@@ -5,6 +5,8 @@ import { Item } from './components/Item';
 import { NewItemForm } from './components/NewItemForm';
 import { NewTagsForm } from './components/NewTagsForm';
 import { Items } from './components/Items';
+import { Tags } from './components/Tags';
+import { Filters } from './components/Filters';
 
 export function App() {
     const items = useSelector((state: any) => state.items);
@@ -23,12 +25,8 @@ export function App() {
             </div>
             <div className='content'>
                 <div className='sidebar'>
-                    <div className='section section-tags'>
-                        <h2>Tags</h2>
-                        <div className='tags column'>
-                            <NewTagsForm />
-                        </div>
-                    </div>
+                    <Filters />
+                    <Tags />
                 </div>
                 <div>
                     <NewItemForm addItem={addItem} tags={tags} />

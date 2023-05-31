@@ -5,6 +5,7 @@ export function Items({children}) {
         <table>
             <thead>
                 <tr>
+                    <th>Status</th>
                     <th>Item</th>
                     <th>Tags</th>
                     <th>Reminder</th>
