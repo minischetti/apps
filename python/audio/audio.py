@@ -8,11 +8,15 @@ from tkinter import filedialog
 
 from playsound import playsound
 
+from pygame import mixer
+
 audio_file = ""
 # y = ""
 # sr = ""
 in_dir = "./in/"
 out_dir = "./out/"
+
+mixer.init()
 
 def pitch_shift(file, n_steps):
     print(file)
@@ -33,8 +37,14 @@ def open_file():
     audio_file = filedialog.askopenfilename(initialdir = "./", title = "Select file")
     label_file_name.config(text=audio_file)
     print(audio_file)
-    # playsound(audio_file)
     return audio_file
+
+def play():
+    mixer.music.load(audio_file)
+    mixer.music.play()
+
+def pause():
+    mixer.music.pause()
  
 root = Tk()
 frame = Frame(root)
@@ -48,6 +58,10 @@ Label(frame, text="Pitch shift").pack(padx=5, pady=5)
 Scala = Scale(frame, from_=-10, to=10, orient=HORIZONTAL)
 Scala.pack(padx=5, pady=5)
 Button(frame, text="Pitch shift", command=lambda: pitch_shift(audio_file, Scala.get())).pack(padx=5, pady=5)
+
+# Play and pause button
+Button(frame, text="Play", command=lambda: play()).pack(padx=5, pady=5)
+Button(frame, text="Pause", command=lambda: pause()).pack(padx=5, pady=5)
  
 root.mainloop()
 
