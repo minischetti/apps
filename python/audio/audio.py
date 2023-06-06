@@ -9,7 +9,7 @@ from tkinter import filedialog
 from playsound import playsound
 
 from pygame import mixer
-
+import random
 audio_file = ""
 # y = ""
 # sr = ""
@@ -23,7 +23,10 @@ def pitch_shift(file, n_steps):
     print("Pitch shifting by " + str(n_steps) + " half steps")
     y, sr = librosa.load(file)
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
-    soundfile.write(out_dir + "file.wav", result, sr)
+    random_number = str(float(random.random()))
+    soundfile.write(out_dir + random_number + ".wav", result, sr)
+    global audio_file
+    audio_file = out_dir + random_number + ".wav"
     return result
 
 # def time_stretch(y, sr, rate):
