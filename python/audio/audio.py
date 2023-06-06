@@ -23,9 +23,11 @@ def pitch_shift(file, n_steps):
     y, sr = librosa.load(file)
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
     random_number = str(float(random.random()))
-    soundfile.write(out_dir + random_number + ".wav", result, sr)
+    # soundfile.write(out_dir + random_number + ".wav", result, sr)
     global audio_file
-    audio_file = out_dir + random_number + ".wav"
+    # audio_file = out_dir + random_number + ".wav"
+
+    audio_file = result
     return result
 
 # def time_stretch(y, sr, rate):
@@ -35,7 +37,7 @@ def pitch_shift(file, n_steps):
 #     return result
 
 def separate():
-    subprocess.run("python -m demucs --two-stems=vocals " + audio_file)
+    subprocess.run("python -m demucs --two-stems=vocals -o=./out " + audio_file)
     # demucs.separate.main("--shifts 1 --model demucs --dl -n -d cpu " + audio_file)
 
 def open_file():
