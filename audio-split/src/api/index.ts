@@ -1,66 +1,50 @@
-'use strict';
-// const fs = require('fs');
-// const path = require('path');
-const { exec } = require('child_process');
-// const { spawn } = require('child_process');
-const execSync = require('child_process').execSync;
-// const hello = require('./Hello.mp3');
+const { program } = require('commander');
+const { execSync } = require('child_process');
 const promisify = require('util').promisify;
-const Hapi = require('@hapi/hapi');
 
-const init = async () => {
+const dependencies = [["conda", "curl -O https://repo.anaconda.com/archive/Anaconda3-2023.03-1-MacOSX-x86_64.sh"], ["python3", "brew install"], ["ffmpeg", "conda install ffmpeg -c conda-forge"], ["demucs", "python3 -m pip install --user -U demucs"]];
 
-    const server = Hapi.server({
-        port: 3000,
-        host: 'localhost'
+program
+    .name('ArtiAudio')
+    .description('An audio CLI powered by AI.')
+    .version('0.0.1');
+program.command('dependencies')
+    .description('List the dependencies of the project')
+    .action(() => {
+        console.log(dependencies);
     });
 
-    await server.start();
-    console.log('Server running on %s', server.info.uri);
-
-    server.route({
-        method: 'GET',
-        path: '/',
-        handler: (request, h) => {
-            console.log('GET /');
-            return 'Hello, world!';
-        }
-    });
-
-    server.route({
-        method: 'GET',
-        path: '/api/split',
-        handler: (request, h) => {
-            // Spawn a child process to run the audio-splitter script
-            // const child = exec('anaconda');
-            // Check if ffmpeg is installed
-            let result;
+program.command('setup')
+    .description('Setup the project')
+    .action(() => {
+        console.log('Setting up the project...');
+        const dependenciesToInstall = [];
+        dependencies.forEach((dependency) => {
+            console.log(`Checking for ${dependency}...`);
             try {
-                result = execSync('ffmpeg -version');
+                execSync(`${dependency[0]} --version`);
             }
-            catch (err) {
-                console.log('ffmpeg is not installed');
-                return 'ffmpeg is not installed';
+            catch (error) {
+                dependenciesToInstall.push(dependency);
             }
-            console.log('ffmpeg is installed');
-            return 'ffmpeg is installed';
+        })
+
+        if (dependenciesToInstall.length > 0) {
+            console.log(`Installing ${dependenciesToInstall.join(', ')}...`);
+            dependenciesToInstall.forEach((dependency) => {
+                execSync(dependency[1]);
+            }
+            )
         }
     });
 
-    server.route({
-        method: 'POST',
-        path: '/api/medications',
-        handler: (request, h) => {
-            console.log('POST /medications');
-            return 'Hello, world!';
-        }
+program.command('split')
+    .description('Split a string into substrings and display as an array')
+    .argument('<string>', 'string to split')
+    .option('--first', 'display just the first substring')
+    .option('-s, --separator <char>', 'separator character', ',')
+    .action((str, options) => {
+        const limit = options.first ? 1 : undefined;
+        console.log(str.split(options.separator, limit));
     });
-};
-
-
-process.on('unhandledRejection', (err) => {
-    console.log(err);
-    process.exit(1);
-});
-
-init();
+program.parse();
