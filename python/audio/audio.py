@@ -2,17 +2,16 @@ import sys
 import librosa
 import soundfile
 import os
-
+import demucs.separate
 from tkinter import * 
 from tkinter import filedialog
-
-from playsound import playsound
+import subprocess
 
 from pygame import mixer
 import random
 audio_file = ""
 # y = ""
-# sr = ""
+sr = ""
 in_dir = "./in/"
 out_dir = "./out/"
 
@@ -34,6 +33,10 @@ def pitch_shift(file, n_steps):
 #     result = librosa.effects.time_stretch(y, rate=rate)
 #     soundfile.write(out_dir + audio_file, result, sr)
 #     return result
+
+def separate():
+    subprocess.run("python -m demucs --two-stems=vocals " + audio_file)
+    # demucs.separate.main("--shifts 1 --model demucs --dl -n -d cpu " + audio_file)
 
 def open_file():
     global audio_file
@@ -61,6 +64,9 @@ Label(frame, text="Pitch shift").pack(padx=5, pady=5)
 Scala = Scale(frame, from_=-10, to=10, orient=HORIZONTAL)
 Scala.pack(padx=5, pady=5)
 Button(frame, text="Pitch shift", command=lambda: pitch_shift(audio_file, Scala.get())).pack(padx=5, pady=5)
+
+Label(frame, text="Separate").pack(padx=5, pady=5)
+Button(frame, text="Separate", command=lambda: separate()).pack(padx=5, pady=5)
 
 # Play and pause button
 Button(frame, text="Play", command=lambda: play()).pack(padx=5, pady=5)
