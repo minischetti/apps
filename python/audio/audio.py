@@ -9,16 +9,17 @@ from tkinter import filedialog
 from playsound import playsound
 
 audio_file = ""
-y = ""
-sr = ""
+# y = ""
+# sr = ""
 in_dir = "./in/"
 out_dir = "./out/"
 
-def pitch_shift(y, sr, n_steps):
+def pitch_shift(file, n_steps):
+    print(file)
     print("Pitch shifting by " + str(n_steps) + " half steps")
-    y, sr = librosa.load(audio_file)
+    y, sr = librosa.load(file)
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
-    soundfile.write(out_dir + audio_file, result, sr)
+    soundfile.write(out_dir + "file.wav", result, sr)
     return result
 
 # def time_stretch(y, sr, rate):
@@ -28,14 +29,12 @@ def pitch_shift(y, sr, n_steps):
 #     return result
 
 def open_file():
-    file = filedialog.askopenfilename(initialdir = "./", title = "Select file", filetypes = (("wav files","*.wav"),("all files","*.*")))
-    print(file)
-    audio_file = file
+    global audio_file
+    audio_file = filedialog.askopenfilename(initialdir = "./", title = "Select file")
     label_file_name.config(text=audio_file)
-    y, sr = librosa.load(file)
-
+    print(audio_file)
     # playsound(audio_file)
-    return file
+    return audio_file
  
 root = Tk()
 frame = Frame(root)
@@ -48,11 +47,11 @@ label_file_name.pack(padx=5, pady=5)
 Label(frame, text="Pitch shift").pack(padx=5, pady=5)
 Scala = Scale(frame, from_=-10, to=10, orient=HORIZONTAL)
 Scala.pack(padx=5, pady=5)
-Button(frame, text="Pitch shift", command=lambda: pitch_shift(y, sr, Scala.get())).pack(padx=5, pady=5)
+Button(frame, text="Pitch shift", command=lambda: pitch_shift(audio_file, Scala.get())).pack(padx=5, pady=5)
  
 root.mainloop()
 
-exit();
+exit()
 
 # Get audio file from command line
 audio_file_name = ""
