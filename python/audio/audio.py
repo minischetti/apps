@@ -2,12 +2,14 @@ import sys
 import librosa
 import soundfile
 
-# Get the first arg
+# Get audio file from command line
+audio_file = ""
 if len(sys.argv) > 1:
     audio_file = sys.argv[1]
 else:
     print("Usage: python audio.py <audio_file>")
-    sys.exit(1)
+    audio_file = input("Enter an audio file location: ")
+    
 
 # audio_file = input("Enter an audio file location:")
 # Load audio file
