@@ -7,14 +7,17 @@
     "dev": "vite src",
     "build": "vite build src",
     "serve": "vite preview src",
-    "api": "vite build src/Server.ts && node Server.ts"
+    "api-watch": "tsc --watch src/api/index.ts",
+    "api-build": "tsc src/api/index.ts",
+    "api-start": "node src/api/index.js"
   },
   "dependencies": {
     "@hapi/hapi": "^21.3.1",
-    "@types/node": "^18.15.11",
+    "@types/node": "^20.2.5",
     "@vitejs/plugin-react": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "typescript": "^5.1.3",
     "vite": "^4.2.1"
   },
   "devDependencies": {

@@ -23,6 +23,9 @@ interface MedicationForm extends FormEvent<HTMLFormElement> {
 }
 
 export function App() {
+    useEffect(() => {
+        console.log('App mounted');
+    }, []);
     const styles = {
         container: {
             flex: 1,
