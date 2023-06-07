@@ -1,3 +1,4 @@
+import io
 import sys
 import librosa
 import soundfile
@@ -8,27 +9,21 @@ from tkinter import filedialog
 import subprocess
 
 from pygame import mixer
-import random
 audio_file = ""
+audio_file_original = ""
 # y = ""
 sr = ""
 in_dir = "./in/"
 out_dir = "./out/"
-
 mixer.init()
 
-def pitch_shift(file, n_steps):
-    print(file)
+def pitch_shift(n_steps):
     print("Pitch shifting by " + str(n_steps) + " half steps")
-    y, sr = librosa.load(file)
+    y, sr = librosa.load(audio_file)
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
-    random_number = str(float(random.random()))
-    # soundfile.write(out_dir + random_number + ".wav", result, sr)
-    global audio_file
-    # audio_file = out_dir + random_number + ".wav"
 
-    audio_file = result
-    return result
+
+    # return result
 
 # def time_stretch(y, sr, rate):
 #     print("Time stretching by a factor of " + str(rate))
@@ -42,7 +37,9 @@ def separate():
 
 def open_file():
     global audio_file
+    global audio_file_original
     audio_file = filedialog.askopenfilename(initialdir = "./", title = "Select file")
+    audio_file_original = audio_file
     label_file_name.config(text=audio_file)
     print(audio_file)
     return audio_file
@@ -53,6 +50,14 @@ def play():
 
 def pause():
     mixer.music.pause()
+
+def unpause():
+    mixer.music.unpause()
+
+def reset():
+    mixer.music.stop()
+    mixer.music.load(audio_file_original)
+    Scala.set(0)
  
 root = Tk()
 frame = Frame(root)
@@ -65,7 +70,7 @@ label_file_name.pack(padx=5, pady=5)
 Label(frame, text="Pitch shift").pack(padx=5, pady=5)
 Scala = Scale(frame, from_=-10, to=10, orient=HORIZONTAL)
 Scala.pack(padx=5, pady=5)
-Button(frame, text="Pitch shift", command=lambda: pitch_shift(audio_file, Scala.get())).pack(padx=5, pady=5)
+Button(frame, text="Pitch shift", command=lambda: pitch_shift(Scala.get())).pack(padx=5, pady=5)
 
 Label(frame, text="Separate").pack(padx=5, pady=5)
 Button(frame, text="Separate", command=lambda: separate()).pack(padx=5, pady=5)
@@ -73,6 +78,8 @@ Button(frame, text="Separate", command=lambda: separate()).pack(padx=5, pady=5)
 # Play and pause button
 Button(frame, text="Play", command=lambda: play()).pack(padx=5, pady=5)
 Button(frame, text="Pause", command=lambda: pause()).pack(padx=5, pady=5)
+Button(frame, text="Unpause", command=lambda: unpause()).pack(padx=5, pady=5)
+Button(frame, text="Reset", command=lambda: reset()).pack(padx=5, pady=5)
  
 root.mainloop()
 
