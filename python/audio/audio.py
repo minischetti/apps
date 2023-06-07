@@ -6,6 +6,7 @@ import os
 import demucs.separate
 from tkinter import * 
 from tkinter import filedialog
+from tkinter.ttk import Combobox
 import subprocess
 
 from pygame import mixer
@@ -65,33 +66,50 @@ def reset():
     Scala.set(0)
  
 root = Tk()
+root.title("ArtiAudio")
 frame = Frame(root)
 frame.pack()
 
+buttons = Frame(frame)
+buttons.grid(row=0, column=0)
+buttons.pack()
+
+# Open file button
 Button(frame, text="Open file", command=lambda: open_file()).pack(padx=5, pady=5)
 label_file_name = Label(frame, text=audio_file)
 label_file_name.pack(padx=5, pady=5)
- 
+
+# Pitch shift slider
 Label(frame, text="Pitch shift").pack(padx=5, pady=5)
 Scala = Scale(frame, from_=-10, to=10, orient=HORIZONTAL)
 Scala.pack(padx=5, pady=5)
 Button(frame, text="Pitch shift", command=lambda: pitch_shift(Scala.get())).pack(padx=5, pady=5)
 
-Label(frame, text="Separate").pack(padx=5, pady=5)
+# Separate button
+Label(frame, text="Stem/track separation", font="24px").pack(padx=5, pady=5)
 Button(frame, text="Separate", command=lambda: separate()).pack(padx=5, pady=5)
+Checkbutton(frame, text="Two stems").pack(padx=5, pady=5)
+# Input
+Label(frame, text="Isolation mode", font="16px").pack(padx=5, pady=5)
+# Label(frame, text="Isolate the desired track with the other stems mixed together.").pack(padx=5, pady=5)
+combobox = Combobox(frame, values=["Vocals", "Drums", "Bass", "Other"])
+combobox.current(0)
+combobox.pack(padx=5, pady=5)
 
 # Play and pause button
-Button(frame, text="Play", command=lambda: play()).pack(padx=5, pady=5)
-Button(frame, text="Pause", command=lambda: pause()).pack(padx=5, pady=5)
-Button(frame, text="Unpause", command=lambda: unpause()).pack(padx=5, pady=5)
-Button(frame, text="Reset", command=lambda: reset()).pack(padx=5, pady=5)
+Button(buttons, text="Play", command=lambda: play()).pack(padx=5, pady=5)
+Button(buttons, text="Pause", command=lambda: pause()).pack(padx=5, pady=5)
+Button(buttons, text="Unpause", command=lambda: unpause()).pack(padx=5, pady=5)
+Button(buttons, text="Reset", command=lambda: reset()).pack(padx=5, pady=5)
 
+Label(frame, text="Files").pack(padx=5, pady=5)
 listbox = Listbox(frame)
 for item in os.listdir(in_dir):
     listbox.bind('<<ListboxSelect>>', lambda event: set_audio_file(in_dir + listbox.get(ANCHOR)))
     listbox.insert(END, item)
 listbox.pack()
 
+Label(frame, text="Operations").pack(padx=5, pady=5)
 listbox2 = Listbox(frame)
 for item in operations:
     listbox2.insert(END, item)
