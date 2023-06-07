@@ -11,6 +11,7 @@ import subprocess
 from pygame import mixer
 audio_file = ""
 audio_file_original = ""
+operations = []
 # y = ""
 sr = ""
 in_dir = "./in/"
@@ -18,6 +19,7 @@ out_dir = "./out/"
 mixer.init()
 
 def pitch_shift(n_steps):
+    listbox2.insert(END, "Pitch shift by " + str(n_steps) + " half steps")
     print("Pitch shifting by " + str(n_steps) + " half steps")
     y, sr = librosa.load(audio_file)
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
@@ -34,7 +36,10 @@ def pitch_shift(n_steps):
 def separate():
     subprocess.run("python -m demucs --two-stems=vocals -o=./out " + audio_file)
     # demucs.separate.main("--shifts 1 --model demucs --dl -n -d cpu " + audio_file)
-
+def set_audio_file(file):
+    global audio_file
+    audio_file = file
+    label_file_name.config(text=audio_file)
 def open_file():
     global audio_file
     global audio_file_original
@@ -80,7 +85,19 @@ Button(frame, text="Play", command=lambda: play()).pack(padx=5, pady=5)
 Button(frame, text="Pause", command=lambda: pause()).pack(padx=5, pady=5)
 Button(frame, text="Unpause", command=lambda: unpause()).pack(padx=5, pady=5)
 Button(frame, text="Reset", command=lambda: reset()).pack(padx=5, pady=5)
- 
+
+listbox = Listbox(frame)
+for item in os.listdir(in_dir):
+    listbox.bind('<<ListboxSelect>>', lambda event: set_audio_file(in_dir + listbox.get(ANCHOR)))
+    listbox.insert(END, item)
+listbox.pack()
+
+listbox2 = Listbox(frame)
+for item in operations:
+    listbox2.insert(END, item)
+listbox2.pack()
+
+
 root.mainloop()
 
 exit()
