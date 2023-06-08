@@ -8,6 +8,7 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter.ttk import Combobox
 import subprocess
+import webbrowser
 
 from pygame import mixer
 audio_file_path = ""
@@ -45,17 +46,24 @@ def pitch_shift(n_steps):
 #     return result
 
 def separate(isolate_track=False, isolate_track_name="vocals"):
-    command = ["python -m demucs", "-o=./out", audio_file]
+    command = ["python -m demucs", "-o=./out", audio_file_path]
     if isolate_track:
         command.append("--two-stems=" + isolate_track_name)
-    subprocess.run("python3 -m demucs -o=./out " + audio_file, shell=True)
+    subprocess.run("python3 -m demucs -o=./out " + audio_file_path, shell=True)
     # demucs.separate.main("--shifts 1 --model demucs --dl -n -d cpu " + audio_file)
 def open_file():
+    # Declare the global variables
     global audio_file_path
     global audio_file_name
+
+    # Open the file dialog
     file = filedialog.askopenfilename(initialdir = "./in", title = "Select file")
+
+    # Set the audio file path and name variables
     audio_file_path = file
     audio_file_name = os.path.basename(file)
+
+    # Update the label
     label_file_name.config(text=audio_file_name)
     print(audio_file_name)
     print(audio_file_path)
@@ -80,10 +88,21 @@ root.title("ArtiAudio")
 frame = Frame(root)
 frame.grid(row=0, column=0)
 
-# Open file button
-Button(frame, text="Open file", command=lambda: open_file()).grid(padx=5, pady=5)
+
+# Menu
+menu = Menu(root)
+menu_file = Menu(menu, tearoff=0)
+menu_file.add_command(label="Open file", command=lambda: open_file())
+menu_file.add_separator()
+menu_file.add_command(label="Open input folder", command=lambda: webbrowser.open(os.path.abspath(in_dir)))
+menu_file.add_command(label="Open output folder", command=lambda: webbrowser.open(os.path.abspath(out_dir)))
+menu_file.add_separator()
+menu_file.add_command(label="Exit", command=lambda: root.quit())
+menu.add_cascade(label="File", menu=menu_file)
+root.config(menu=menu)
+
 label_file_name = Label(frame, text=audio_file_name)
-label_file_name.grid(padx=5, pady=5)
+label_file_name.grid(row=1, column=0, padx=5, pady=5)
 
 # Playback buttons
 buttons = Frame(frame)
@@ -97,10 +116,10 @@ Button(buttons, text="Reset", command=lambda: reset()).grid(row=0, column=3, pad
 
 
 # Pitch shift slider
-Label(frame, text="Pitch shift").grid(padx=5, pady=5)
+Label(frame, text="Pitch shift", font="24px").grid(row=1, column=1, padx=5, pady=5)
 pitch_scale = Scale(frame, from_=-10, to=10, orient=HORIZONTAL)
-pitch_scale.grid(padx=5, pady=5)
-Button(frame, text="Pitch shift", command=lambda: pitch_shift(pitch_scale.get())).grid(padx=5, pady=5)
+pitch_scale.grid(row=2, column=1, padx=5, pady=5)
+Button(frame, text="Pitch shift", command=lambda: pitch_shift(pitch_scale.get())).grid(row=3, column=1, padx=5, pady=5)
 
 # Separate button
 Label(frame, text="Stem/track separation", font="24px").grid(padx=5, pady=5)
@@ -112,6 +131,5 @@ isolate_track_options = Combobox(frame, values=["All", "Vocals", "Drums", "Bass"
 # Set the default value to the first option
 isolate_track_options.current(0)
 isolate_track_options.grid(padx=5, pady=5)
-
 
 root.mainloop()
