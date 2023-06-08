@@ -109,27 +109,28 @@ buttons = Frame(frame)
 buttons.grid(row=1, column=0)
 
 # Play and pause button
-Button(buttons, text="Play", command=lambda: play()).grid(row=0, column=0, padx=5, pady=5)
-Button(buttons, text="Pause", command=lambda: pause()).grid(row=0, column=1, padx=5, pady=5)
-Button(buttons, text="Unpause", command=lambda: unpause()).grid(row=0, column=2, padx=5, pady=5)
-Button(buttons, text="Reset", command=lambda: reset()).grid(row=0, column=3, padx=5, pady=5)
+Label(frame, text="Playback", font="24px").grid(row=0, column=0, padx=5, pady=5)
+Button(buttons, text="Play", command=lambda: play()).grid(row=1, column=0, padx=5, pady=5)
+Button(buttons, text="Pause", command=lambda: pause()).grid(row=1, column=1, padx=5, pady=5)
+Button(buttons, text="Unpause", command=lambda: unpause()).grid(row=1, column=2, padx=5, pady=5)
+Button(buttons, text="Reset", command=lambda: reset()).grid(row=1, column=3, padx=5, pady=5)
 
 
 # Pitch shift slider
-Label(frame, text="Pitch shift", font="24px").grid(row=1, column=1, padx=5, pady=5)
+Label(frame, text="Pitch shift", font="24px").grid(row=0, column=1, padx=5, pady=5)
 pitch_scale = Scale(frame, from_=-10, to=10, orient=HORIZONTAL)
-pitch_scale.grid(row=2, column=1, padx=5, pady=5)
-Button(frame, text="Pitch shift", command=lambda: pitch_shift(pitch_scale.get())).grid(row=3, column=1, padx=5, pady=5)
+pitch_scale.grid(row=1, column=1, padx=5, pady=5)
+Button(frame, text="Pitch shift", command=lambda: pitch_shift(pitch_scale.get())).grid(row=2, column=1, padx=5, pady=5)
 
-# Separate button
-Label(frame, text="Stem/track separation", font="24px").grid(padx=5, pady=5)
-Label(frame, text="Separate the tracks of a song.").grid(padx=5, pady=5)
-Button(frame, text="Separate", command=lambda: separate()).grid(padx=5, pady=5)
-
+# Stem/track separation
+Label(frame, text="Stem/track separation", font="24px").grid(row=0, column=2, padx=5, pady=5)
 # Isolate track options
 isolate_track_options = Combobox(frame, values=["All", "Vocals", "Drums", "Bass", "Other"], state="readonly")
 # Set the default value to the first option
 isolate_track_options.current(0)
-isolate_track_options.grid(padx=5, pady=5)
+isolate_track_options.grid(row=1, column=2, padx=5, pady=5)
+Button(frame, text="Separate", command=lambda: separate()).grid(row=2, column=2, padx=5, pady=5)
+
+
 
 root.mainloop()
