@@ -14,28 +14,19 @@ from pygame import mixer
 audio_file_path = ""
 audio_file_name = ""
 audio_file_original = ""
-operations = []
-settings = {}
-
-settings["pitch_shift"] = 0
-settings["time_stretch"] = 1
-settings["stems"] = False
-settings["stems_isolate"] = "vocals"
-settings["stems_isolate_track"] = False
-# y = ""
-sr = ""
 in_dir = "./in/"
 out_dir = "./out/"
 mixer.init()
 
 def pitch_shift(n_steps):
     # listbox2.insert(END, "Pitch shift by " + str(n_steps) + " half steps")
-    global audio_file
+    global audio_file_path
+    global audio_file_name
     print("Pitch shifting by " + str(n_steps) + " half steps")
-    y, sr = librosa.load(audio_file.path)
+    y, sr = librosa.load(audio_file_path)
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
     
-    soundfile.write(out_dir + audio_file.name, result, sr)
+    soundfile.write(out_dir + audio_file_name, result, sr)
 
     # return result
 
