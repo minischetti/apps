@@ -10,8 +10,12 @@ from tkinter import filedialog
 from tkinter.ttk import Combobox
 import subprocess
 import webbrowser
-
+import whisper
 from pygame import mixer
+
+# Set up the whisper model
+model = whisper.load_model("base")
+
 audio_file_path = ""
 audio_file_name = ""
 audio_file_ext = ""
@@ -102,11 +106,12 @@ def pause():
 def unpause():
     mixer.music.unpause()
 
-def reset():
-    mixer.music.stop()
-    mixer.music.load(audio_file_original)
-    pitch_scale.set(0)
-
+def generate_lyrics():
+    result = model.transcribe(audio_file_path)
+    print(result)
+    # lyrics.config(text=result["text"])
+    lyrics.delete(1.0, END)
+    lyrics.insert(END, result["text"])
 # GUI
 root = Tk()
 root.title("ArtiAudio")
@@ -146,7 +151,6 @@ Label(frame, text="Playback", font="24px").grid(row=2, column=0, padx=5, pady=5)
 Button(buttons, text="Play", command=lambda: play()).grid(row=3, column=0, padx=5, pady=5)
 Button(buttons, text="Pause", command=lambda: pause()).grid(row=3, column=1, padx=5, pady=5)
 Button(buttons, text="Unpause", command=lambda: unpause()).grid(row=3, column=2, padx=5, pady=5)
-Button(buttons, text="Reset", command=lambda: reset()).grid(row=3, column=3, padx=5, pady=5)
 
 # play_button_image = PhotoImage(file="play.png")
 # play_button = Button(buttons, image=play_button_image, command=lambda: play())
@@ -166,5 +170,12 @@ isolate_track_options = Combobox(frame, values=["All", "Vocals", "Drums", "Bass"
 isolate_track_options.current(0)
 isolate_track_options.grid(row=3, column=2, padx=5, pady=5)
 Button(frame, text="Separate", command=lambda: separate(isolate_track_options.get())).grid(row=4, column=2, padx=5, pady=5)
+
+# Lyrics
+Label(frame, text="Lyrics", font="24px").grid(row=2, column=3, padx=5, pady=5)
+Button(frame, text="Generate lyrics", command=lambda: generate_lyrics()).grid(row=3, column=3, padx=5, pady=5)
+lyrics = Text(frame)
+lyrics.insert(INSERT, "Lyrics will appear here")
+lyrics.grid(row=4, column=3, padx=5, pady=5)
 
 root.mainloop()
