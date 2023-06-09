@@ -14,20 +14,34 @@ import webbrowser
 from pygame import mixer
 audio_file_path = ""
 audio_file_name = ""
+audio_file_ext = ""
 audio_file_original = ""
 in_dir = "./in/"
 out_dir = "./out/"
 mixer.init()
 
+# Get the current date and time
+now = lambda: datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+out_dir_now = lambda: out_dir + now() + "/" + audio_file_name + "/"
+
 def pitch_shift(n_steps):
     # listbox2.insert(END, "Pitch shift by " + str(n_steps) + " half steps")
     global audio_file_path
     global audio_file_name
+    global audio_file_ext
     print("Pitch shifting by " + str(n_steps) + " half steps")
+    print("Loading " + audio_file_name)
     y, sr = librosa.load(audio_file_path)
+    print("Pitch shifting...")
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
-    
-    soundfile.write(out_dir + audio_file_name, result, sr)
+    print("Saving...")
+    # Make the output directory if it doesn't exist
+    output_dir = out_dir_now() + "/" + "pitch" + "/" + str(n_steps) + "/"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    soundfile.write(output_dir + audio_file_name, result, sr)
+    print("Pitch shift complete and file saved to output folder")
 
     # return result
 
@@ -38,11 +52,8 @@ def pitch_shift(n_steps):
 #     return result
 
 def separate(isolate_track="All"):
-    # Get the current date and time
-    now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-
     # Set the command
-    command = "python -m demucs -o=./out/" + now + "/ " + audio_file_path
+    command = "python -m demucs -o=" + out_dir_now() + " " + audio_file_path
 
     # Add the isolate track option if it is not set to "All"
     if isolate_track != "All":
@@ -53,24 +64,29 @@ def separate(isolate_track="All"):
     print("Separating tracks...")
     subprocess.run(command, shell=True)
     print("Separation complete")
-    # demucs.separate.main("--shifts 1 --model demucs --dl -n -d cpu " + audio_file)
+
 def open_file():
     # Declare the global variables
     global audio_file_path
     global audio_file_name
+    global audio_file_ext
 
     # Open the file dialog
     file = filedialog.askopenfilename(initialdir = "./in", title = "Select file")
 
     # Set the audio file path and name variables
     audio_file_path = file
-    audio_file_name = os.path.basename(file)
+    audio_file_name = os.path.basename(audio_file_path).split(".")[0]
+    audio_file_ext = os.path.basename(audio_file_path).split(".")[1]
+
 
     # Update the label
     label_file_name.config(text=audio_file_name)
-    print(audio_file_name)
+    label_file_path.config(text=audio_file_path)
     print(audio_file_path)
 
+
+# Playback functions
 def play():
     mixer.music.load(audio_file_path)
     mixer.music.play()
@@ -85,7 +101,8 @@ def reset():
     mixer.music.stop()
     mixer.music.load(audio_file_original)
     pitch_scale.set(0)
- 
+
+# GUI
 root = Tk()
 root.title("ArtiAudio")
 frame = Frame(root)
@@ -106,6 +123,8 @@ root.config(menu=menu)
 
 label_file_name = Label(frame, text=audio_file_name, font="24px")
 label_file_name.grid(row=0, column=1, padx=5, pady=5)
+label_file_path = Label(frame, text=audio_file_path, font="18px")
+label_file_path.grid(row=1, column=1, padx=5, pady=5)
 
 # Playback buttons
 buttons = Frame(frame)
@@ -136,7 +155,5 @@ isolate_track_options = Combobox(frame, values=["All", "Vocals", "Drums", "Bass"
 isolate_track_options.current(0)
 isolate_track_options.grid(row=2, column=2, padx=5, pady=5)
 Button(frame, text="Separate", command=lambda: separate(isolate_track_options.get())).grid(row=3, column=2, padx=5, pady=5)
-
-
 
 root.mainloop()
