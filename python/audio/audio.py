@@ -1,3 +1,4 @@
+import datetime
 import io
 import sys
 import librosa
@@ -36,11 +37,22 @@ def pitch_shift(n_steps):
 #     soundfile.write(out_dir + audio_file, result, sr)
 #     return result
 
-def separate(isolate_track=False, isolate_track_name="vocals"):
-    command = ["python -m demucs", "-o=./out", audio_file_path]
-    if isolate_track:
-        command.append("--two-stems=" + isolate_track_name)
-    subprocess.run("python3 -m demucs -o=./out " + audio_file_path, shell=True)
+def separate(isolate_track="All"):
+    # Get the current date and time
+    now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+
+    # Set the command
+    command = "python -m demucs -o=./out/" + now + "/ " + audio_file_path
+
+    # Add the isolate track option if it is not set to "All"
+    if isolate_track != "All":
+        command += " --two-stems=" + isolate_track.lower()
+
+    # Run the command
+    print(command)
+    print("Separating tracks...")
+    subprocess.run(command, shell=True)
+    print("Separation complete")
     # demucs.separate.main("--shifts 1 --model demucs --dl -n -d cpu " + audio_file)
 def open_file():
     # Declare the global variables
@@ -106,6 +118,9 @@ Button(buttons, text="Pause", command=lambda: pause()).grid(row=2, column=1, pad
 Button(buttons, text="Unpause", command=lambda: unpause()).grid(row=2, column=2, padx=5, pady=5)
 Button(buttons, text="Reset", command=lambda: reset()).grid(row=2, column=3, padx=5, pady=5)
 
+# play_button_image = PhotoImage(file="play.png")
+# play_button = Button(buttons, image=play_button_image, command=lambda: play())
+
 
 # Pitch shift slider
 Label(frame, text="Pitch shift", font="24px").grid(row=1, column=1, padx=5, pady=5)
@@ -120,7 +135,7 @@ isolate_track_options = Combobox(frame, values=["All", "Vocals", "Drums", "Bass"
 # Set the default value to the first option
 isolate_track_options.current(0)
 isolate_track_options.grid(row=2, column=2, padx=5, pady=5)
-Button(frame, text="Separate", command=lambda: separate()).grid(row=3, column=2, padx=5, pady=5)
+Button(frame, text="Separate", command=lambda: separate(isolate_track_options.get())).grid(row=3, column=2, padx=5, pady=5)
 
 
 
