@@ -34,16 +34,22 @@ def pitch_shift(n_steps):
     y, sr = librosa.load(audio_file_path)
     print("Pitch shifting...")
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
-    print("Saving...")
     # Make the output directory if it doesn't exist
-    output_dir = out_dir_now() + "/" + "pitch" + "/" + str(n_steps) + "/"
+    write_sound_file(result, sr, "pitch_shift" + str(n_steps))
+
+def write_sound_file(data, sample_rate, operation_name):
+    # Make the output directory if it doesn't exist
+    print("Saving...")
+    output_dir = out_dir + operation_name + "/" + audio_file_name + "/"
+    print(output_dir)
     if not os.path.exists(output_dir):
+        print("Making directory " + output_dir)
         os.makedirs(output_dir)
-
-    soundfile.write(output_dir + audio_file_name, result, sr)
-    print("Pitch shift complete and file saved to output folder")
-
-    # return result
+    
+    # Write the file
+    print("Writing file...")
+    soundfile.write(output_dir + audio_file_name + "." + audio_file_ext, data, sample_rate)
+    print("File written")
 
 # def time_stretch(y, sr, rate):
 #     print("Time stretching by a factor of " + str(rate))
@@ -81,8 +87,7 @@ def open_file():
 
 
     # Update the label
-    label_file_name.config(text=audio_file_name)
-    label_file_path.config(text=audio_file_path)
+    description.config(text=audio_file_name)
     print(audio_file_path)
 
 
@@ -121,39 +126,45 @@ menu_file.add_command(label="Exit", command=lambda: root.quit())
 menu.add_cascade(label="File", menu=menu_file)
 root.config(menu=menu)
 
-label_file_name = Label(frame, text=audio_file_name, font="24px")
-label_file_name.grid(row=0, column=1, padx=5, pady=5)
-label_file_path = Label(frame, text=audio_file_path, font="18px")
-label_file_path.grid(row=1, column=1, padx=5, pady=5)
+title = Label(frame, text="ArtiAudio", font=("Roboto Mono", 32, "bold"))
+title.grid(row=0, column=1, padx=5, pady=5)
+description = Label(frame, text="Load an audio file...", font=("Roboto Mono", 12))
+description.bind("<Button-1>", lambda e: open_file())
+description.grid(row=1, column=1, padx=5, pady=5)
+
+# label_file_name = Label(frame, text=audio_file_name, font="24px")
+# label_file_name.grid(row=0, column=1, padx=5, pady=5)
+# label_file_path = Label(frame, text=audio_file_path, font="16px")
+# label_file_path.grid(row=1, column=1, padx=5, pady=5)
 
 # Playback buttons
 buttons = Frame(frame)
-buttons.grid(row=2, column=0)
+buttons.grid(row=3, column=0)
 
 # Play and pause button
-Label(frame, text="Playback", font="24px").grid(row=1, column=0, padx=5, pady=5)
-Button(buttons, text="Play", command=lambda: play()).grid(row=2, column=0, padx=5, pady=5)
-Button(buttons, text="Pause", command=lambda: pause()).grid(row=2, column=1, padx=5, pady=5)
-Button(buttons, text="Unpause", command=lambda: unpause()).grid(row=2, column=2, padx=5, pady=5)
-Button(buttons, text="Reset", command=lambda: reset()).grid(row=2, column=3, padx=5, pady=5)
+Label(frame, text="Playback", font="24px").grid(row=2, column=0, padx=5, pady=5)
+Button(buttons, text="Play", command=lambda: play()).grid(row=3, column=0, padx=5, pady=5)
+Button(buttons, text="Pause", command=lambda: pause()).grid(row=3, column=1, padx=5, pady=5)
+Button(buttons, text="Unpause", command=lambda: unpause()).grid(row=3, column=2, padx=5, pady=5)
+Button(buttons, text="Reset", command=lambda: reset()).grid(row=3, column=3, padx=5, pady=5)
 
 # play_button_image = PhotoImage(file="play.png")
 # play_button = Button(buttons, image=play_button_image, command=lambda: play())
 
 
 # Pitch shift slider
-Label(frame, text="Pitch shift", font="24px").grid(row=1, column=1, padx=5, pady=5)
+Label(frame, text="Pitch shift", font="24px").grid(row=2, column=1, padx=5, pady=5)
 pitch_scale = Scale(frame, from_=-10, to=10, orient=HORIZONTAL)
-pitch_scale.grid(row=2, column=1, padx=5, pady=5)
-Button(frame, text="Pitch shift", command=lambda: pitch_shift(pitch_scale.get())).grid(row=3, column=1, padx=5, pady=5)
+pitch_scale.grid(row=3, column=1, padx=5, pady=5)
+Button(frame, text="Pitch shift", command=lambda: pitch_shift(pitch_scale.get())).grid(row=4, column=1, padx=5, pady=5)
 
 # Stem/track separation
-Label(frame, text="Stem/track separation", font="24px").grid(row=1, column=2, padx=5, pady=5)
+Label(frame, text="Stem/track separation", font="24px").grid(row=2, column=2, padx=5, pady=5)
 # Isolate track options
 isolate_track_options = Combobox(frame, values=["All", "Vocals", "Drums", "Bass", "Other"], state="readonly")
 # Set the default value to the first option
 isolate_track_options.current(0)
-isolate_track_options.grid(row=2, column=2, padx=5, pady=5)
-Button(frame, text="Separate", command=lambda: separate(isolate_track_options.get())).grid(row=3, column=2, padx=5, pady=5)
+isolate_track_options.grid(row=3, column=2, padx=5, pady=5)
+Button(frame, text="Separate", command=lambda: separate(isolate_track_options.get())).grid(row=4, column=2, padx=5, pady=5)
 
 root.mainloop()
