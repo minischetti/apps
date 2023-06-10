@@ -2,3 +2,4 @@ librosa
 soundfile
 demucs
 pygame
+so-vits-svc-fork

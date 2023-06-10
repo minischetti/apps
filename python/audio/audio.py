@@ -150,6 +150,30 @@ def generate_lyrics():
     for word in result["segments"]:
         # insert lyrics into the text box with a new line after each word
         lyrics.insert(END, word["text"] + "\n")
+
+def change_voice(voice):
+    model_config = ""
+    model_data = ""
+    for models in os.listdir("./models"):
+        if voice in models:
+            model_config = "./models/" + voice + "/config.json"
+            # Find file with .pth extension
+            for file in os.listdir("./models/" + models):
+                if file.endswith(".pth"):
+                    model_data = "./models/" + voice + "/" + file
+                    break
+            break
+    if model_config == "" or model_data == "":
+        print("Voice not found")
+        return
+    print("Changing voice to " + voice)
+    print(model_config)
+    print(model_data)
+    return
+    command = ["svc", "infer", audio_file_path, out_dir_now() + audio_file_name + "_changed_voice.wav"]
+    subprocess.run(command, shell=True)
+
+
 # GUI
 root = Tk()
 root.title("ArtiAudio")
@@ -218,6 +242,24 @@ isolate_track_options.current(0)
 isolate_track_options.grid(row=5, padx=5, pady=5)
 Button(section_separator, text="Separate", command=lambda: separate(isolate_track_options.get())).grid(row=6, padx=5, pady=5)
 
+# Voice changer
+models_dir = os.path.abspath("models")
+voice_options = []
+for model in os.listdir(models_dir):
+    voice_options.append(model)
+
+section_voice_changer = Frame(frame)
+section_voice_changer.grid(row=4, column=2)
+Label(section_voice_changer, text="Voice changer", font="24px").grid(row=4, padx=5, pady=5)
+
+voice_changer_options = Combobox(section_voice_changer, values=voice_options, state="readonly")
+# Set the default value to the first option
+voice_changer_options.current(0)
+voice_changer_options.grid(row=5, padx=5, pady=5)
+Button(section_voice_changer, text="Change voice", command=lambda: change_voice(voice_changer_options.get())).grid(row=6, padx=5, pady=5)
+# for each model in the models folder, add it to the voice changer options
+
+
 # Lyrics
 section_lyrics = Frame(frame)
 section_lyrics.grid(row=7, column=0, padx=5, pady=5)
@@ -228,5 +270,7 @@ Button(frame, text="Generate lyrics", command=lambda: generate_lyrics()).grid(co
 lyrics = Text(frame)
 lyrics.insert(INSERT, "Lyrics will appear here")
 lyrics.grid(column=0, padx=5, pady=5)
+
+
 
 root.mainloop()
