@@ -7,11 +7,14 @@ import os
 import demucs.separate
 from tkinter import * 
 from tkinter import filedialog
-from tkinter.ttk import Combobox
+from tkinter.ttk import Combobox, Progressbar
 import subprocess
 import webbrowser
 import whisper
 from pygame import mixer
+from fastapi import FastAPI
+app = FastAPI()
+
 
 # Set up the whisper model
 model = whisper.load_model("base")
@@ -33,13 +36,29 @@ def pitch_shift(n_steps):
     global audio_file_path
     global audio_file_name
     global audio_file_ext
+    global progress
+    global progress_title
+
+    if audio_file_path == "":
+        progress_title.config(text="No file selected")
+        print("No file selected")
+        return
+
+    progress.start()
+    progress_title.config(text="Pitch shifting...")
     print("Pitch shifting by " + str(n_steps) + " half steps")
     print("Loading " + audio_file_name)
+    progress_title.config(text="Loading " + audio_file_name)
     y, sr = librosa.load(audio_file_path)
     print("Pitch shifting...")
+    progress_title.config(text="Pitch shifting...")
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
+    progress_title.config(text="Saving...")
     # Make the output directory if it doesn't exist
     write_sound_file(result, sr, "pitch_shift" + str(n_steps))
+    progress_title.config(text="Done")
+    progress.stop()
+    progress_title.config(text="Standby...")
 
 def write_sound_file(data, sample_rate, operation_name):
     # Make the output directory if it doesn't exist
@@ -62,8 +81,8 @@ def write_sound_file(data, sample_rate, operation_name):
 #     return result
 
 def separate(isolate_track="All"):
-    # Set the command
-    command = "python -m demucs -o=" + out_dir_now() + " " + audio_file_path
+    # Construct the command
+    command = ["python", "-m", "demucs", "-o=" + out_dir_now(), audio_file_path]
 
     # Add the isolate track option if it is not set to "All"
     if isolate_track != "All":
@@ -83,6 +102,10 @@ def open_file():
 
     # Open the file dialog
     file = filedialog.askopenfilename(initialdir = "./in", title = "Select file")
+
+    # Check if a file was opened
+    if file == "":
+        return
 
     # Set the audio file path and name variables
     audio_file_path = file
@@ -132,10 +155,16 @@ menu.add_cascade(label="File", menu=menu_file)
 root.config(menu=menu)
 
 title = Label(frame, text="ArtiAudio", font=("Roboto Mono", 32, "bold"))
-title.grid(row=0, column=1, padx=5, pady=5)
+title.grid(row=0, column=0, columnspan=4, padx=5, pady=5)
+
 description = Label(frame, text="Load an audio file...", font=("Roboto Mono", 12))
 description.bind("<Button-1>", lambda e: open_file())
-description.grid(row=1, column=1, padx=5, pady=5)
+description.grid(row=1, column=0, columnspan=4, padx=5, pady=5)
+
+progress = Progressbar(frame, orient=HORIZONTAL, mode='indeterminate')
+progress.grid(row=2, column=0, columnspan=4, padx=5, pady=5)
+progress_title = Label(frame, text="Standby...", font=("Roboto Mono", 12))
+progress_title.grid(row=3, column=0, columnspan=4, padx=5, pady=5)
 
 # label_file_name = Label(frame, text=audio_file_name, font="24px")
 # label_file_name.grid(row=0, column=1, padx=5, pady=5)
@@ -144,38 +173,36 @@ description.grid(row=1, column=1, padx=5, pady=5)
 
 # Playback buttons
 buttons = Frame(frame)
-buttons.grid(row=3, column=0)
+buttons.grid(row=2, column=0, columnspan=4)
 
-# Play and pause button
-Label(frame, text="Playback", font="24px").grid(row=2, column=0, padx=5, pady=5)
-Button(buttons, text="Play", command=lambda: play()).grid(row=3, column=0, padx=5, pady=5)
-Button(buttons, text="Pause", command=lambda: pause()).grid(row=3, column=1, padx=5, pady=5)
-Button(buttons, text="Unpause", command=lambda: unpause()).grid(row=3, column=2, padx=5, pady=5)
+Button(buttons, text="Play", command=lambda: play()).grid(row=4, column=0, padx=5, pady=5)
+Button(buttons, text="Pause", command=lambda: pause()).grid(row=4, column=1, padx=5, pady=5)
+Button(buttons, text="Unpause", command=lambda: unpause()).grid(row=4, column=2, padx=5, pady=5)
 
 # play_button_image = PhotoImage(file="play.png")
 # play_button = Button(buttons, image=play_button_image, command=lambda: play())
 
 
 # Pitch shift slider
-Label(frame, text="Pitch shift", font="24px").grid(row=2, column=1, padx=5, pady=5)
+Label(frame, text="Pitch shift", font="24px").grid(row=4, column=1, padx=5, pady=5)
 pitch_scale = Scale(frame, from_=-10, to=10, orient=HORIZONTAL)
-pitch_scale.grid(row=3, column=1, padx=5, pady=5)
-Button(frame, text="Pitch shift", command=lambda: pitch_shift(pitch_scale.get())).grid(row=4, column=1, padx=5, pady=5)
+pitch_scale.grid(row=5, column=1, padx=5, pady=5)
+Button(frame, text="Pitch shift", command=lambda: pitch_shift(pitch_scale.get())).grid(row=6, column=1, padx=5, pady=5)
 
 # Stem/track separation
-Label(frame, text="Stem/track separation", font="24px").grid(row=2, column=2, padx=5, pady=5)
+Label(frame, text="Stem/track separation", font="24px").grid(row=4, column=2, padx=5, pady=5)
 # Isolate track options
 isolate_track_options = Combobox(frame, values=["All", "Vocals", "Drums", "Bass", "Other"], state="readonly")
 # Set the default value to the first option
 isolate_track_options.current(0)
-isolate_track_options.grid(row=3, column=2, padx=5, pady=5)
-Button(frame, text="Separate", command=lambda: separate(isolate_track_options.get())).grid(row=4, column=2, padx=5, pady=5)
+isolate_track_options.grid(row=5, column=2, padx=5, pady=5)
+Button(frame, text="Separate", command=lambda: separate(isolate_track_options.get())).grid(row=6, column=2, padx=5, pady=5)
 
 # Lyrics
-Label(frame, text="Lyrics", font="24px").grid(row=2, column=3, padx=5, pady=5)
-Button(frame, text="Generate lyrics", command=lambda: generate_lyrics()).grid(row=3, column=3, padx=5, pady=5)
+Label(frame, text="Lyrics", font="24px").grid(row=4, column=3, padx=5, pady=5)
+Button(frame, text="Generate lyrics", command=lambda: generate_lyrics()).grid(row=5, column=3, padx=5, pady=5)
 lyrics = Text(frame)
 lyrics.insert(INSERT, "Lyrics will appear here")
-lyrics.grid(row=4, column=3, padx=5, pady=5)
+lyrics.grid(row=6, column=3, padx=5, pady=5)
 
 root.mainloop()
