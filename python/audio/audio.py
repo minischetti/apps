@@ -29,7 +29,7 @@ mixer.init()
 
 # Get the current date and time
 now = lambda: datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-out_dir_now = lambda: out_dir + now() + "/" + audio_file_name + "/"
+out_dir_now = lambda: out_dir + audio_file_name + "/"
 
 def pitch_shift(n_steps):
     # listbox2.insert(END, "Pitch shift by " + str(n_steps) + " half steps")
@@ -37,33 +37,33 @@ def pitch_shift(n_steps):
     global audio_file_name
     global audio_file_ext
     global progress
-    global progress_title
+    global progress_label
 
     if audio_file_path == "":
-        progress_title.config(text="No file selected")
+        progress_label.config(text="No file selected")
         print("No file selected")
         return
 
     progress.start()
-    progress_title.config(text="Pitch shifting...")
+    progress_label.config(text="Pitch shifting...")
     print("Pitch shifting by " + str(n_steps) + " half steps")
     print("Loading " + audio_file_name)
-    progress_title.config(text="Loading " + audio_file_name)
+    progress_label.config(text="Loading " + audio_file_name)
     y, sr = librosa.load(audio_file_path)
     print("Pitch shifting...")
-    progress_title.config(text="Pitch shifting...")
+    progress_label.config(text="Pitch shifting...")
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
-    progress_title.config(text="Saving...")
+    progress_label.config(text="Saving...")
     # Make the output directory if it doesn't exist
     write_sound_file(result, sr, "pitch_shift" + str(n_steps))
-    progress_title.config(text="Done")
+    progress_label.config(text="Done")
     progress.stop()
-    progress_title.config(text="Standby...")
+    progress_label.config(text="Standby...")
 
 def write_sound_file(data, sample_rate, operation_name):
     # Make the output directory if it doesn't exist
     print("Saving...")
-    output_dir = out_dir + operation_name + "/" + audio_file_name + "/"
+    output_dir = out_dir + audio_file_name + "/" + operation_name + "/"
     print(output_dir)
     if not os.path.exists(output_dir):
         print("Making directory " + output_dir)
@@ -80,19 +80,28 @@ def write_sound_file(data, sample_rate, operation_name):
 #     soundfile.write(out_dir + audio_file, result, sr)
 #     return result
 
-def separate(isolate_track="All"):
+separation_options = ["All", "Vocals", "Drums", "Bass", "Other"]
+def separate(isolate_track=separation_options[0]):
+    # Declare the global variables
+    global progress
+    global progress_label
     # Construct the command
     command = ["python", "-m", "demucs", "-o=" + out_dir_now(), audio_file_path]
 
     # Add the isolate track option if it is not set to "All"
-    if isolate_track != "All":
-        command += " --two-stems=" + isolate_track.lower()
+    if isolate_track != separation_options[0]:
+        command.append("--two-stems=" + isolate_track.lower())
 
-    # Run the command
     print(command)
     print("Separating tracks...")
+    progress_label.config(text="Separating tracks...")
+    progress.start()
+    # Run the command
     subprocess.run(command, shell=True)
+    progress_label.config(text="Separation complete")
     print("Separation complete")
+    progress_label.config(text="Standby...")
+    progress.stop()
 
 def open_file():
     # Declare the global variables
@@ -163,8 +172,8 @@ description.grid(row=1, column=0, columnspan=4, padx=5, pady=5)
 
 progress = Progressbar(frame, orient=HORIZONTAL, mode='indeterminate')
 progress.grid(row=2, column=0, columnspan=4, padx=5, pady=5)
-progress_title = Label(frame, text="Standby...", font=("Roboto Mono", 12))
-progress_title.grid(row=3, column=0, columnspan=4, padx=5, pady=5)
+progress_label = Label(frame, text="Standby...", font=("Roboto Mono", 12))
+progress_label.grid(row=3, column=0, columnspan=4, padx=5, pady=5)
 
 # label_file_name = Label(frame, text=audio_file_name, font="24px")
 # label_file_name.grid(row=0, column=1, padx=5, pady=5)
