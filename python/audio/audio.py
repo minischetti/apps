@@ -138,12 +138,18 @@ def pause():
 def unpause():
     mixer.music.unpause()
 
+def stop():
+    mixer.music.stop()
+
 def generate_lyrics():
     result = model.transcribe(audio_file_path)
     print(result)
     # lyrics.config(text=result["text"])
     lyrics.delete(1.0, END)
-    lyrics.insert(END, result["text"])
+    # lyrics.insert(END, result["text"])
+    for word in result["segments"]:
+        # insert lyrics into the text box with a new line after each word
+        lyrics.insert(END, word["text"] + "\n")
 # GUI
 root = Tk()
 root.title("ArtiAudio")
@@ -187,31 +193,40 @@ buttons.grid(row=2, column=0, columnspan=4)
 Button(buttons, text="Play", command=lambda: play()).grid(row=4, column=0, padx=5, pady=5)
 Button(buttons, text="Pause", command=lambda: pause()).grid(row=4, column=1, padx=5, pady=5)
 Button(buttons, text="Unpause", command=lambda: unpause()).grid(row=4, column=2, padx=5, pady=5)
+Button(buttons, text="Stop", command=lambda: stop()).grid(row=4, column=3, padx=5, pady=5)
 
 # play_button_image = PhotoImage(file="play.png")
 # play_button = Button(buttons, image=play_button_image, command=lambda: play())
 
 
 # Pitch shift slider
-Label(frame, text="Pitch shift", font="24px").grid(row=4, column=1, padx=5, pady=5)
-pitch_scale = Scale(frame, from_=-10, to=10, orient=HORIZONTAL)
-pitch_scale.grid(row=5, column=1, padx=5, pady=5)
-Button(frame, text="Pitch shift", command=lambda: pitch_shift(pitch_scale.get())).grid(row=6, column=1, padx=5, pady=5)
+pitch_section = Frame(frame)
+pitch_section.grid(row=4, column=0)
+Label(pitch_section, text="Pitch shift", font="24px").grid(column=0, padx=5, pady=5)
+pitch_scale = Scale(pitch_section, from_=-10, to=10, orient=HORIZONTAL)
+pitch_scale.grid(column=0, padx=5, pady=5)
+Button(pitch_section, text="Pitch shift", command=lambda: pitch_shift(pitch_scale.get())).grid(column=0, padx=5, pady=5)
 
 # Stem/track separation
-Label(frame, text="Stem/track separation", font="24px").grid(row=4, column=2, padx=5, pady=5)
+section_separator = Frame(frame)
+section_separator.grid(row=4, column=1)
+Label(section_separator, text="Stem/track separation", font="24px").grid(row=4, padx=5, pady=5)
 # Isolate track options
-isolate_track_options = Combobox(frame, values=["All", "Vocals", "Drums", "Bass", "Other"], state="readonly")
+isolate_track_options = Combobox(section_separator, values=separation_options, state="readonly")
 # Set the default value to the first option
 isolate_track_options.current(0)
-isolate_track_options.grid(row=5, column=2, padx=5, pady=5)
-Button(frame, text="Separate", command=lambda: separate(isolate_track_options.get())).grid(row=6, column=2, padx=5, pady=5)
+isolate_track_options.grid(row=5, padx=5, pady=5)
+Button(section_separator, text="Separate", command=lambda: separate(isolate_track_options.get())).grid(row=6, padx=5, pady=5)
 
 # Lyrics
-Label(frame, text="Lyrics", font="24px").grid(row=4, column=3, padx=5, pady=5)
-Button(frame, text="Generate lyrics", command=lambda: generate_lyrics()).grid(row=5, column=3, padx=5, pady=5)
+section_lyrics = Frame(frame)
+section_lyrics.grid(row=7, column=0, padx=5, pady=5)
+
+Label(frame, text="Lyrics", font="24px").grid(column=0, padx=5, pady=5)
+Button(frame, text="Generate lyrics", command=lambda: generate_lyrics()).grid(column=0, padx=5, pady=5)
+
 lyrics = Text(frame)
 lyrics.insert(INSERT, "Lyrics will appear here")
-lyrics.grid(row=6, column=3, padx=5, pady=5)
+lyrics.grid(column=0, padx=5, pady=5)
 
 root.mainloop()
