@@ -9,18 +9,25 @@ function App() {
   const [isStopped, setIsStopped] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(false)
   const [selectedFile, setSelectedFile] = React.useState(null)
+  const [lyrics, setLyrics] = React.useState(null)
 
-  const select_file = async () => {
+  const select_file = () => {
     setIsLoading(true)
     console.log('select_file')
-    await window.api.selectFile().then((res) => {
-      console.log(res)
-      setSelectedFile(res || "result")
+    return window.api.selectFile().then((res) => {
+      console.log("App.js", res)
+      setSelectedFile(res)
       setIsLoading(false)
     }).catch((err) => {
       console.log(err)
       setIsLoading(false)
     })
+    // await window.api.getLyrics().then((res) => {
+    //   console.log(res)
+    //   setLyrics(res)
+    // }).catch((err) => {
+    //   console.log(err)
+    // })
   }
 
   const play = () => {
@@ -112,6 +119,16 @@ function App() {
           </div>
         )
       }
+    },
+    lyrics: () => {
+      console.log(lyrics);
+      if (lyrics) {
+        {
+          lyrics.map((line) => {
+            <div>{line.text}</div>
+          })
+        }
+      }
     }
   }
 
@@ -124,6 +141,7 @@ function App() {
         {isLoading ? <Spinner className="animation-spin" size={32} /> : null}
       </div>
       {templates.now_playing()}
+      {templates.lyrics()}
       <div className='footer'>
         {templates.playback_controls()}
         {templates.pitch_controls()}

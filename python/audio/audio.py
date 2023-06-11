@@ -17,9 +17,10 @@ from typing import Union
 from pydantic import BaseModel
 app = FastAPI()
 
-@app.get("/api/")
-def read_root():
-    return {"Hello": "World"}
+class FileRequest(BaseModel):
+    filePath: str
+    class Config:
+        frozen = True
 
 # Set up the whisper model
 model = whisper.load_model("base")
@@ -91,36 +92,32 @@ def separate(isolate_track=separation_options[0]):
     subprocess.run(command, shell=True)
     print("Separation complete")
 
-def open_file():
+@app.post("/api/open/")
+def open_file(FileRequest: FileRequest):
     # Declare the global variables
     global audio_file_path
     global audio_file_name
     global audio_file_ext
 
     # Open the file dialog
-    file = filedialog.askopenfilename(initialdir = "./in", title = "Select file")
+    # file = filedialog.askopenfilename(initialdir = "./in", title = "Select file")
 
     # Check if a file was opened
-    if file == "":
-        return
+    # if FileRequest.filePath == "":
+    #     return
 
     # Set the audio file path and name variables
-    audio_file_path = file
+    audio_file_path = FileRequest.filePath
     audio_file_name = os.path.basename(audio_file_path).split(".")[0]
     audio_file_ext = os.path.basename(audio_file_path).split(".")[1]
 
-
-    # Update the label
     print(audio_file_path)
+    # Return a success response
+    return {"message": "Successfully opened " + audio_file_name}
 
-
-class TranscribeRequest(BaseModel):
-    filePath: str
-    class Config:
-        frozen = True
 
 @app.post("/api/transcribe/")
-def generate_lyrics(filePath: TranscribeRequest):
+def generate_lyrics(filePath: FileRequest):
     print(filePath)
 
     # Check if file path is provided

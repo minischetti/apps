@@ -24,7 +24,7 @@ const handlers = {
       if (filePaths.length > 0) {
         const filePath = filePaths[0]
         // const fileContent = fs.readFileSync(filePath, 'utf-8');
-        console.log(filePath)
+        // console.log(filePath)
         // await superagent.get('http://127.0.0.1:8000/api/')
         //   .then(res => {
         //     console.log(res)
@@ -32,12 +32,12 @@ const handlers = {
         //   .catch(err => {
         //     console.log(err)
         //   })
-        await superagent.post('http://127.0.0.1:8000/api/transcribe/')
-          .send({ filePath }).then(res => {
-            console.log(res.body)
-          }).catch(err => {
-            console.log(err)
-          })
+        try {
+          await superagent.post('http://127.0.0.1:8000/api/open/').send({ filePath });
+          return JSON.stringify({ filePath });
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
   },
