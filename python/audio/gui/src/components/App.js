@@ -117,21 +117,21 @@ function App() {
 
 
   return (
-    <div className='app' >
+    <div className='app'>
       <div className='app-header'>
         <h1>ArtiAudio</h1>
         <button onClick={select_file}>Open file</button>
         {isLoading ? <Spinner className="animation-spin" size={32} /> : null}
       </div>
       {templates.now_playing()}
-      < div className='footer'>
+      <div className='footer'>
         {templates.playback_controls()}
         {templates.pitch_controls()}
         {templates.speed_controls()}
         {templates.separate_controls()}
         {templates.voice_changer_controls()}
-      </div >
-    </div >
+      </div>
+    </div>
   )
 }
 

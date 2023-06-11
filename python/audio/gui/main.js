@@ -23,7 +23,7 @@ const handlers = {
     } else {
       if (filePaths.length > 0) {
         const filePath = filePaths[0]
-        const fileContent = fs.readFileSync(filePath, 'utf-8');
+        // const fileContent = fs.readFileSync(filePath, 'utf-8');
         console.log(filePath)
         // await superagent.get('http://127.0.0.1:8000/api/')
         //   .then(res => {
@@ -32,8 +32,6 @@ const handlers = {
         //   .catch(err => {
         //     console.log(err)
         //   })
-        // How should I send a large file to the server?
-        // https://stackoverflow.com/questions/51879671/how-should-i-send-a-large-file-to-the-server
         await superagent.post('http://127.0.0.1:8000/api/transcribe/')
           .send({ filePath }).then(res => {
             console.log(res.body)

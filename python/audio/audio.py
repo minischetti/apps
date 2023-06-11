@@ -36,34 +36,24 @@ mixer.init()
 now = lambda: datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 out_dir_now = lambda: out_dir + audio_file_name + "/"
 
+@app.post("/api/pitch/")
 def pitch_shift(n_steps):
     # listbox2.insert(END, "Pitch shift by " + str(n_steps) + " half steps")
     global audio_file_path
     global audio_file_name
     global audio_file_ext
-    global progress
-    global progress_label
 
     if audio_file_path == "":
-        progress_label.config(text="No file selected")
         print("No file selected")
         return
 
-    progress.start()
-    progress_label.config(text="Pitch shifting...")
     print("Pitch shifting by " + str(n_steps) + " half steps")
     print("Loading " + audio_file_name)
-    progress_label.config(text="Loading " + audio_file_name)
     y, sr = librosa.load(audio_file_path)
     print("Pitch shifting...")
-    progress_label.config(text="Pitch shifting...")
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
-    progress_label.config(text="Saving...")
     # Make the output directory if it doesn't exist
     write_sound_file(result, sr, "pitch_shift" + str(n_steps))
-    progress_label.config(text="Done")
-    progress.stop()
-    progress_label.config(text="Standby...")
 
 def write_sound_file(data, sample_rate, operation_name):
     # Make the output directory if it doesn't exist
@@ -86,10 +76,8 @@ def write_sound_file(data, sample_rate, operation_name):
 #     return result
 
 separation_options = ["All", "Vocals", "Drums", "Bass", "Other"]
+@app.post("/api/separate/")
 def separate(isolate_track=separation_options[0]):
-    # Declare the global variables
-    global progress
-    global progress_label
     # Construct the command
     command = ["python", "-m", "demucs", "-o=" + out_dir_now(), audio_file_path]
 
@@ -99,14 +87,9 @@ def separate(isolate_track=separation_options[0]):
 
     print(command)
     print("Separating tracks...")
-    progress_label.config(text="Separating tracks...")
-    progress.start()
     # Run the command
     subprocess.run(command, shell=True)
-    progress_label.config(text="Separation complete")
     print("Separation complete")
-    progress_label.config(text="Standby...")
-    progress.stop()
 
 def open_file():
     # Declare the global variables
@@ -128,23 +111,8 @@ def open_file():
 
 
     # Update the label
-    description.config(text=audio_file_name)
     print(audio_file_path)
 
-
-# Playback functions
-def play():
-    mixer.music.load(audio_file_path)
-    mixer.music.play()
-
-def pause():
-    mixer.music.pause()
-
-def unpause():
-    mixer.music.unpause()
-
-def stop():
-    mixer.music.stop()
 
 class TranscribeRequest(BaseModel):
     filePath: str
@@ -154,17 +122,24 @@ class TranscribeRequest(BaseModel):
 @app.post("/api/transcribe/")
 def generate_lyrics(filePath: TranscribeRequest):
     print(filePath)
+
+    # Check if file path is provided
     if filePath == None:
         return {"message": "No file path provided"}
     
+    # Check if path is valid
+    if not os.path.exists(filePath.filePath):
+        return {"message": "File path is invalid"}
+    
     result = model.transcribe(filePath.filePath)
+    print(result)
     # print(result)
     # for word in result["segments"]:
     #     print(word)
 
-    return result["text"]
+    return result["segments"]
 
-@app.post("/upload")
+@app.post("/api/upload/")
 def upload(file: UploadFile = File(...)):
     try:
         contents = file.file.read()
@@ -177,6 +152,7 @@ def upload(file: UploadFile = File(...)):
 
     return {"message": f"Successfully uploaded {file.filename}"}
 
+@app.post("/api/voice/")
 def change_voice(voice):
     model_config = ""
     model_data = ""
