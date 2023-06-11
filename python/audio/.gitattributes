@@ -1,3 +1,1 @@
-models/ filter=lfs diff=lfs merge=lfs -text
-models/dave_mustaine/config.json filter=lfs diff=lfs merge=lfs -text
 models/dave_mustaine/G_71800.pth filter=lfs diff=lfs merge=lfs -text
