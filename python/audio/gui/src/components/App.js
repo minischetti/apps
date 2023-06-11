@@ -41,29 +41,44 @@ function App() {
     setIsPaused(false)
   }
 
+  const templates = {
+    now_playing: () => {
+      if (selectedFile) {
+        return (
+          <div className="now-playing">
+            {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" onClick={select_file} /> : <FileArrowUp className="file_upload_button" onClick={select_file} />}
+            <h2>{selectedFile}</h2>
+          </div>
+        )
+      }
+    },
+    playback_controls: () => {
+      const shouldShowPlayButton = (!isPlaying && !isPaused) || (isPlaying && isPaused) || (isPaused && !isPlaying);
+      const shouldShowPauseButton = isPlaying && !isPaused;
+      if (selectedFile) {
+        return (
+          <div className='playback-controls'>
+            {shouldShowPlayButton ? <Play className="orb" onClick={play} /> : null}
+            {shouldShowPauseButton ? <Pause className="orb" onClick={pause} /> : null}
+          </div>
+        )
+      }
+    }
+  }
+
 
   return (
-    <div className='app'>
+    <div className='app' >
       <div className='app-header'>
         <h1>ArtiAudio</h1>
-
+        <button onClick={select_file}>Open file</button>
         {isLoading ? <Spinner className="animation-spin" size={32} /> : null}
       </div>
-      <div className="now-playing">
-      
-        {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" onClick={select_file} /> : <FileArrowUp className="file_upload_button" onClick={select_file} />}
-        <h2>{selectedFile}</h2>
-      </div>
-      <div className='footer'>
-
-
-        {selectedFile ? <div className='playback-controls'>
-          {(!isPlaying && !isPaused) || (isPlaying && isPaused) || (isPaused && !isPlaying) ? <Play className="orb" onClick={play} /> : null}
-          {isPlaying && !isPaused ? <Pause className="orb" onClick={pause} /> : null}
-        </div>
-          : null}
-      </div>
-    </div>
+      {templates.now_playing()}
+      < div className='footer'>
+        {templates.playback_controls()}
+      </div >
+    </div >
   )
 }
 
