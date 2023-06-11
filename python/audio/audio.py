@@ -169,8 +169,7 @@ def change_voice(voice):
     print("Changing voice to " + voice)
     print(model_config)
     print(model_data)
-    return
-    command = ["svc", "infer", audio_file_path, out_dir_now() + audio_file_name + "_changed_voice.wav"]
+    command = ["svc", "infer", "-m", model_data, "-c", model_config, "-o", out_dir_now() + audio_file_name + "_" + voice + ".wav", audio_file_path]
     subprocess.run(command, shell=True)
 
 
