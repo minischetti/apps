@@ -95,3 +95,9 @@ button:hover, button:focus, button:active {
     width: 100px;
     height: 100px;
 }
+
+.controls-section {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}

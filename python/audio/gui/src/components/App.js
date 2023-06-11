@@ -63,6 +63,55 @@ function App() {
           </div>
         )
       }
+    },
+    pitch_controls: () => {
+      if (selectedFile) {
+        return (
+          <div className='pitch-controls controls-section'>
+            <h2>Pitch</h2>
+            <input type="range" min="-12" max="12" defaultValue="0" />
+          </div>
+        )
+      }
+    },
+    speed_controls: () => {
+      if (selectedFile) {
+        return (
+          <div className='speed-controls controls-section'>
+            <h2>Speed</h2>
+            <input type="range" min="0.1" max="2" defaultValue="1" step="0.1" />
+          </div>
+        )
+      }
+    },
+    separate_controls: () => {
+      if (selectedFile) {
+        return (
+          <div className='separate-controls controls-section'>
+            <h2>Separate</h2>
+            <select>
+              <option value="vocals">Vocals</option>
+              <option value="drums">Drums</option>
+              <option value="bass">Bass</option>
+              <option value="other">Other</option>
+            </select>
+            <button>Separate</button>
+          </div>
+        )
+      }
+    },
+    voice_changer_controls: () => {
+      if (selectedFile) {
+        return (
+          <div className='voice-changer-controls controls-section'>
+            <h2>Voice Changer</h2>
+            <select>
+              <option value="dave_mustaine">Dave Mustaine</option>
+            </select>
+            <button>Change</button>
+          </div>
+        )
+      }
     }
   }
 
@@ -77,6 +126,10 @@ function App() {
       {templates.now_playing()}
       < div className='footer'>
         {templates.playback_controls()}
+        {templates.pitch_controls()}
+        {templates.speed_controls()}
+        {templates.separate_controls()}
+        {templates.voice_changer_controls()}
       </div >
     </div >
   )
