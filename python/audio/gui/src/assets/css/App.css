@@ -1,0 +1,98 @@
+/* Main CSS file */
+
+@import '_example/_example.css';
+
+button {
+    all: unset;
+    display: flex;
+    appearance: none;
+    font-family: sans-serif;
+    border: 2px solid white;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    user-select: none;
+    align-items: center;
+}
+
+button svg {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}
+
+button:hover, button:focus, button:active {
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-image: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #fd1892 100%);
+    border-image-slice: 1;
+}
+
+.animation-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(359deg);
+    }
+}
+
+.app-header {
+    background-color: #282c34;
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr 1fr 1fr;
+    color: white;
+    padding: 0.5rem 1rem;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.playback-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.orb {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background-image: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #fd1892 100%);
+    margin: 0 0.25rem;
+    padding: 0.5rem;
+    color: black;
+    box-shadow: 0 0 1rem rgba(0, 0, 255, 0.5);
+    user-select: none;
+    transition: box-shadow 0.25s ease-in-out;
+}
+
+.orb:hover {
+    box-shadow: 0 0 1rem rgba(0, 0, 255, 1);
+}
+
+.now-playing {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 1rem;
+    background-color: #282c34;
+    border-radius: 1rem;
+    color: white;
+}
+
+.file_upload_button {
+    width: 100px;
+    height: 100px;
+}
