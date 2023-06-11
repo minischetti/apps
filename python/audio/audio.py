@@ -12,9 +12,14 @@ import subprocess
 import webbrowser
 import whisper
 from pygame import mixer
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
+from typing import Union
+from pydantic import BaseModel
 app = FastAPI()
 
+@app.get("/api/")
+def read_root():
+    return {"Hello": "World"}
 
 # Set up the whisper model
 model = whisper.load_model("base")
@@ -141,15 +146,36 @@ def unpause():
 def stop():
     mixer.music.stop()
 
-def generate_lyrics():
-    result = model.transcribe(audio_file_path)
-    print(result)
-    # lyrics.config(text=result["text"])
-    lyrics.delete(1.0, END)
-    # lyrics.insert(END, result["text"])
-    for word in result["segments"]:
-        # insert lyrics into the text box with a new line after each word
-        lyrics.insert(END, word["text"] + "\n")
+class TranscribeRequest(BaseModel):
+    filePath: str
+    class Config:
+        frozen = True
+
+@app.post("/api/transcribe/")
+def generate_lyrics(filePath: TranscribeRequest):
+    print(filePath)
+    if filePath == None:
+        return {"message": "No file path provided"}
+    
+    result = model.transcribe(filePath.filePath)
+    # print(result)
+    # for word in result["segments"]:
+    #     print(word)
+
+    return result["text"]
+
+@app.post("/upload")
+def upload(file: UploadFile = File(...)):
+    try:
+        contents = file.file.read()
+        with open(file.filename, 'wb') as f:
+            f.write(contents)
+    except Exception:
+        return {"message": "There was an error uploading the file"}
+    finally:
+        file.file.close()
+
+    return {"message": f"Successfully uploaded {file.filename}"}
 
 def change_voice(voice):
     model_config = ""
@@ -171,105 +197,3 @@ def change_voice(voice):
     print(model_data)
     command = ["svc", "infer", "-m", model_data, "-c", model_config, "-o", out_dir_now() + audio_file_name + "_" + voice + ".wav", audio_file_path]
     subprocess.run(command, shell=True)
-
-
-# GUI
-root = Tk()
-root.title("ArtiAudio")
-frame = Frame(root)
-frame.grid(row=0, column=0)
-
-
-# Menu
-menu = Menu(root)
-menu_file = Menu(menu, tearoff=0)
-menu_file.add_command(label="Open file", command=lambda: open_file())
-menu_file.add_separator()
-menu_file.add_command(label="Open input folder", command=lambda: webbrowser.open(os.path.abspath(in_dir)))
-menu_file.add_command(label="Open output folder", command=lambda: webbrowser.open(os.path.abspath(out_dir)))
-menu_file.add_separator()
-menu_file.add_command(label="Exit", command=lambda: root.quit())
-menu.add_cascade(label="File", menu=menu_file)
-root.config(menu=menu)
-
-title = Label(frame, text="ArtiAudio", font=("Roboto Mono", 32, "bold"))
-title.grid(row=0, column=0, columnspan=4, padx=5, pady=5)
-
-description = Label(frame, text="Load an audio file...", font=("Roboto Mono", 12))
-description.bind("<Button-1>", lambda e: open_file())
-description.grid(row=1, column=0, columnspan=4, padx=5, pady=5)
-
-progress = Progressbar(frame, orient=HORIZONTAL, mode='indeterminate')
-progress.grid(row=2, column=0, columnspan=4, padx=5, pady=5)
-progress_label = Label(frame, text="Standby...", font=("Roboto Mono", 12))
-progress_label.grid(row=3, column=0, columnspan=4, padx=5, pady=5)
-
-# label_file_name = Label(frame, text=audio_file_name, font="24px")
-# label_file_name.grid(row=0, column=1, padx=5, pady=5)
-# label_file_path = Label(frame, text=audio_file_path, font="16px")
-# label_file_path.grid(row=1, column=1, padx=5, pady=5)
-
-# Playback buttons
-buttons = Frame(frame)
-buttons.grid(row=2, column=0, columnspan=4)
-
-Button(buttons, text="Play", command=lambda: play()).grid(row=4, column=0, padx=5, pady=5)
-Button(buttons, text="Pause", command=lambda: pause()).grid(row=4, column=1, padx=5, pady=5)
-Button(buttons, text="Unpause", command=lambda: unpause()).grid(row=4, column=2, padx=5, pady=5)
-Button(buttons, text="Stop", command=lambda: stop()).grid(row=4, column=3, padx=5, pady=5)
-
-# play_button_image = PhotoImage(file="play.png")
-# play_button = Button(buttons, image=play_button_image, command=lambda: play())
-
-
-# Pitch shift slider
-pitch_section = Frame(frame)
-pitch_section.grid(row=4, column=0)
-Label(pitch_section, text="Pitch shift", font="24px").grid(column=0, padx=5, pady=5)
-pitch_scale = Scale(pitch_section, from_=-10, to=10, orient=HORIZONTAL)
-pitch_scale.grid(column=0, padx=5, pady=5)
-Button(pitch_section, text="Pitch shift", command=lambda: pitch_shift(pitch_scale.get())).grid(column=0, padx=5, pady=5)
-
-# Stem/track separation
-section_separator = Frame(frame)
-section_separator.grid(row=4, column=1)
-Label(section_separator, text="Stem/track separation", font="24px").grid(row=4, padx=5, pady=5)
-# Isolate track options
-isolate_track_options = Combobox(section_separator, values=separation_options, state="readonly")
-# Set the default value to the first option
-isolate_track_options.current(0)
-isolate_track_options.grid(row=5, padx=5, pady=5)
-Button(section_separator, text="Separate", command=lambda: separate(isolate_track_options.get())).grid(row=6, padx=5, pady=5)
-
-# Voice changer
-models_dir = os.path.abspath("models")
-voice_options = []
-for model in os.listdir(models_dir):
-    voice_options.append(model)
-
-section_voice_changer = Frame(frame)
-section_voice_changer.grid(row=4, column=2)
-Label(section_voice_changer, text="Voice changer", font="24px").grid(row=4, padx=5, pady=5)
-
-voice_changer_options = Combobox(section_voice_changer, values=voice_options, state="readonly")
-# Set the default value to the first option
-voice_changer_options.current(0)
-voice_changer_options.grid(row=5, padx=5, pady=5)
-Button(section_voice_changer, text="Change voice", command=lambda: change_voice(voice_changer_options.get())).grid(row=6, padx=5, pady=5)
-# for each model in the models folder, add it to the voice changer options
-
-
-# Lyrics
-section_lyrics = Frame(frame)
-section_lyrics.grid(row=7, column=0, padx=5, pady=5)
-
-Label(frame, text="Lyrics", font="24px").grid(column=0, padx=5, pady=5)
-Button(frame, text="Generate lyrics", command=lambda: generate_lyrics()).grid(column=0, padx=5, pady=5)
-
-lyrics = Text(frame)
-lyrics.insert(INSERT, "Lyrics will appear here")
-lyrics.grid(column=0, padx=5, pady=5)
-
-
-
-root.mainloop()
