@@ -52,3 +52,12 @@ ehthumbs.db
 # Windows shortcuts #
 #####################
 *.lnk
+
+# OpenAI models #
+#################
+src/models/
+
+# Python #
+##########
+__pycache__/
+*.pyc
