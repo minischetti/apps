@@ -49,18 +49,31 @@ const handlers = {
     }
   },
   async adjustPitch(event, filePath, nSteps) {
-          try {
-            console.log("filePath",filePath)
-            console.log("nSteps", nSteps)
-          // set response type to blob
-          const result = await superagent.post('http://127.0.0.1:8000/api/pitch/').send(
-            { filePath, nSteps }
-          )
-          console.log(result)
-        } catch (err) {
-          console.error(err);
-        }
-      }
+    try {
+      console.log("filePath", filePath)
+      console.log("nSteps", nSteps)
+      // set response type to blob
+      const result = await superagent.post('http://127.0.0.1:8000/api/pitch/').send(
+        { filePath, nSteps }
+      )
+      console.log(result)
+    } catch (err) {
+      console.error(err);
+    }
+  },
+  async changeSpeed(event, filePath, speed) {
+    try {
+      console.log("filePath", filePath)
+      console.log("speed", speed)
+      // set response type to blob
+      const result = await superagent.post('http://127.0.0.1:8000/api/speed/').send(
+        { filePath, speed }
+      )
+      console.log(result)
+    } catch (err) {
+      console.error(err);
+    }
+  }
 }
 
 // Broken:
@@ -68,9 +81,9 @@ const handlers = {
 //   dev = true
 // }
 
-if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
-  dev = true
-}
+if(process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
+    dev = true
+  }
 
 function createWindow() {
   // Create the browser window.
@@ -125,6 +138,7 @@ app.on('ready', () => {
   // ipcMain.handle('explorer:item::open', handlers.openFile)
   ipcMain.handle('selectFile', handlers.selectFile)
   ipcMain.handle('adjustPitch', handlers.adjustPitch)
+  ipcMain.handle('changeSpeed', handlers.changeSpeed)
   // ipcMain.handle('explorer:tree::get', handlers.getExplorerTree)
   // ipcMain.handle('explorer:tree:directory::get', handlers.getExplorerDirectory)
   // ipcMain.handle('explorer:tree:directory::new', handlers.newExplorerDirectory)

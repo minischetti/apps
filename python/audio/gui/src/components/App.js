@@ -13,6 +13,7 @@ function App() {
   const [lyrics, setLyrics] = React.useState(null)
   const [player, setPlayer] = React.useState(null)
   const [pitch, setPitch] = React.useState(0)
+  const [speed, setSpeed] = React.useState(1)
 
   const select_file = () => {
     setIsLoading(true)
@@ -42,6 +43,14 @@ function App() {
   const changePitch = () => {
     console.log('changePitch')
     window.api.adjustPitch(selectedFile, pitch).then((res) => {
+      console.log(res)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+  const changeSpeed = () => {
+    console.log('changeSpeed')
+    window.api.changeSpeed(selectedFile, speed).then((res) => {
       console.log(res)
     }).catch((err) => {
       console.log(err)
@@ -106,8 +115,8 @@ function App() {
         return (
           <div className='speed-controls controls-section'>
             <h2>Speed</h2>
-            <input type="range" min="0.1" max="2" defaultValue="1" step="0.1" />
-            <button>Change</button>
+            <input type="range" min="0.1" max="2" defaultValue="1" step="0.1" onChange={(e) => setSpeed(e.target.value)} />
+            <button onClick={changeSpeed}>Change</button>
           </div>
         )
       }

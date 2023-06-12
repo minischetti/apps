@@ -26,6 +26,11 @@ class PitchRequest(BaseModel):
     nSteps: int
     class Config:
         frozen = True
+class SpeedRequest(BaseModel):
+    filePath: str
+    speed: float
+    class Config:
+        frozen = True
 # Set up the whisper model
 model = whisper.load_model("base")
 
@@ -73,11 +78,21 @@ def write_sound_file(data, sample_rate, operation_name, file_name, file_ext):
     print("File written")
     return {"message": "Successfully saved " + file_name + "." + file_ext}
 
-# def time_stretch(y, sr, rate):
-#     print("Time stretching by a factor of " + str(rate))
-#     result = librosa.effects.time_stretch(y, rate=rate)
-#     soundfile.write(out_dir + audio_file, result, sr)
-#     return result
+@app.post("/api/speed/")
+def time_stretch(SpeedRequest: SpeedRequest):
+    file_path = SpeedRequest.filePath
+    file_name = os.path.basename(SpeedRequest.filePath).split(".")[0]
+    file_ext = os.path.basename(SpeedRequest.filePath).split(".")[1]
+
+    if SpeedRequest.filePath == "":
+        print("No file selected")
+        return
+    
+    y, sr = librosa.load(SpeedRequest.filePath)
+    print("Time stretching by a factor of " + str(SpeedRequest.speed))
+    result = librosa.effects.time_stretch(y, rate=SpeedRequest.speed)
+    write_sound_file(result, sr, "time_stretch" + str(SpeedRequest.speed), file_name, file_ext)
+    return {"message": "Successfully saved " + file_name + "." + file_ext}
 
 separation_options = ["All", "Vocals", "Drums", "Bass", "Other"]
 @app.post("/api/separate/")
