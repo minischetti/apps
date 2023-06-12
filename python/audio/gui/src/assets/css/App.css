@@ -1,6 +1,39 @@
-/* Main CSS file */
+@media screen and (prefers-color-scheme: light),
+screen and (prefers-color-scheme: no-preference) {
 
-@import '_example/_example.css';
+    /* Light theme */
+    body {
+        color: #000;
+        background-color: #fff;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+
+    /* Dark theme */
+    body {
+        color: #fff;
+        /* background: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #fd1892 100%) fixed no-repeat; */
+        background-color: #001;
+    }
+}
+
+h1 {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 21px;
+    font-weight: 200;
+}
+
+h2 {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 200;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
 
 button {
     all: unset;
@@ -20,7 +53,9 @@ button svg {
     margin-right: 0.5rem;
 }
 
-button:hover, button:focus, button:active {
+button:hover,
+button:focus,
+button:active {
     cursor: pointer;
     border: 2px solid transparent;
     border-image: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #fd1892 100%);
@@ -42,21 +77,24 @@ button:hover, button:focus, button:active {
 }
 
 .app-header {
-    background-color: #282c34;
-    display: grid;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    grid-template-columns: 1fr 1fr 1fr;
     color: white;
     padding: 0.5rem 1rem;
+    background-color: hsla(0, 0%, 100%, 0.1);
+    backdrop-filter: blur(10px);
 }
 
-.footer {
-    position: fixed;
-    bottom: 0;
+.header-section {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
 }
+
 
 .playback-controls {
     display: flex;
@@ -100,4 +138,32 @@ button:hover, button:focus, button:active {
     display: flex;
     align-items: center;
     flex-direction: column;
+    padding: 1rem;
+    border: 1px solid white;
+    flex: 1;
+}
+
+.footer {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 2rem 0;
+    background-color: hsla(0, 0%, 100%, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.controls {
+    display: grid;
+    grid-auto-columns: 1fr;
+    align-items: center;
+    justify-content: center;
 }

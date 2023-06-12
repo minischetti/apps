@@ -107,6 +107,7 @@ function App() {
           <div className='speed-controls controls-section'>
             <h2>Speed</h2>
             <input type="range" min="0.1" max="2" defaultValue="1" step="0.1" />
+            <button>Change</button>
           </div>
         )
       }
@@ -155,18 +156,24 @@ function App() {
   return (
     <div className='app'>
       <div className='app-header'>
-        <h1>ArtiAudio</h1>
-        <button onClick={select_file}>Open file</button>
-        {isLoading ? <Spinner className="animation-spin" size={32} /> : null}
+        <div className='header-section'>
+          <h1>ArtiAudio</h1>
+          <button onClick={select_file}>Open file</button>
+          {isLoading ? <Spinner className="animation-spin" size={32} /> : null}
+        </div>
+        {templates.now_playing()}
       </div>
-      {templates.now_playing()}
+
+
       {templates.lyrics()}
-      <div className='footer'>
-        {templates.playback_controls()}
+      <div className='controls'>
         {templates.pitch_controls()}
         {templates.speed_controls()}
         {templates.separate_controls()}
         {templates.voice_changer_controls()}
+      </div>
+      <div className='footer'>
+        {templates.playback_controls()}
       </div>
     </div>
   )
