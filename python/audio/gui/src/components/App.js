@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 
 import '../assets/css/App.css'
 import { FileArrowUp, Pause, Play, Stop, Spinner } from '@phosphor-icons/react'
+import * as Tone from 'tone'
 
 function App() {
   const [isPlaying, setIsPlaying] = React.useState(false)
@@ -10,13 +11,18 @@ function App() {
   const [isLoading, setIsLoading] = React.useState(false)
   const [selectedFile, setSelectedFile] = React.useState(null)
   const [lyrics, setLyrics] = React.useState(null)
+  const [player, setPlayer] = React.useState(null)
 
   const select_file = () => {
     setIsLoading(true)
     console.log('select_file')
     return window.api.selectFile().then((res) => {
-      console.log("App.js", res)
-      setSelectedFile(res)
+      const synth = new Tone.Synth().toDestination();
+      const player = new Tone.Player(res.filePath).toDestination();
+      setPlayer(player)
+      console.log(res)
+
+      setSelectedFile(res.filePath)
       setIsLoading(false)
     }).catch((err) => {
       console.log(err)
@@ -32,12 +38,16 @@ function App() {
 
   const play = () => {
     console.log('play')
+    player.start()
     setIsPlaying(true)
     setIsPaused(false)
   }
 
   const pause = () => {
     console.log('pause')
+    player.stop(
+      Tone.now()
+    )
     setIsPaused(true)
     setIsPlaying(false)
   }
@@ -47,6 +57,32 @@ function App() {
     setIsPlaying(false)
     setIsPaused(false)
   }
+
+  useEffect(() => {
+    if (selectedFile && selectedFile.filePath) {
+
+      player.loaded.then(() => {
+        console.log('player loaded')
+      })
+
+      if (isPlaying) {
+        player.start()
+      }
+
+      if (isPaused) {
+        player.pause()
+      }
+
+      if (isStopped) {
+        player.stop()
+      }
+
+      return () => {
+        player.dispose()
+      }
+
+    }
+  }, [selectedFile])
 
   const templates = {
     now_playing: () => {
@@ -121,7 +157,6 @@ function App() {
       }
     },
     lyrics: () => {
-      console.log(lyrics);
       if (lyrics) {
         {
           lyrics.map((line) => {

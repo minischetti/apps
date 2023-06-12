@@ -7,10 +7,15 @@ const path = require('path')
 const url = require('url')
 const { join } = require('path')
 const superagent = require('superagent');
+const Tone = require('tone');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let window
+
+
+
+
 
 // Keep a reference for dev mode
 let dev = false
@@ -22,8 +27,11 @@ const handlers = {
       return
     } else {
       if (filePaths.length > 0) {
-        const filePath = filePaths[0]
-        // const fileContent = fs.readFileSync(filePath, 'utf-8');
+        const filePath = path.resolve(filePaths[0]);
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        const fileContentBase = Buffer.from(fileContent).toString('base64');
+        return { filePath, fileContent, fileContentBase }
+
         // console.log(filePath)
         // await superagent.get('http://127.0.0.1:8000/api/')
         //   .then(res => {
@@ -32,12 +40,12 @@ const handlers = {
         //   .catch(err => {
         //     console.log(err)
         //   })
-        try {
-          await superagent.post('http://127.0.0.1:8000/api/open/').send({ filePath });
-          return JSON.stringify({ filePath });
-        } catch (err) {
-          console.error(err);
-        }
+        // try {
+        //   // set response type to blob
+        //   const result = await superagent.post('http://127.0.0.1:8000/api/open/').send({ fileContent });
+        // } catch (err) {
+        //   console.error(err);
+        // }
       }
     }
   },
@@ -56,7 +64,8 @@ function createWindow() {
   // Create the browser window.
   window = new BrowserWindow({
     webPreferences: {
-      preload: join(__dirname, 'preload.js')
+      preload: join(__dirname, 'preload.js'),
+      webSecurity: false,
     }
   })
 
