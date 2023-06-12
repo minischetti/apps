@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = electron;
 
 contextBridge.exposeInMainWorld('api', {
     selectFile: () => ipcRenderer.invoke('selectFile'),
+    adjustPitch: (filePath, nSteps) => ipcRenderer.invoke('adjustPitch', filePath, nSteps),
     explorer: {
         item: {
             open: (path) => ipcRenderer.invoke('explorer:item::open', path),

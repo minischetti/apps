@@ -27,10 +27,9 @@ const handlers = {
       return
     } else {
       if (filePaths.length > 0) {
-        const filePath = path.resolve(filePaths[0]);
-        const fileContent = fs.readFileSync(filePath, 'utf8');
-        const fileContentBase = Buffer.from(fileContent).toString('base64');
-        return { filePath, fileContent, fileContentBase }
+        const filePath = filePaths[0]
+        console.log(filePath)
+        return filePath
 
         // console.log(filePath)
         // await superagent.get('http://127.0.0.1:8000/api/')
@@ -49,6 +48,19 @@ const handlers = {
       }
     }
   },
+  async adjustPitch(event, filePath, nSteps) {
+          try {
+            console.log("filePath",filePath)
+            console.log("nSteps", nSteps)
+          // set response type to blob
+          const result = await superagent.post('http://127.0.0.1:8000/api/pitch/').send(
+            { filePath, nSteps }
+          )
+          console.log(result)
+        } catch (err) {
+          console.error(err);
+        }
+      }
 }
 
 // Broken:
@@ -110,6 +122,7 @@ app.on('ready', () => {
   // Add listeners for each preload event
   // ipcMain.handle('explorer:item::open', handlers.openFile)
   ipcMain.handle('selectFile', handlers.selectFile)
+  ipcMain.handle('adjustPitch', handlers.adjustPitch)
   // ipcMain.handle('explorer:tree::get', handlers.getExplorerTree)
   // ipcMain.handle('explorer:tree:directory::get', handlers.getExplorerDirectory)
   // ipcMain.handle('explorer:tree:directory::new', handlers.newExplorerDirectory)

@@ -21,7 +21,11 @@ class FileRequest(BaseModel):
     filePath: str
     class Config:
         frozen = True
-
+class PitchRequest(BaseModel):
+    filePath: str
+    nSteps: int
+    class Config:
+        frozen = True
 # Set up the whisper model
 model = whisper.load_model("base")
 
@@ -37,29 +41,27 @@ mixer.init()
 now = lambda: datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 out_dir_now = lambda: out_dir + audio_file_name + "/"
 
-@app.post("/api/pitch/")
-def pitch_shift(n_steps):
-    # listbox2.insert(END, "Pitch shift by " + str(n_steps) + " half steps")
-    global audio_file_path
-    global audio_file_name
-    global audio_file_ext
 
-    if audio_file_path == "":
+@app.post("/api/pitch/")
+def pitch_shift(PitchRequest: PitchRequest):
+    # listbox2.insert(END, "Pitch shift by " + str(n_steps) + " half steps")
+    file_path = PitchRequest.filePath
+    file_name = os.path.basename(PitchRequest.filePath).split(".")[0]
+    file_ext = os.path.basename(PitchRequest.filePath).split(".")[1]
+
+    if PitchRequest.filePath == "":
         print("No file selected")
         return
 
-    print("Pitch shifting by " + str(n_steps) + " half steps")
-    print("Loading " + audio_file_name)
-    y, sr = librosa.load(audio_file_path)
-    print("Pitch shifting...")
-    result = librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
+    y, sr = librosa.load(file_path)
+    result = librosa.effects.pitch_shift(y, sr=sr, n_steps=PitchRequest.nSteps)
     # Make the output directory if it doesn't exist
-    write_sound_file(result, sr, "pitch_shift" + str(n_steps))
+    write_sound_file(result, sr, "pitch_shift" + str(PitchRequest.nSteps), file_name, file_ext)
 
-def write_sound_file(data, sample_rate, operation_name):
+def write_sound_file(data, sample_rate, operation_name, file_name, file_ext):
     # Make the output directory if it doesn't exist
     print("Saving...")
-    output_dir = out_dir + audio_file_name + "/" + operation_name + "/"
+    output_dir = out_dir + file_name + "/" + operation_name + "/"
     print(output_dir)
     if not os.path.exists(output_dir):
         print("Making directory " + output_dir)
@@ -67,8 +69,9 @@ def write_sound_file(data, sample_rate, operation_name):
     
     # Write the file
     print("Writing file...")
-    soundfile.write(output_dir + audio_file_name + "." + audio_file_ext, data, sample_rate)
+    soundfile.write(output_dir + file_name + "." + file_ext, data, sample_rate)
     print("File written")
+    return {"message": "Successfully saved " + file_name + "." + file_ext}
 
 # def time_stretch(y, sr, rate):
 #     print("Time stretching by a factor of " + str(rate))
@@ -100,7 +103,7 @@ def open_file(FileRequest: FileRequest):
     global audio_file_ext
 
     # Open the file dialog
-    # file = filedialog.askopenfilename(initialdir = "./in", title = "Select file")
+ 
 
     # Check if a file was opened
     # if FileRequest.filePath == "":

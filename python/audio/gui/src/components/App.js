@@ -12,18 +12,21 @@ function App() {
   const [selectedFile, setSelectedFile] = React.useState(null)
   const [lyrics, setLyrics] = React.useState(null)
   const [player, setPlayer] = React.useState(null)
+  const [pitch, setPitch] = React.useState(0)
 
   const select_file = () => {
     setIsLoading(true)
     console.log('select_file')
     return window.api.selectFile().then((res) => {
-      const synth = new Tone.Synth().toDestination();
-      const player = new Tone.Player(res.filePath).toDestination();
-      setPlayer(player)
-      console.log(res)
-
-      setSelectedFile(res.filePath)
+      setSelectedFile(res)
       setIsLoading(false)
+      const synth = new Tone.Synth().toDestination();
+      synth.triggerAttackRelease("C4", "8n");
+      const player = new Tone.Player(res).toDestination();
+      setPlayer(player)
+
+
+
     }).catch((err) => {
       console.log(err)
       setIsLoading(false)
@@ -36,6 +39,14 @@ function App() {
     // })
   }
 
+  const changePitch = () => {
+    console.log('changePitch')
+    window.api.adjustPitch(selectedFile, pitch).then((res) => {
+      console.log(res)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
   const play = () => {
     console.log('play')
     player.start()
@@ -45,9 +56,7 @@ function App() {
 
   const pause = () => {
     console.log('pause')
-    player.stop(
-      Tone.now()
-    )
+    player.stop()
     setIsPaused(true)
     setIsPlaying(false)
   }
@@ -57,32 +66,6 @@ function App() {
     setIsPlaying(false)
     setIsPaused(false)
   }
-
-  useEffect(() => {
-    if (selectedFile && selectedFile.filePath) {
-
-      player.loaded.then(() => {
-        console.log('player loaded')
-      })
-
-      if (isPlaying) {
-        player.start()
-      }
-
-      if (isPaused) {
-        player.pause()
-      }
-
-      if (isStopped) {
-        player.stop()
-      }
-
-      return () => {
-        player.dispose()
-      }
-
-    }
-  }, [selectedFile])
 
   const templates = {
     now_playing: () => {
@@ -112,7 +95,8 @@ function App() {
         return (
           <div className='pitch-controls controls-section'>
             <h2>Pitch</h2>
-            <input type="range" min="-12" max="12" defaultValue="0" />
+            <input type="range" min="-12" max="12" defaultValue="0" step="1" onChange={(e) => setPitch(e.target.value)} />
+            <button onClick={changePitch}>Change</button>
           </div>
         )
       }
