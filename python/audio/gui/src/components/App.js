@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import '../assets/css/App.css'
 import { FileArrowUp, Pause, Play, Stop, Spinner } from '@phosphor-icons/react'
 import * as Tone from 'tone'
+import { parseFile } from 'music-metadata';
 
 function App() {
   const [isPlaying, setIsPlaying] = React.useState(false)
@@ -56,6 +57,16 @@ function App() {
       console.log(err)
     })
   }
+  const separate = (event) => {
+    event.preventDefault()
+    console.log('separate')
+    const mode = event.target.mode.value
+    window.api.separate(selectedFile, mode).then((res) => {
+      console.log(res)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
   const play = () => {
     console.log('play')
     player.start()
@@ -75,6 +86,16 @@ function App() {
     setIsPlaying(false)
     setIsPaused(false)
   }
+
+  // useEffect(() => {
+  //   console.log('useEffect')
+  //   window.api.getLyrics(selectedFile).then((res) => {
+  //     console.log(res)
+  //     setLyrics(res)
+  //   }).catch((err) => {
+  //     console.log(err)
+  //   })
+  // }, [selectedFile])
 
   const templates = {
     now_playing: () => {
@@ -126,13 +147,16 @@ function App() {
         return (
           <div className='separate-controls controls-section'>
             <h2>Separate</h2>
-            <select>
+            <form onSubmit={separate}>
+            <select name="mode">
+              <option value="all">All</option>
               <option value="vocals">Vocals</option>
               <option value="drums">Drums</option>
               <option value="bass">Bass</option>
               <option value="other">Other</option>
             </select>
-            <button>Separate</button>
+            <button>Change</button>
+            </form>
           </div>
         )
       }
@@ -148,15 +172,16 @@ function App() {
             <button>Change</button>
           </div>
         )
-      }
+      } 
     },
     lyrics: () => {
       if (lyrics) {
-        {
+        console.log(lyrics)
+        return (
           lyrics.map((line) => {
             <div>{line.text}</div>
           })
-        }
+        )
       }
     }
   }

@@ -73,7 +73,34 @@ const handlers = {
     } catch (err) {
       console.error(err);
     }
-  }
+  },
+  async getLyrics(event, filePath) {
+    try {
+      console.log("filePath", filePath)
+      // set response type to blob
+      const result = await superagent.post('http://127.0.0.1:8000/api/lyrics/').send(
+        { filePath }
+      )
+      console.log(result)
+      return result
+    } catch (err) {
+      console.error(err);
+    }
+  },
+  async separate(event, filePath, mode) {
+    try {
+      console.log("filePath", filePath)
+      console.log("mode", mode)
+      // set response type to blob
+      const result = await superagent.post('http://127.0.0.1:8000/api/separate/').send(
+        { filePath, mode }
+      )
+      console.log(result)
+      return result
+    } catch (err) {
+      console.error(err);
+    }
+  },
 }
 
 // Broken:
@@ -134,14 +161,10 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-  // Add listeners for each preload event
-  // ipcMain.handle('explorer:item::open', handlers.openFile)
-  ipcMain.handle('selectFile', handlers.selectFile)
-  ipcMain.handle('adjustPitch', handlers.adjustPitch)
-  ipcMain.handle('changeSpeed', handlers.changeSpeed)
-  // ipcMain.handle('explorer:tree::get', handlers.getExplorerTree)
-  // ipcMain.handle('explorer:tree:directory::get', handlers.getExplorerDirectory)
-  // ipcMain.handle('explorer:tree:directory::new', handlers.newExplorerDirectory)
+  // Register ipcMain handlers
+  for (const [event, handler] of Object.entries(handlers)) {
+    ipcMain.handle(event, handler)
+  }
 
   createWindow()
   app.on('activate', () => {
