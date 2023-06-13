@@ -31,13 +31,9 @@ function App() {
       window.api.getLyrics(res.filePath).then((res) => {
         console.log(res)
         setLyrics(res)
-      }
-      ).catch((err) => {
+      }).catch((err) => {
         console.log(err)
-      }
-      )
-
-
+      })
     }).catch((err) => {
       console.log(err)
       setIsLoading(false)
@@ -105,16 +101,6 @@ function App() {
     setIsPlaying(false)
     setIsPaused(false)
   }
-
-  // useEffect(() => {
-  //   console.log('useEffect')
-  //   window.api.getLyrics(selectedFile).then((res) => {
-  //     console.log(res)
-  //     setLyrics(res)
-  //   }).catch((err) => {
-  //     console.log(err)
-  //   })
-  // }, [selectedFile])
 
   const templates = {
     now_playing: () => {
@@ -197,12 +183,20 @@ function App() {
       }
     },
     lyrics: () => {
-      if (lyrics) {
-        console.log(lyrics)
+      if (selectedFile && lyrics) {
         return (
-          lyrics.map((line) => {
-            <div>{line.text}</div>
-          })
+          <div className='lyrics'>
+            <h2>Lyrics</h2>
+            <div className="lyrics-container">
+              {lyrics.map((lyric, index) => {
+                return (
+                  <div className="lyric" key={index}>
+                    <h3>{lyric}</h3>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         )
       }
     }

@@ -158,12 +158,13 @@ def generate_lyrics(filePath: FileRequest):
         return {"message": "File path is invalid"}
     
     result = model.transcribe(filePath.filePath)
-    print(result)
     # print(result)
-    # for word in result["segments"]:
-    #     print(word)
+    words = []
+    for word in result["segments"]:
+        words.append(word["text"])
 
-    return result["segments"]
+    return {"message": "Successfully generated lyrics", "words": words}
+    # return result["segments"]
 
 @app.post("/api/upload/")
 def upload(file: UploadFile = File(...)):
