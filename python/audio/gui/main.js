@@ -2,12 +2,11 @@
 
 // Import parts of electron to use
 const { app, BrowserWindow, ipcMain, dialog } = require('electron')
-const fs = require('fs')
 const path = require('path')
 const url = require('url')
 const { join } = require('path')
 const superagent = require('superagent');
-const Tone = require('tone');
+const { parseFile } = require('music-metadata');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -29,7 +28,9 @@ const handlers = {
       if (filePaths.length > 0) {
         const filePath = filePaths[0]
         console.log(filePath)
-        return filePath
+        const metadata = await parseFile(filePath)
+        console.log(metadata)
+        return { filePath, metadata }
 
         // console.log(filePath)
         // await superagent.get('http://127.0.0.1:8000/api/')

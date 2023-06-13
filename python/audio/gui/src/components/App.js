@@ -3,7 +3,6 @@ import React, { useEffect } from 'react'
 import '../assets/css/App.css'
 import { FileArrowUp, Pause, Play, Stop, Spinner } from '@phosphor-icons/react'
 import * as Tone from 'tone'
-import { parseFile } from 'music-metadata';
 
 function App() {
   const [isPlaying, setIsPlaying] = React.useState(false)
@@ -15,12 +14,14 @@ function App() {
   const [player, setPlayer] = React.useState(null)
   const [pitch, setPitch] = React.useState(0)
   const [speed, setSpeed] = React.useState(1)
+  const [metadata, setMetadata] = React.useState(null)
 
   const select_file = () => {
     setIsLoading(true)
     console.log('select_file')
     return window.api.selectFile().then((res) => {
-      setSelectedFile(res)
+      setSelectedFile(res.filePath)
+      setMetadata(res.metadata)
       setIsLoading(false)
       const synth = new Tone.Synth().toDestination();
       synth.triggerAttackRelease("C4", "8n");
@@ -99,11 +100,14 @@ function App() {
 
   const templates = {
     now_playing: () => {
-      if (selectedFile) {
+      if (selectedFile && metadata) {
         return (
           <div className="now-playing">
             {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" onClick={select_file} /> : <FileArrowUp className="file_upload_button" onClick={select_file} />}
             <h2>{selectedFile}</h2>
+            <h3>{metadata.common.title}</h3>
+            <h3>{metadata.common.album}</h3>
+            <h3>{metadata.common.artist}</h3>
           </div>
         )
       }

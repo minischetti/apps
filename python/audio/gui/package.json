@@ -33,6 +33,7 @@
   "dependencies": {
     "@phosphor-icons/react": "^2.0.9",
     "got": "^13.0.0",
+    "music-metadata": "^7.13.0",
     "music-metadata-browser": "^2.5.10",
     "pizzicato": "^0.6.4",
     "postcss": "^8.4.8",
