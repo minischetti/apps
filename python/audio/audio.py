@@ -60,8 +60,10 @@ def pitch_shift(PitchRequest: PitchRequest):
 
     y, sr = librosa.load(file_path)
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=PitchRequest.nSteps)
+
+    return io.BytesIO(result)
     # Make the output directory if it doesn't exist
-    write_sound_file(result, sr, "pitch_shift" + str(PitchRequest.nSteps), file_name, file_ext)
+    # write_sound_file(result, sr, "pitch_shift" + str(PitchRequest.nSteps), file_name, file_ext)
 
 def write_sound_file(data, sample_rate, operation_name, file_name, file_ext):
     # Make the output directory if it doesn't exist

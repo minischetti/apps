@@ -20,14 +20,22 @@ function App() {
     setIsLoading(true)
     console.log('select_file')
     return window.api.selectFile().then((res) => {
-      setSelectedFile(res.filePath)
       setMetadata(res.metadata)
       setIsLoading(false)
       const synth = new Tone.Synth().toDestination();
       synth.triggerAttackRelease("C4", "8n");
-      const player = new Tone.Player(res).toDestination();
+      console.log("res.filePath", res.filePath)
+      const player = new Tone.Player(res.filePath).toDestination();
       setPlayer(player)
-
+      setSelectedFile(res.filePath)
+      window.api.getLyrics(res.filePath).then((res) => {
+        console.log(res)
+        setLyrics(res)
+      }
+      ).catch((err) => {
+        console.log(err)
+      }
+      )
 
 
     }).catch((err) => {
@@ -46,6 +54,16 @@ function App() {
     console.log('changePitch')
     window.api.adjustPitch(selectedFile, pitch).then((res) => {
       console.log(res)
+      setSelectedFile(res)
+      // let buf
+      // const buffer = new Tone.Buffer(res, () => {
+      //   buf = buffer.get()
+      //   console.log("buf", buf.body)
+      // })
+
+
+
+      setPlayer(new Tone.Player(res).toDestination())
     }).catch((err) => {
       console.log(err)
     })
@@ -105,9 +123,9 @@ function App() {
           <div className="now-playing">
             {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" onClick={select_file} /> : <FileArrowUp className="file_upload_button" onClick={select_file} />}
             <h2>{selectedFile}</h2>
-            <h3>{metadata.common.title}</h3>
-            <h3>{metadata.common.album}</h3>
-            <h3>{metadata.common.artist}</h3>
+            {metadata.common.title ? <h3>{metadata.common.title}</h3> : null}
+            {metadata.common.album ? <h3>{metadata.common.album}</h3> : null}
+            {metadata.common.artist ? <h3>{metadata.common.artist}</h3> : null}
           </div>
         )
       }
@@ -127,7 +145,7 @@ function App() {
     pitch_controls: () => {
       if (selectedFile) {
         return (
-          <div className='pitch-controls controls-section'>
+          <div className='pitch-controls control'>
             <h2>Pitch</h2>
             <input type="range" min="-12" max="12" defaultValue="0" step="1" onChange={(e) => setPitch(e.target.value)} />
             <button onClick={changePitch}>Change</button>
@@ -138,7 +156,7 @@ function App() {
     speed_controls: () => {
       if (selectedFile) {
         return (
-          <div className='speed-controls controls-section'>
+          <div className='speed-controls control'>
             <h2>Speed</h2>
             <input type="range" min="0.1" max="2" defaultValue="1" step="0.1" onChange={(e) => setSpeed(e.target.value)} />
             <button onClick={changeSpeed}>Change</button>
@@ -149,17 +167,17 @@ function App() {
     separate_controls: () => {
       if (selectedFile) {
         return (
-          <div className='separate-controls controls-section'>
+          <div className='separate-controls control'>
             <h2>Separate</h2>
             <form onSubmit={separate}>
-            <select name="mode">
-              <option value="all">All</option>
-              <option value="vocals">Vocals</option>
-              <option value="drums">Drums</option>
-              <option value="bass">Bass</option>
-              <option value="other">Other</option>
-            </select>
-            <button>Change</button>
+              <select name="mode">
+                <option value="all">All</option>
+                <option value="vocals">Vocals</option>
+                <option value="drums">Drums</option>
+                <option value="bass">Bass</option>
+                <option value="other">Other</option>
+              </select>
+              <button>Change</button>
             </form>
           </div>
         )
@@ -168,7 +186,7 @@ function App() {
     voice_changer_controls: () => {
       if (selectedFile) {
         return (
-          <div className='voice-changer-controls controls-section'>
+          <div className='voice-changer-controls control'>
             <h2>Voice Changer</h2>
             <select>
               <option value="dave_mustaine">Dave Mustaine</option>
@@ -176,7 +194,7 @@ function App() {
             <button>Change</button>
           </div>
         )
-      } 
+      }
     },
     lyrics: () => {
       if (lyrics) {
@@ -196,22 +214,24 @@ function App() {
       <div className='app-header'>
         <div className='header-section'>
           <h1>ArtiAudio</h1>
-          <button onClick={select_file}>Open file</button>
-          {isLoading ? <Spinner className="animation-spin" size={32} /> : null}
+          <div className="flex row">
+            <button onClick={select_file}>Open file</button>
+            {isLoading ? <Spinner className="animation-spin" size={32} /> : null}
+          </div>
         </div>
-        {templates.now_playing()}
       </div>
-
-
+      {templates.now_playing()}
       {templates.lyrics()}
-      <div className='controls'>
-        {templates.pitch_controls()}
-        {templates.speed_controls()}
-        {templates.separate_controls()}
-        {templates.voice_changer_controls()}
-      </div>
       <div className='footer'>
-        {templates.playback_controls()}
+        <div className='controls'>
+          {templates.pitch_controls()}
+          {templates.speed_controls()}
+          {templates.separate_controls()}
+          {templates.voice_changer_controls()}
+        </div>
+        <div className="playback">
+          {templates.playback_controls()}
+        </div>
       </div>
     </div>
   )

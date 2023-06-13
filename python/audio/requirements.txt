@@ -2,4 +2,6 @@ librosa
 soundfile
 demucs
 pygame
-so-vits-svc-fork
+ffmpeg-python
+ffmpeg
+openai-whisper

@@ -26,10 +26,11 @@ const handlers = {
       return
     } else {
       if (filePaths.length > 0) {
-        const filePath = filePaths[0]
+        const filePath = path.resolve(filePaths[0])
         console.log(filePath)
         const metadata = await parseFile(filePath)
-        console.log(metadata)
+        // const fileContent = await superagent.get(filePath).responseType('blob')
+        // get absolute path
         return { filePath, metadata }
 
         // console.log(filePath)
@@ -56,8 +57,11 @@ const handlers = {
       // set response type to blob
       const result = await superagent.post('http://127.0.0.1:8000/api/pitch/').send(
         { filePath, nSteps }
-      )
-      console.log(result)
+      ).responseType('buffer')
+
+      const buffer = Buffer.from(result.body).toString('base64')
+      return buffer
+
     } catch (err) {
       console.error(err);
     }
