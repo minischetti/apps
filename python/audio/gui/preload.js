@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('api', {
     changeSpeed: (filePath, speed) => ipcRenderer.invoke('changeSpeed', filePath, speed),
     getLyrics: (filePath) => ipcRenderer.invoke('getLyrics', filePath),
     separate: (filePath, mode) => ipcRenderer.invoke('separate', filePath, mode),
+    changeVoice: (filePath, voice) => ipcRenderer.invoke('changeVoice', filePath, voice),
     explorer: {
         item: {
             open: (path) => ipcRenderer.invoke('explorer:item::open', path),

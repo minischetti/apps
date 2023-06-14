@@ -31,6 +31,11 @@ class SpeedRequest(BaseModel):
     speed: float
     class Config:
         frozen = True
+class VoiceRequest(BaseModel):
+    filePath: str
+    voice: str
+    class Config:
+        frozen = True
 # Set up the whisper model
 model = whisper.load_model("base")
 
@@ -181,23 +186,24 @@ def upload(file: UploadFile = File(...)):
     return {"message": f"Successfully uploaded {file.filename}"}
 
 @app.post("/api/voice/")
-def change_voice(voice):
+def change_voice(VoiceRequest: VoiceRequest):
     model_config = ""
     model_data = ""
     for models in os.listdir("./models"):
-        if voice in models:
-            model_config = "./models/" + voice + "/config.json"
+        if VoiceRequest.voice in models:
+            model_config = "./models/" + VoiceRequest.voice + "/config.json"
             # Find file with .pth extension
             for file in os.listdir("./models/" + models):
                 if file.endswith(".pth"):
-                    model_data = "./models/" + voice + "/" + file
+                    model_data = "./models/" + VoiceRequest.voice + "/" + file
                     break
             break
     if model_config == "" or model_data == "":
         print("Voice not found")
         return
-    print("Changing voice to " + voice)
+    print("Changing voice to " + VoiceRequest.voice)
     print(model_config)
     print(model_data)
-    command = ["svc", "infer", "-m", model_data, "-c", model_config, "-o", out_dir_now() + audio_file_name + "_" + voice + ".wav", audio_file_path]
+    command = ["svc", "infer", "--no-auto-predict-f0", "-m", model_data, "-c", model_config, "-o", out_dir_now() + audio_file_name + "_" + VoiceRequest.voice + ".wav", VoiceRequest.filePath]
     subprocess.run(command, shell=True)
+    return {"message": "Successfully changed voice to " + VoiceRequest.voice}

@@ -105,11 +105,22 @@ function App() {
       console.log(err)
     })
   }
-  const separate = (event) => {
+  const isolate = (event) => {
     event.preventDefault()
     console.log('separate')
     const mode = event.target.mode.value
     window.api.separate(selectedFile, mode).then((res) => {
+      console.log(res)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+  const changeVoice = (event) => {
+    event.preventDefault()
+    console.log('changeVoice')
+    const voice = event.target.voice.value
+    console.log("voice", voice)
+    window.api.changeVoice(selectedFile, voice).then((res) => {
       console.log(res)
     }).catch((err) => {
       console.log(err)
@@ -225,9 +236,9 @@ function App() {
           <div className='separate-controls control'>
             <div className="control-header">
               <ArrowsOutLineHorizontal size={32} />
-              <h2>Separate</h2>
+              <h2>Isolate</h2>
             </div>
-            <form onSubmit={separate}>
+            <form onSubmit={isolate}>
               <div className="modes">
                 {modes.map((mode, index) => {
                   return (
@@ -264,7 +275,7 @@ function App() {
               <MicrophoneStage size={32} />
               <h2>Voice Changer</h2>
             </div>
-            <form>
+            <form onSubmit={changeVoice}>
               <div className="voices">
                 {voices.map((voice, index) => {
                   return (

@@ -123,6 +123,20 @@ const handlers = {
       console.error(err);
     }
   },
+  async changeVoice(event, filePath, voice) {
+    try {
+      console.log("filePath", filePath)
+      console.log("voice", voice)
+      // set response type to blob
+      const result = await superagent.post('http://127.0.0.1:8000/api/voice/').send(
+        { filePath, voice }
+      )
+      console.log(result)
+      return result.body
+    } catch (err) {
+      console.error(err);
+    }
+  },
 }
 
 // Broken:
