@@ -6,7 +6,7 @@ const path = require('path')
 const url = require('url')
 const { join } = require('path')
 const superagent = require('superagent');
-const { parseFile } = require('music-metadata');
+const { parseFile, selectCover } = require('music-metadata');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -20,6 +20,23 @@ let window
 let dev = false
 
 const handlers = {
+  async getOutputFolder() {
+    const { canceled, filePaths } = await dialog.showOpenDialog(
+      window,
+      {
+        properties: ['openDirectory']
+      }
+    )
+    if (canceled) {
+      return
+    } else {
+      if (filePaths.length > 0) {
+        const filePath = path.resolve(filePaths[0])
+        console.log(filePath)
+        return filePath
+      }
+    }
+  },
   async selectFile() {
     const { canceled, filePaths } = await dialog.showOpenDialog()
     if (canceled) {
@@ -29,6 +46,8 @@ const handlers = {
         const filePath = path.resolve(filePaths[0])
         console.log(filePath)
         const metadata = await parseFile(filePath)
+        const cover = selectCover(metadata.common.picture)
+        metadata.img = cover
         // const fileContent = await superagent.get(filePath).responseType('blob')
         // get absolute path
         return { filePath, metadata }
@@ -57,10 +76,9 @@ const handlers = {
       // set response type to blob
       const result = await superagent.post('http://127.0.0.1:8000/api/pitch/').send(
         { filePath, nSteps }
-      ).responseType('buffer')
+      )
 
-      const buffer = Buffer.from(result.body).toString('base64')
-      return buffer
+      return path.resolve(result.body)
 
     } catch (err) {
       console.error(err);
@@ -100,7 +118,7 @@ const handlers = {
         { filePath, mode }
       )
       console.log(result)
-      return result
+      return result.body
     } catch (err) {
       console.error(err);
     }

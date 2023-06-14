@@ -18,16 +18,18 @@ screen and (prefers-color-scheme: no-preference) {
     }
 }
 
+body {
+    font-family: sans-serif;
+}
+
 h1 {
     font-family: sans-serif;
     font-size: 36px;
-    font-weight: 200;
 }
 
 h2 {
     font-family: sans-serif;
     font-size: 18px;
-    font-weight: 200;
 }
 
 html, body {
@@ -47,6 +49,33 @@ button {
     background-color: hsla(0, 0%, 100%, 0.1);
     border-radius: 0.25rem;
 }
+
+/* select {
+    all: unset;
+    display: flex;
+    appearance: none;
+    font-family: sans-serif;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    user-select: none;
+    align-items: center;
+    background-color: hsla(0, 0%, 100%, 0.1);
+    border-radius: 0.25rem;
+}
+
+option {
+    all: unset;
+    display: flex;
+    appearance: none;
+    font-family: sans-serif;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    user-select: none;
+    align-items: center;
+    background-color: hsla(0, 0%, 100%, 0.1);
+    border-radius: 0.25rem;
+    color: black;
+} */
 
 button svg {
     width: 1rem;
@@ -74,6 +103,14 @@ button:active {
     }
 }
 
+.app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
 .app-header {
     position: sticky;
     top: 0;
@@ -82,7 +119,7 @@ button:active {
     justify-content: space-between;
     color: white;
     padding: 0.5rem 1rem;
-    background-color: hsla(0, 0%, 100%, 0.1);
+    border-bottom: 2px solid hsla(0, 0%, 100%, 0.1);
     backdrop-filter: blur(10px);
 }
 
@@ -90,6 +127,15 @@ button:active {
     display: flex;
     justify-content: space-between;
     width: 100%;
+}
+
+.playback {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    color: white;
 }
 
 
@@ -119,8 +165,7 @@ button:active {
 .now-playing {
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    gap: 1rem;
     padding: 1rem;
     border-radius: 1rem;
     color: white;
@@ -146,20 +191,20 @@ button:active {
     padding: 1rem;
     background-color: hsla(0, 0%, 100%, 0.1);
     flex: 1;
+    border-radius: 1rem;
 }
 
 .footer {
     position: fixed;
     bottom: 0;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     gap: 1rem;
     align-items: center;
-    justify-content: center;
     width: 100%;
-    padding: 2rem 0;
     background-color: hsla(0, 0%, 100%, 0.1);
     backdrop-filter: blur(10px);
+    border-radius: 1rem 1rem 0 0;
 }
 
 .flex {

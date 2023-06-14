@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = electron;
 
 contextBridge.exposeInMainWorld('api', {
     selectFile: () => ipcRenderer.invoke('selectFile'),
+    getOutputFolder: () => ipcRenderer.invoke('getOutputFolder'),
     adjustPitch: (filePath, nSteps) => ipcRenderer.invoke('adjustPitch', filePath, nSteps),
     changeSpeed: (filePath, speed) => ipcRenderer.invoke('changeSpeed', filePath, speed),
     getLyrics: (filePath) => ipcRenderer.invoke('getLyrics', filePath),

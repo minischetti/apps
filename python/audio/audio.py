@@ -60,25 +60,26 @@ def pitch_shift(PitchRequest: PitchRequest):
 
     y, sr = librosa.load(file_path)
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=PitchRequest.nSteps)
+    # return io.BytesIO(result)
+    output = write_sound_file(result, sr, "pitch_shift" + str(PitchRequest.nSteps), file_path, file_name, file_ext)
+    return output
 
-    return io.BytesIO(result)
-    # Make the output directory if it doesn't exist
-    # write_sound_file(result, sr, "pitch_shift" + str(PitchRequest.nSteps), file_name, file_ext)
-
-def write_sound_file(data, sample_rate, operation_name, file_name, file_ext):
+def write_sound_file(data, sample_rate, operation_name, file_path, file_name, file_ext):
     # Make the output directory if it doesn't exist
     print("Saving...")
-    output_dir = out_dir + file_name + "/" + operation_name + "/"
-    print(output_dir)
-    if not os.path.exists(output_dir):
-        print("Making directory " + output_dir)
-        os.makedirs(output_dir)
+    output_path = file_name + ".aa." + file_ext
+    # output_dir = out_dir + file_name + "/" + operation_name + "/"
+    # print(output_dir)
+    # if not os.path.exists(output_dir):
+    #     print("Making directory " + output_dir)
+    #     os.makedirs(output_dir)
     
     # Write the file
     print("Writing file...")
-    soundfile.write(output_dir + file_name + "." + file_ext, data, sample_rate)
+    soundfile.write(output_path, data, sample_rate)
     print("File written")
-    return {"message": "Successfully saved " + file_name + "." + file_ext}
+    return output_path
+    # return {"message": "Successfully saved " + file_name + "." + file_ext}
 
 @app.post("/api/speed/")
 def time_stretch(SpeedRequest: SpeedRequest):

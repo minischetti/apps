@@ -4,6 +4,7 @@ import '../assets/css/App.css'
 import { FileArrowUp, Pause, Play, Stop, Spinner } from '@phosphor-icons/react'
 import * as Tone from 'tone'
 
+
 function App() {
   const [isPlaying, setIsPlaying] = React.useState(false)
   const [isPaused, setIsPaused] = React.useState(false)
@@ -11,10 +12,37 @@ function App() {
   const [isLoading, setIsLoading] = React.useState(false)
   const [selectedFile, setSelectedFile] = React.useState(null)
   const [lyrics, setLyrics] = React.useState(null)
-  const [player, setPlayer] = React.useState(null)
+  const [player, setPlayer] = React.useState(new Tone.Player())
   const [pitch, setPitch] = React.useState(0)
   const [speed, setSpeed] = React.useState(1)
   const [metadata, setMetadata] = React.useState(null)
+  const [synth, setSynth] = React.useState(new Tone.Synth().toDestination())
+  const [outputFolder, setOutputFolder] = React.useState(null)
+
+  useEffect(() => {
+    console.log('useEffect')
+    player.toDestination()
+  }, [player])
+
+  const set_output_folder = () => {
+    console.log('get_output_folder')
+    window.api.getOutputFolder().then((res) => {
+      console.log(res)
+      setOutputFolder(res)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
+  const getLyrics = () => {
+    window.api.getLyrics(res.filePath).then((res) => {
+      console.log(res)
+      setLyrics(res)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
 
   const select_file = () => {
     setIsLoading(true)
@@ -22,18 +50,14 @@ function App() {
     return window.api.selectFile().then((res) => {
       setMetadata(res.metadata)
       setIsLoading(false)
-      const synth = new Tone.Synth().toDestination();
       synth.triggerAttackRelease("C4", "8n");
-      console.log("res.filePath", res.filePath)
-      const player = new Tone.Player(res.filePath).toDestination();
+      player.load(res.filePath)
+      // getLyrics()
+
+
       setPlayer(player)
       setSelectedFile(res.filePath)
-      window.api.getLyrics(res.filePath).then((res) => {
-        console.log(res)
-        setLyrics(res)
-      }).catch((err) => {
-        console.log(err)
-      })
+
     }).catch((err) => {
       console.log(err)
       setIsLoading(false)
@@ -46,23 +70,32 @@ function App() {
     // })
   }
 
-  const changePitch = () => {
+  const changePitch = (event) => {
+    event.preventDefault()
     console.log('changePitch')
+    const nSteps = event.target.pitch.value
+    console.log("nSteps", nSteps)
+    setPitch(nSteps)
+    // player.start()
     window.api.adjustPitch(selectedFile, pitch).then((res) => {
       console.log(res)
       setSelectedFile(res)
-      // let buf
-      // const buffer = new Tone.Buffer(res, () => {
-      //   buf = buffer.get()
-      //   console.log("buf", buf.body)
-      // })
-
-
-
-      setPlayer(new Tone.Player(res).toDestination())
+      player.load(res)
     }).catch((err) => {
       console.log(err)
     })
+    // let buf
+    // const buffer = new Tone.Buffer(res, () => {
+    //   buf = buffer.get()
+    //   console.log("buf", buf.body)
+    // })
+
+
+
+    //   setPlayer(new Tone.Player(res).toDestination())
+    // }).catch((err) => {
+    //   console.log(err)
+    // })
   }
   const changeSpeed = () => {
     console.log('changeSpeed')
@@ -104,14 +137,16 @@ function App() {
 
   const templates = {
     now_playing: () => {
+      // read image as base64
       if (selectedFile && metadata) {
         return (
           <div className="now-playing">
             {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" onClick={select_file} /> : <FileArrowUp className="file_upload_button" onClick={select_file} />}
-            <h2>{selectedFile}</h2>
-            {metadata.common.title ? <h3>{metadata.common.title}</h3> : null}
-            {metadata.common.album ? <h3>{metadata.common.album}</h3> : null}
-            {metadata.common.artist ? <h3>{metadata.common.artist}</h3> : null}
+            <div className="now-playing-info">
+              {metadata.common.title ? <h3>{metadata.common.title}</h3> : <h2>{selectedFile}</h2>}
+              {metadata.common.album ? <p>{metadata.common.album}</p> : null}
+              {metadata.common.artist ? <p>{metadata.common.artist}</p> : null}
+            </div>
           </div>
         )
       }
@@ -131,11 +166,12 @@ function App() {
     pitch_controls: () => {
       if (selectedFile) {
         return (
-          <div className='pitch-controls control'>
+          <form onSubmit={changePitch} className='pitch-controls control'>
             <h2>Pitch</h2>
-            <input type="range" min="-12" max="12" defaultValue="0" step="1" onChange={(e) => setPitch(e.target.value)} />
-            <button onClick={changePitch}>Change</button>
-          </div>
+            <input name="pitch" type="range" min="-12" max="12" defaultValue="0" step="1" onChange={(e) => setPitch(e.target.value)} />
+            <p>{pitch}</p>
+            <button>Change</button>
+          </form>
         )
       }
     },
@@ -210,19 +246,20 @@ function App() {
           <h1>ArtiAudio</h1>
           <div className="flex row">
             <button onClick={select_file}>Open file</button>
+            <button onClick={set_output_folder}>Set output folder</button>
             {isLoading ? <Spinner className="animation-spin" size={32} /> : null}
           </div>
         </div>
       </div>
-      {templates.now_playing()}
+      <div className='controls'>
+        {templates.pitch_controls()}
+        {templates.speed_controls()}
+        {templates.separate_controls()}
+        {templates.voice_changer_controls()}
+      </div>
       {templates.lyrics()}
       <div className='footer'>
-        <div className='controls'>
-          {templates.pitch_controls()}
-          {templates.speed_controls()}
-          {templates.separate_controls()}
-          {templates.voice_changer_controls()}
-        </div>
+        {templates.now_playing()}
         <div className="playback">
           {templates.playback_controls()}
         </div>
