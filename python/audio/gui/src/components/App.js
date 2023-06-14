@@ -152,7 +152,7 @@ function App() {
       if (selectedFile && metadata) {
         return (
           <div className="now-playing">
-            {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" onClick={select_file} /> : <FileArrowUp className="file_upload_button" onClick={select_file} />}
+            {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" className="album-art" onClick={select_file} /> : <FileArrowUp className="file_upload_button" onClick={select_file} />}
             <div className="now-playing-info">
               {metadata.common.title ? <h3>{metadata.common.title}</h3> : <h2>{selectedFile}</h2>}
               {metadata.common.album ? <p>{metadata.common.album}</p> : null}
@@ -177,7 +177,7 @@ function App() {
     pitch_controls: () => {
       if (selectedFile) {
         return (
-          <form onSubmit={changePitch} className='pitch-controls control'>
+          <form onSubmit={changePitch} className='pitch-controls control' onChange={() => synth.triggerAttackRelease("C3", "32n")}>
             <div className="control-header">
               <MusicNote size={32} />
               <h2>Pitch</h2>
@@ -194,7 +194,7 @@ function App() {
     speed_controls: () => {
       if (selectedFile) {
         return (
-          <div className='speed-controls control'>
+          <form className='speed-controls control' onChange={() => synth.triggerAttackRelease("C3", "32n")}>
             <div className="control-header">
               <Gauge size={32} />
               <h2>Speed</h2>
@@ -204,7 +204,7 @@ function App() {
             <div className="control-footer">
               <button onClick={changeSpeed}>Change</button>
             </div>
-          </div>
+          </form>
         )
       }
     },
@@ -238,7 +238,7 @@ function App() {
               <ArrowsOutLineHorizontal size={32} />
               <h2>Isolate</h2>
             </div>
-            <form onSubmit={isolate}>
+            <form onSubmit={isolate} onChange={() => synth.triggerAttackRelease("C3", "32n")}>
               <div className="modes">
                 {modes.map((mode, index) => {
                   return (
@@ -275,7 +275,7 @@ function App() {
               <MicrophoneStage size={32} />
               <h2>Voice Changer</h2>
             </div>
-            <form onSubmit={changeVoice}>
+            <form onSubmit={changeVoice} onChange={() => synth.triggerAttackRelease("C3", "32n")}>
               <div className="voices">
                 {voices.map((voice, index) => {
                   return (

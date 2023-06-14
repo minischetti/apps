@@ -299,3 +299,7 @@ button:active {
     border-top: 2px solid hsla(0, 0%, 100%, 0.1);
     padding-top: 1rem;
 }
+
+.album-art {
+    border-radius: 1rem;
+}
