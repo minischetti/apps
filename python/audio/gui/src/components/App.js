@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 
 import '../assets/css/App.css'
-import { FileArrowUp, Pause, Play, Stop, Spinner } from '@phosphor-icons/react'
+import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote } from '@phosphor-icons/react'
 import * as Tone from 'tone'
 
 
@@ -167,10 +167,15 @@ function App() {
       if (selectedFile) {
         return (
           <form onSubmit={changePitch} className='pitch-controls control'>
-            <h2>Pitch</h2>
+            <div className="control-header">
+              <MusicNote size={32} />
+              <h2>Pitch</h2>
+            </div>
             <input name="pitch" type="range" min="-12" max="12" defaultValue="0" step="1" onChange={(e) => setPitch(e.target.value)} />
-            <p>{pitch}</p>
-            <button>Change</button>
+            <p>{pitch} semitone(s)</p>
+            <div className="control-footer">
+              <button>Change</button>
+            </div>
           </form>
         )
       }
@@ -179,41 +184,101 @@ function App() {
       if (selectedFile) {
         return (
           <div className='speed-controls control'>
-            <h2>Speed</h2>
+            <div className="control-header">
+              <Gauge size={32} />
+              <h2>Speed</h2>
+            </div>
             <input type="range" min="0.1" max="2" defaultValue="1" step="0.1" onChange={(e) => setSpeed(e.target.value)} />
-            <button onClick={changeSpeed}>Change</button>
+            <p>{speed}x</p>
+            <div className="control-footer">
+              <button onClick={changeSpeed}>Change</button>
+            </div>
           </div>
         )
       }
     },
     separate_controls: () => {
+      const modes = [
+        {
+          name: 'All',
+          value: 'all'
+        },
+        {
+          name: 'Vocals',
+          value: 'vocals'
+        },
+        {
+          name: 'Drums',
+          value: 'drums'
+        },
+        {
+          name: 'Bass',
+          value: 'bass'
+        },
+        {
+          name: 'Other',
+          value: 'other'
+        }
+      ]
       if (selectedFile) {
         return (
           <div className='separate-controls control'>
-            <h2>Separate</h2>
+            <div className="control-header">
+              <ArrowsOutLineHorizontal size={32} />
+              <h2>Separate</h2>
+            </div>
             <form onSubmit={separate}>
-              <select name="mode">
-                <option value="all">All</option>
-                <option value="vocals">Vocals</option>
-                <option value="drums">Drums</option>
-                <option value="bass">Bass</option>
-                <option value="other">Other</option>
-              </select>
-              <button>Change</button>
+              <div className="modes">
+                {modes.map((mode, index) => {
+                  return (
+                    <div className="tag mode" key={index}>
+                      <input defaultChecked={index == 0} type="radio" id={mode.value} name="mode" value={mode.value} />
+                      <label htmlFor={mode.value}>{mode.name}</label>
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="control-footer">
+                <button>Start<ArrowRight /></button>
+              </div>
             </form>
           </div>
         )
       }
     },
     voice_changer_controls: () => {
+      const voices = [
+        {
+          name: 'Dave Mustaine',
+          value: 'dave_mustaine'
+        },
+        {
+          name: 'James Hetfield',
+          value: 'james_hetfield'
+        }
+      ]
       if (selectedFile) {
         return (
           <div className='voice-changer-controls control'>
-            <h2>Voice Changer</h2>
-            <select>
-              <option value="dave_mustaine">Dave Mustaine</option>
-            </select>
-            <button>Change</button>
+            <div className="control-header">
+              <MicrophoneStage size={32} />
+              <h2>Voice Changer</h2>
+            </div>
+            <form>
+              <div className="voices">
+                {voices.map((voice, index) => {
+                  return (
+                    <div className="tag voice" key={index}>
+                      <input defaultChecked={index == 0} type="radio" id={voice.value} name="voice" value={voice.value} />
+                      <label htmlFor={voice.value}>{voice.name}</label>
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="control-footer">
+                <button>Change</button>
+              </div>
+            </form>
           </div>
         )
       }
