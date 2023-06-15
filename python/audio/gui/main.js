@@ -137,6 +137,15 @@ const handlers = {
       console.error(err);
     }
   },
+  async getVoices(event) {
+    try {
+      const result = await superagent.get('http://127.0.0.1:8000/api/voices/').send()
+      console.log(result)
+      return result.body
+    } catch (err) {
+      console.error(err);
+    }
+  },
 }
 
 // Broken:

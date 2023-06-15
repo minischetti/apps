@@ -6,22 +6,37 @@ import * as Tone from 'tone'
 
 
 function App() {
+  // Playback
   const [isPlaying, setIsPlaying] = React.useState(false)
   const [isPaused, setIsPaused] = React.useState(false)
   const [isStopped, setIsStopped] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(false)
+
+  // File
   const [selectedFile, setSelectedFile] = React.useState(null)
+  const [originalFile, setOriginalFile] = React.useState(null)
+  const [mode, setMode] = React.useState('original')
+  const [metadata, setMetadata] = React.useState(null)
+
+  // Lyrics
   const [lyrics, setLyrics] = React.useState(null)
+
+  // Media Player
   const [player, setPlayer] = React.useState(new Tone.Player())
+  // Synth
+  const [synth, setSynth] = React.useState(new Tone.Synth().toDestination())
+
+  // Effects
   const [pitch, setPitch] = React.useState(0)
   const [speed, setSpeed] = React.useState(1)
-  const [metadata, setMetadata] = React.useState(null)
-  const [synth, setSynth] = React.useState(new Tone.Synth().toDestination())
+
+  const [voices, setVoices] = React.useState([])
   const [outputFolder, setOutputFolder] = React.useState(null)
 
   useEffect(() => {
     console.log('useEffect')
     player.toDestination()
+    setVoices(getVoices())
   }, [player])
 
   const set_output_folder = () => {
@@ -51,12 +66,13 @@ function App() {
       setMetadata(res.metadata)
       setIsLoading(false)
       synth.triggerAttackRelease("C4", "8n");
-      player.load(res.filePath)
+      player.load(`file://${res.filePath}`)
       // getLyrics()
 
 
       setPlayer(player)
-      setSelectedFile(res.filePath)
+      setSelectedFile(`file://${res.filePath}`)
+      setOriginalFile(`${res.filePath}`)
 
     }).catch((err) => {
       console.log(err)
@@ -146,6 +162,16 @@ function App() {
     setIsPaused(false)
   }
 
+  const getVoices = () => {
+    console.log('getVoices')
+    window.api.getVoices().then((res) => {
+      console.log(res)
+      setVoices(res.voices)
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
   const templates = {
     now_playing: () => {
       // read image as base64
@@ -154,7 +180,7 @@ function App() {
           <div className="now-playing">
             {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" className="album-art" onClick={select_file} /> : <FileArrowUp className="file_upload_button" onClick={select_file} />}
             <div className="now-playing-info">
-              {metadata.common.title ? <h3>{metadata.common.title}</h3> : <h2>{selectedFile}</h2>}
+              {metadata.common.title ? <h3>{metadata.common.title}</h3> : <h3>{selectedFile}</h3>}
               {metadata.common.album ? <p>{metadata.common.album}</p> : null}
               {metadata.common.artist ? <p>{metadata.common.artist}</p> : null}
             </div>
@@ -163,6 +189,11 @@ function App() {
       }
     },
     playback_controls: () => {
+      if (selectedFile) {
+      return (
+        <audio src={selectedFile} controls></audio>
+      )
+      }
       const shouldShowPlayButton = (!isPlaying && !isPaused) || (isPlaying && isPaused) || (isPaused && !isPlaying);
       const shouldShowPauseButton = isPlaying && !isPaused;
       if (selectedFile) {
@@ -180,7 +211,7 @@ function App() {
           <form onSubmit={changePitch} className='pitch-controls control' onChange={() => synth.triggerAttackRelease("C3", "32n")}>
             <div className="control-header">
               <MusicNote size={32} />
-              <h2>Pitch</h2>
+              <h3>Pitch</h3>
             </div>
             <input name="pitch" type="range" min="-12" max="12" defaultValue="0" step="1" onChange={(e) => setPitch(e.target.value)} />
             <p>{pitch} semitone(s)</p>
@@ -197,7 +228,7 @@ function App() {
           <form className='speed-controls control' onChange={() => synth.triggerAttackRelease("C3", "32n")}>
             <div className="control-header">
               <Gauge size={32} />
-              <h2>Speed</h2>
+              <h3>Speed</h3>
             </div>
             <input type="range" min="0.1" max="2" defaultValue="1" step="0.1" onChange={(e) => setSpeed(e.target.value)} />
             <p>{speed}x</p>
@@ -236,13 +267,13 @@ function App() {
           <div className='separate-controls control'>
             <div className="control-header">
               <ArrowsOutLineHorizontal size={32} />
-              <h2>Isolate</h2>
+              <h3>Isolate</h3>
             </div>
             <form onSubmit={isolate} onChange={() => synth.triggerAttackRelease("C3", "32n")}>
               <div className="modes">
                 {modes.map((mode, index) => {
                   return (
-                    <div className="tag mode" key={index}>
+                    <div className="tag mode" key={index} tabIndex={0}>
                       <input defaultChecked={index == 0} type="radio" id={mode.value} name="mode" value={mode.value} />
                       <label htmlFor={mode.value}>{mode.name}</label>
                     </div>
@@ -258,30 +289,20 @@ function App() {
       }
     },
     voice_changer_controls: () => {
-      const voices = [
-        {
-          name: 'Dave Mustaine',
-          value: 'dave_mustaine'
-        },
-        {
-          name: 'James Hetfield',
-          value: 'james_hetfield'
-        }
-      ]
       if (selectedFile) {
         return (
           <div className='voice-changer-controls control'>
             <div className="control-header">
               <MicrophoneStage size={32} />
-              <h2>Voice Changer</h2>
+              <h3>Voice Changer</h3>
             </div>
             <form onSubmit={changeVoice} onChange={() => synth.triggerAttackRelease("C3", "32n")}>
               <div className="voices">
                 {voices.map((voice, index) => {
                   return (
-                    <div className="tag voice" key={index}>
-                      <input defaultChecked={index == 0} type="radio" id={voice.value} name="voice" value={voice.value} />
-                      <label htmlFor={voice.value}>{voice.name}</label>
+                    <div className="tag voice" key={index} tabIndex={0}>
+                      <input defaultChecked={index == 0} type="radio" id={voice} name="voice" value={voice.value} />
+                      <label htmlFor={voice}>{voice}</label>
                     </div>
                   )
                 })}
@@ -311,9 +332,40 @@ function App() {
           </div>
         )
       }
+    },
+    body: () => {
+      if (selectedFile) {
+        return (
+          <div>
+            <div className='section'>
+              <h2>Effects</h2>
+              <div className="controls">
+                {templates.pitch_controls()}
+                {templates.speed_controls()}
+              </div>
+            </div>
+            <div className='section'>
+              <h2>Tools</h2>
+              <div className="controls">
+                {templates.separate_controls()}
+                {templates.voice_changer_controls()}
+              </div>
+            </div>
+            {templates.lyrics()}
+          </div>
+        )
+      }
     }
   }
 
+  const update_file = (event) => {
+    console.log('update_file')
+    const mode = event.target.mode.value
+    console.log("mode", mode)
+    console.log(res)
+    setSelectedFile(res)
+    player.load(res)
+  }
 
   return (
     <div className='app'>
@@ -327,13 +379,15 @@ function App() {
           </div>
         </div>
       </div>
-      <div className='controls'>
-        {templates.pitch_controls()}
-        {templates.speed_controls()}
-        {templates.separate_controls()}
-        {templates.voice_changer_controls()}
-      </div>
-      {templates.lyrics()}
+      {/* {["original", "output"].map((mode, index) => {
+        return (
+          <div className="tag" key={index}>
+            <input defaultChecked={index == 0} type="radio" id={mode} name="mode" value={folder} />
+            <label htmlFor={mode}>{mode}</label>
+          </div>
+        )
+      })} */}
+      {templates.body()}
       <div className='footer'>
         {templates.now_playing()}
         <div className="playback">

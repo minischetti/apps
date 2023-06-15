@@ -39,7 +39,18 @@ h1 {
 }
 
 h2 {
+    font-size: 24px;
+    font-weight: 400;
+}
+
+h3 {
     font-size: 18px;
+    font-weight: 400;
+    margin: 0;
+}
+
+h4 {
+    font-size: 16px;
     font-weight: 400;
     margin: 0;
 }
@@ -197,8 +208,6 @@ button:active {
 .controls {
     display: flex;
     gap: 1rem;
-    align-items: center;
-    justify-content: center;
     width: 100%;
 }
 
@@ -209,6 +218,10 @@ button:active {
     padding: 1rem;
     background-color: hsla(0, 0%, 100%, 0.1);
     border-radius: 1rem;
+}
+
+.control:focus-within {
+    outline: 2px solid hsla(0, 0%, 100%, 0.25);
 }
 
 .footer {
@@ -302,4 +315,10 @@ button:active {
 
 .album-art {
     border-radius: 1rem;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: hsla(0, 0%, 100%, 0.1);
 }

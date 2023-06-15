@@ -67,7 +67,7 @@ def pitch_shift(PitchRequest: PitchRequest):
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=PitchRequest.nSteps)
     # return io.BytesIO(result)
     output = write_sound_file(result, sr, "pitch_shift" + str(PitchRequest.nSteps), file_path, file_name, file_ext)
-    return output
+    return {"message": "Successfully saved " + file_name + "." + file_ext, "filePath": output}
 
 def write_sound_file(data, sample_rate, operation_name, file_path, file_name, file_ext):
     # Make the output directory if it doesn't exist
@@ -150,6 +150,12 @@ def open_file(FileRequest: FileRequest):
     # Return a success response
     return {"message": "Successfully opened " + audio_file_name}
 
+@app.get("/api/voices/")
+def get_voices():
+    voices = []
+    for models in os.listdir("./models"):
+        voices.append(models)
+    return {"voices": voices}
 
 @app.post("/api/lyrics/")
 def generate_lyrics(filePath: FileRequest):
