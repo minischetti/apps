@@ -339,7 +339,20 @@ hr {
     gap: 1rem;
     padding: 1rem;
     border-radius: 1rem;
+    border-right: 2px solid hsla(0, 0%, 100%, 0.1);
     color: white;
     background-color: hsla(0, 0%, 100%, 0.1);
     backdrop-filter: blur(10px);
+}
+
+.sidebar .flex.row {
+    justify-content: space-between;
+}
+
+.files {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    height: 100%;
 }

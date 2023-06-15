@@ -96,8 +96,11 @@ function App() {
 
   const open_file = (event) => {
     console.log('open_file')
+    setIsLoading(true)
     setSelectedFile(`file://${event.target.value}`)
     player.load(event.target.value)
+    synth.triggerAttackRelease("C3", "8n");
+    setIsLoading(false)
   }
 
   const changePitch = (event) => {
@@ -406,7 +409,7 @@ function App() {
               <h3>Library</h3>
               <button onClick={select_file}>Add file</button>
             </div>
-            <form onChange={open_file}>
+            <form onChange={open_file} className='files'>
               {files.map((file, index) => {
                 return (
                   <div className="tag" key={index}>
