@@ -341,12 +341,17 @@ hr {
     border-radius: 1rem;
     border-right: 2px solid hsla(0, 0%, 100%, 0.1);
     color: white;
-    background-color: hsla(0, 0%, 100%, 0.1);
+    /* background-color: hsla(0, 0%, 100%, 0.1); */
     backdrop-filter: blur(10px);
+    overflow: scroll;
 }
 
 .sidebar .flex.row {
     justify-content: space-between;
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(10px);
+    z-index: 1;
 }
 
 .files {

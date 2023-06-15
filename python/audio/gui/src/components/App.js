@@ -383,6 +383,7 @@ function App() {
         <div className="flex row">
           <h3>Output</h3>
           <button onClick={set_output_folder}>Set output folder</button>
+          {/* Filter non-audio files */}
         </div>
         <form onChange={update_file} className='files'>
           {outputFolder.folderContent ? outputFolder.folderContent.map((path, index) => {
