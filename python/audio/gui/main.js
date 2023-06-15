@@ -7,6 +7,7 @@ const url = require('url')
 const { join } = require('path')
 const superagent = require('superagent');
 const { parseFile, selectCover } = require('music-metadata');
+const fs = require('fs')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -31,9 +32,16 @@ const handlers = {
       return
     } else {
       if (filePaths.length > 0) {
-        const filePath = path.resolve(filePaths[0])
-        console.log(filePath)
-        return filePath
+        const folderPath = path.resolve(filePaths[0])
+        const folderContent = fs.readdirSync(folderPath)
+        // filter out non-audio files
+        const audioFiles = folderContent.filter(file => {
+          const ext = path.extname(file)
+          console.log(ext)
+          return ['.mp3', '.wav', '.flac', '.ogg'].includes(ext)
+        })
+        // Show only audio files
+        return {folderPath, folderContent}
       }
     }
   },

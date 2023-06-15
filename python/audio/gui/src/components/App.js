@@ -32,7 +32,11 @@ function App() {
   const [speed, setSpeed] = React.useState(1)
 
   const [voices, setVoices] = React.useState([])
-  const [outputFolder, setOutputFolder] = React.useState(null)
+  // Format
+  const [outputFolder, setOutputFolder] = React.useState({
+    folderPath: null,
+    folderContent: []
+  })
 
   useEffect(() => {
     console.log('useEffect')
@@ -372,7 +376,27 @@ function App() {
           </div>
         )
       }
-    }
+    },
+    output_folder: () => {
+      return (
+        <div className="output">
+        <div className="flex row">
+          <h3>Output</h3>
+          <button onClick={set_output_folder}>Set output folder</button>
+        </div>
+        <form onChange={update_file} className='files'>
+          {outputFolder.folderContent ? outputFolder.folderContent.map((path, index) => {
+            return (
+              <div className="tag" key={index}>
+                <input type="radio" id={path} name="file" value={path} />
+                <label htmlFor={path}>{path}</label>
+                </div>
+            )
+          }) : null}
+        </form>
+      </div>
+      )
+    },
   }
 
   const update_file = (event) => {
@@ -420,6 +444,9 @@ function App() {
               })}
             </form>
           </div>
+        </div>
+        <div className="sidebar">
+        {templates.output_folder()}
         </div>
         {templates.body()}
       </div>
