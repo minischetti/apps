@@ -12,7 +12,8 @@ function App() {
   const [isStopped, setIsStopped] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(false)
 
-  // File
+  // Files
+  const [files, setFiles] = React.useState([])
   const [selectedFile, setSelectedFile] = React.useState(null)
   const [originalFile, setOriginalFile] = React.useState(null)
   const [mode, setMode] = React.useState('original')
@@ -64,15 +65,22 @@ function App() {
     console.log('select_file')
     return window.api.selectFile().then((res) => {
       setMetadata(res.metadata)
-      setIsLoading(false)
-      synth.triggerAttackRelease("C4", "8n");
-      player.load(`file://${res.filePath}`)
+      // player.load(`file://${res.filePath}`)
       // getLyrics()
 
 
-      setPlayer(player)
-      setSelectedFile(`file://${res.filePath}`)
-      setOriginalFile(`${res.filePath}`)
+      // setPlayer(player)
+      // setSelectedFile(`file://${res.filePath}`)
+      // setOriginalFile(`${res.filePath}`)
+      // Check if the file is already open
+      if (files.includes(res.filePath)) {
+        console.log("File already open")
+        synth.triggerAttackRelease("C2", "8n");
+        return
+      }
+      setFiles([...files, res.filePath])
+      synth.triggerAttackRelease("C4", "8n");
+      setIsLoading(false)
 
     }).catch((err) => {
       console.log(err)
@@ -84,6 +92,12 @@ function App() {
     // }).catch((err) => {
     //   console.log(err)
     // })
+  }
+
+  const open_file = (event) => {
+    console.log('open_file')
+    setSelectedFile(`file://${event.target.value}`)
+    player.load(event.target.value)
   }
 
   const changePitch = (event) => {
@@ -363,7 +377,7 @@ function App() {
     const mode = event.target.mode.value
     console.log("mode", mode)
     console.log(res)
-    setSelectedFile(res)
+    setSelectedFile(`file://${res}`)
     player.load(res)
   }
 
@@ -373,8 +387,6 @@ function App() {
         <div className='header-section'>
           <h1>ArtiAudio</h1>
           <div className="flex row">
-            <button onClick={select_file}>Open file</button>
-            <button onClick={set_output_folder}>Set output folder</button>
             {isLoading ? <Spinner className="animation-spin" size={32} /> : null}
           </div>
         </div>
@@ -387,7 +399,27 @@ function App() {
           </div>
         )
       })} */}
-      {templates.body()}
+      <div className="app-body">
+        <div className="sidebar">
+          <div className="files">
+            <div className="flex row">
+              <h3>Library</h3>
+              <button onClick={select_file}>Add file</button>
+            </div>
+            <form onChange={open_file}>
+              {files.map((file, index) => {
+                return (
+                  <div className="tag" key={index}>
+                    <input type="radio" id={file} name="file" value={file} />
+                    <label htmlFor={file}>{file}</label>
+                  </div>
+                )
+              })}
+            </form>
+          </div>
+        </div>
+        {templates.body()}
+      </div>
       <div className='footer'>
         {templates.now_playing()}
         <div className="playback">
