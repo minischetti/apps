@@ -48,7 +48,9 @@ function App() {
     console.log('get_output_folder')
     window.api.getOutputFolder().then((res) => {
       console.log(res)
-      setOutputFolder(res)
+      if (res) {
+        setOutputFolder(res)
+      }
     }).catch((err) => {
       console.log(err)
     })
@@ -68,7 +70,7 @@ function App() {
     setIsLoading(true)
     console.log('select_file')
     return window.api.selectFile().then((res) => {
-      setMetadata(res.metadata)
+      console.log(res)
       // player.load(`file://${res.filePath}`)
       // getLyrics()
 
@@ -77,12 +79,19 @@ function App() {
       // setSelectedFile(`file://${res.filePath}`)
       // setOriginalFile(`${res.filePath}`)
       // Check if the file is already open
-      if (files.includes(res.filePath)) {
-        console.log("File already open")
-        synth.triggerAttackRelease("C2", "8n");
-        return
+      // File object looks like this:
+      // {
+      //   name: "01 - The 1975.mp3"
+      //   path: "C:\Users\james\Downloads\01 - The 1975.mp3"
+      //   metadata: {}
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].path == res.file.path) {
+          console.log("File already open")
+          synth.triggerAttackRelease("C2", "8n");
+          return
+        }
       }
-      setFiles([...files, res.filePath])
+      setFiles([...files, res.file])
       synth.triggerAttackRelease("C4", "8n");
       setIsLoading(false)
 
@@ -195,13 +204,12 @@ function App() {
 
   const templates = {
     now_playing: () => {
-      // read image as base64
       if (selectedFile && metadata) {
         return (
           <div className="now-playing">
             {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" className="album-art" onClick={select_file} /> : <FileArrowUp className="file_upload_button" onClick={select_file} />}
             <div className="now-playing-info">
-              {metadata.common.title ? <h3>{metadata.common.title}</h3> : <h3>{selectedFile}</h3>}
+              {metadata.common.title ? <h3>{metadata.common.title}</h3> : <h3>{selectedFile.name}</h3>}
               {metadata.common.album ? <p>{metadata.common.album}</p> : null}
               {metadata.common.artist ? <p>{metadata.common.artist}</p> : null}
             </div>
@@ -212,7 +220,7 @@ function App() {
     playback_controls: () => {
       if (selectedFile) {
       return (
-        <audio src={selectedFile} controls></audio>
+        <audio src={selectedFile.path} controls></audio>
       )
       }
       const shouldShowPlayButton = (!isPlaying && !isPaused) || (isPlaying && isPaused) || (isPaused && !isPlaying);
@@ -357,7 +365,7 @@ function App() {
     body: () => {
       if (selectedFile) {
         return (
-          <div>
+          <div className="main">
             <div className='section'>
               <h2>Effects</h2>
               <div className="controls">
@@ -373,6 +381,12 @@ function App() {
               </div>
             </div>
             {templates.lyrics()}
+          </div>
+        )
+      } else {
+        return (
+          <div className="main">
+            <h2>Open a file to get started</h2>
           </div>
         )
       }
@@ -400,6 +414,22 @@ function App() {
     },
   }
 
+  const input_knob_listener = () => {
+    console.log('input_knob_listener')
+    const knob = document.querySelector('.input-knob')
+    knob.addEventListener('mousedown', (e) => {
+      console.log('mousedown')
+      const knobRect = knob.getBoundingClientRect()
+      const knobCenterX = knobRect.left + knobRect.width / 2
+      const knobCenterY = knobRect.top + knobRect.height / 2
+      const angle = Math.atan2(e.clientY - knobCenterY, e.clientX - knobCenterX) * 180 / Math.PI
+      console.log(angle)
+      knob.style.transform = `rotate(${angle}deg)`
+    })
+  }
+
+    
+
   const update_file = (event) => {
     console.log('update_file')
     const mode = event.target.mode.value
@@ -410,7 +440,7 @@ function App() {
   }
 
   return (
-    <div className='app'>
+    <div className='app-content'>
       <div className='app-header'>
         <div className='header-section'>
           <h1>ArtiAudio</h1>
@@ -438,18 +468,23 @@ function App() {
               {files.map((file, index) => {
                 return (
                   <div className="tag" key={index}>
-                    <input type="radio" id={file} name="file" value={file} />
-                    <label htmlFor={file}>{file}</label>
+                    <input type="radio" id={file.name} name="file" value={file.name} />
+                    <label htmlFor={file.name}>{file.name}</label>
                   </div>
                 )
               })}
             </form>
           </div>
         </div>
-        <div className="sidebar">
-        {templates.output_folder()}
-        </div>
+        {/* <div className="input-knob" onClick={input_knob_listener}>
+          <div className="knob"></div>
+        </div> */}
+
+
         {templates.body()}
+                <div className="sidebar right">
+          {templates.output_folder()}
+        </div>
       </div>
       <div className='footer'>
         {templates.now_playing()}

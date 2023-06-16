@@ -56,9 +56,14 @@ const handlers = {
         const metadata = await parseFile(filePath)
         const cover = selectCover(metadata.common.picture)
         metadata.img = cover
+        const file = {
+          name: path.basename(filePath),
+          path: filePath,
+          metadata
+        }
         // const fileContent = await superagent.get(filePath).responseType('blob')
         // get absolute path
-        return { filePath, metadata }
+        return { file }
 
         // console.log(filePath)
         // await superagent.get('http://127.0.0.1:8000/api/')
