@@ -13,6 +13,8 @@ const fs = require('fs')
 // be closed automatically when the JavaScript object is garbage collected.
 let window
 
+let files = []
+
 
 // Keep a reference for dev mode
 let dev = false
@@ -32,7 +34,7 @@ const handlers = {
         const folderPath = path.resolve(filePaths[0])
         const folderContent = fs.readdirSync(folderPath)
         // Show only audio files
-        return {folderPath, folderContent}
+        return { folderPath, folderContent }
       }
     }
   },
@@ -52,26 +54,10 @@ const handlers = {
           path: filePath,
           metadata
         }
-        // const fileContent = await superagent.get(filePath).responseType('blob')
-        // get absolute path
-        // Check if library.json exists and load it
-        let library;
-        if (fs.existsSync('library.json')) {
-          library = require('library.json')
-          library.files.push({
-            name: path.basename(filePath),
-            path: filePath,
-          })
-          fs.writeFileSync('library.json', JSON.stringify(library))
-        } else {
-          library = {
-            files: [{
-              name: path.basename(filePath),
-              path: filePath,
-          }]
-          }
-          fs.writeFileSync('library.json', JSON.stringify(library))
-        }
+        await superagent.post('http://127.0.0.1:8000/api/library/').send({
+          name: file.name,
+          path: file.path,
+        })
         return file
 
         // console.log(filePath)
@@ -91,10 +77,18 @@ const handlers = {
       }
     }
   },
-  async getFiles() {
+  async getLibrary() {
     try {
-      const library = require('library.json')
-      return library.files
+      const result = await superagent.get('http://127.0.0.1:8000/api/library/').send()
+      return result.body
+    } catch (err) {
+      console.error(err);
+    }
+  },
+  async cleanLibrary() {
+    try {
+      const result = await superagent.post('http://127.0.0.1:8000/api/library/clean').send()
+      return result.message
     } catch (err) {
       console.error(err);
     }
@@ -170,7 +164,6 @@ const handlers = {
   async getVoices(event) {
     try {
       const result = await superagent.get('http://127.0.0.1:8000/api/voices/').send()
-      console.log(result)
       return result.body
     } catch (err) {
       console.error(err);
@@ -183,9 +176,9 @@ const handlers = {
 //   dev = true
 // }
 
-if(process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
-    dev = true
-  }
+if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
+  dev = true
+}
 
 function createWindow() {
   // Create the browser window.

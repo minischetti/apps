@@ -1,5 +1,6 @@
 import datetime
 import io
+import json
 import sys
 import librosa
 import soundfile
@@ -34,6 +35,11 @@ class SpeedRequest(BaseModel):
 class VoiceRequest(BaseModel):
     filePath: str
     voice: str
+    class Config:
+        frozen = True
+class FileClass(BaseModel):
+    name: str
+    path: str
     class Config:
         frozen = True
 # Set up the whisper model
@@ -156,6 +162,67 @@ def get_voices():
     for models in os.listdir("./models"):
         voices.append(models)
     return {"voices": voices}
+
+@app.get("/api/library/")
+def get_library():
+    # library is a json file
+    with open("./gui/library.json") as f:
+        library = json.load(f)
+    return library
+
+@app.post("/api/library/clean")
+def clean_library():
+    # Get the library
+    with open("./gui/library.json") as f:
+        library = json.load(f)
+
+    # Check for duplicates
+    for file in library:
+        for file2 in library:
+            if file["path"] == file2["path"] and file != file2:
+                library.remove(file2)
+
+
+                    # Check if the file exists
+    for file in library:
+        if not os.path.exists(file["path"]):
+            library.remove(file)
+    
+    # Write the library to the json file
+    with open("./gui/library.json", "w") as f:
+        json.dump(library, f)
+
+    return {"message": "Successfully cleaned library"}
+@app.post("/api/library/")
+def add_to_library(File: FileClass):
+    # Get the library
+    with open("./gui/library.json") as f:
+        library = json.load(f)
+    
+    # Check if the file is already in the library
+    for file in library:
+        if file["path"] == File.path:
+            return {"message": "File is already in library"}
+
+    # Add the file to the library
+    library.append({
+        "name": os.path.basename(File.path),
+        "path": File.path
+    })
+
+    # Write the library to the json file
+    with open("./gui/library.json", "w") as f:
+        json.dump(library, f)
+    
+    return {"message": "Successfully added " + os.path.basename(File.path) + " to library"}
+
+@app.delete("/api/library/")
+def clear_library():
+    # Clear the library
+    library = []
+    with open("./gui/library.json", "w") as f:
+        json.dump(library, f)
+    return {"message": "Successfully cleared library"}
 
 @app.post("/api/lyrics/")
 def generate_lyrics(filePath: FileRequest):

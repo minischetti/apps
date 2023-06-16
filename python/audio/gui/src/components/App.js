@@ -41,15 +41,29 @@ function App() {
   useEffect(() => {
     console.log('useEffect')
     player.toDestination()
-    setVoices(getVoices())
-    window.api.getFiles().then((res) => {
-      console.log(res)
-      setFiles(res.files)
+    getVoices()
+    getLibrary()
+  }, [player])
+
+  const getLibrary = () => {
+    window.api.getLibrary().then((res) => {
+      console.log("getLibrary", res)
+      setFiles(res)
     }
     ).catch((err) => {
       console.log(err)
     })
-  }, [player, files])
+  }
+
+  const cleanLibrary = () => {
+    window.api.cleanLibrary().then((res) => {
+      console.log("cleanLibrary", res)
+      getLibrary()
+    }
+    ).catch((err) => {
+      console.log(err)
+    })
+  }
 
   const set_output_folder = () => {
     console.log('get_output_folder')
@@ -78,27 +92,7 @@ function App() {
     console.log('select_file')
     return window.api.selectFile().then((res) => {
       console.log(res)
-      // player.load(`file://${res.filePath}`)
-      // getLyrics()
-
-
-      // setPlayer(player)
-      // setSelectedFile(`file://${res.filePath}`)
-      // setOriginalFile(`${res.filePath}`)
-      // Check if the file is already open
-      // File object looks like this:
-      // {
-      //   name: "01 - The 1975.mp3"
-      //   path: "C:\Users\james\Downloads\01 - The 1975.mp3"
-      //   metadata: {}
-      for (let i = 0; i < files.length; i++) {
-        if (files[i].path == res.file.path) {
-          console.log("File already open")
-          synth.triggerAttackRelease("C2", "8n");
-          return
-        }
-      }
-      synth.triggerAttackRelease("C4", "8n");
+      getLibrary()
       setIsLoading(false)
 
     }).catch((err) => {
@@ -201,7 +195,7 @@ function App() {
   const getVoices = () => {
     console.log('getVoices')
     window.api.getVoices().then((res) => {
-      console.log(res)
+      console.log('voices', res.voices)
       setVoices(res.voices)
     }).catch((err) => {
       console.log(err)
@@ -469,16 +463,17 @@ function App() {
             <div className="flex row">
               <h3>Library</h3>
               <button onClick={select_file}>Add file</button>
+              <button onClick={cleanLibrary}>Clean library</button>
             </div>
             <form onChange={open_file} className='files'>
-              {files.map((file, index) => {
+              {files ? files.map((file, index) => {
                 return (
                   <div className="tag" key={index}>
-                    <input type="radio" id={file.name} name="file" value={file.name} />
+                    <input type="radio" id={file.name} name="file" value={file.path} />
                     <label htmlFor={file.name}>{file.name}</label>
                   </div>
                 )
-              })}
+              }) : null}
             </form>
           </div>
         </div>
