@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld('api', {
     // File
     selectFile: () => ipcRenderer.invoke('selectFile'),
     getOutputFolder: () => ipcRenderer.invoke('getOutputFolder'),
+    getFiles: () => ipcRenderer.invoke('getFiles'),
     // Effects
     adjustPitch: (filePath, nSteps) => ipcRenderer.invoke('adjustPitch', filePath, nSteps),
     changeSpeed: (filePath, speed) => ipcRenderer.invoke('changeSpeed', filePath, speed),

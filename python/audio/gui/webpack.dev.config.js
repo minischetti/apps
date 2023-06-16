@@ -29,6 +29,11 @@ module.exports = {
         use: [{ loader: 'file-loader?name=font/[name]__[hash:base64:5].[ext]' }],
         include: defaultInclude
       },
+      {
+        test: /\.json$/,
+        use: [{ loader: 'json-loader' }],
+        include: path.resolve(__dirname, 'library.json')
+      }
     ]
   },
   // target: 'electron-renderer',

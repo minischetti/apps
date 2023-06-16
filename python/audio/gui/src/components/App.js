@@ -42,7 +42,14 @@ function App() {
     console.log('useEffect')
     player.toDestination()
     setVoices(getVoices())
-  }, [player])
+    window.api.getFiles().then((res) => {
+      console.log(res)
+      setFiles(res.files)
+    }
+    ).catch((err) => {
+      console.log(err)
+    })
+  }, [player, files])
 
   const set_output_folder = () => {
     console.log('get_output_folder')
@@ -91,7 +98,6 @@ function App() {
           return
         }
       }
-      setFiles([...files, res.file])
       synth.triggerAttackRelease("C4", "8n");
       setIsLoading(false)
 

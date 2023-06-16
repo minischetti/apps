@@ -14,9 +14,6 @@ const fs = require('fs')
 let window
 
 
-
-
-
 // Keep a reference for dev mode
 let dev = false
 
@@ -34,12 +31,6 @@ const handlers = {
       if (filePaths.length > 0) {
         const folderPath = path.resolve(filePaths[0])
         const folderContent = fs.readdirSync(folderPath)
-        // filter out non-audio files
-        const audioFiles = folderContent.filter(file => {
-          const ext = path.extname(file)
-          console.log(ext)
-          return ['.mp3', '.wav', '.flac', '.ogg'].includes(ext)
-        })
         // Show only audio files
         return {folderPath, folderContent}
       }
@@ -63,7 +54,25 @@ const handlers = {
         }
         // const fileContent = await superagent.get(filePath).responseType('blob')
         // get absolute path
-        return { file }
+        // Check if library.json exists and load it
+        let library;
+        if (fs.existsSync('library.json')) {
+          library = require('library.json')
+          library.files.push({
+            name: path.basename(filePath),
+            path: filePath,
+          })
+          fs.writeFileSync('library.json', JSON.stringify(library))
+        } else {
+          library = {
+            files: [{
+              name: path.basename(filePath),
+              path: filePath,
+          }]
+          }
+          fs.writeFileSync('library.json', JSON.stringify(library))
+        }
+        return file
 
         // console.log(filePath)
         // await superagent.get('http://127.0.0.1:8000/api/')
@@ -80,6 +89,14 @@ const handlers = {
         //   console.error(err);
         // }
       }
+    }
+  },
+  async getFiles() {
+    try {
+      const library = require('library.json')
+      return library.files
+    } catch (err) {
+      console.error(err);
     }
   },
   async adjustPitch(event, filePath, nSteps) {
