@@ -1,13 +1,15 @@
 'use strict'
 
 // Import parts of electron to use
-const { app, BrowserWindow, ipcMain, dialog } = require('electron')
+const { Menu, app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('path')
 const url = require('url')
 const { join } = require('path')
 const superagent = require('superagent');
 const { parseFile, selectCover } = require('music-metadata');
 const fs = require('fs')
+
+
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -20,6 +22,27 @@ let files = []
 let dev = false
 
 const handlers = {
+  async open_context_menu(event, filePath) {
+    const menu = Menu.buildFromTemplate([
+      {
+        label: 'Remove from library',
+        click: async () => await handlers.removeFile(event, filePath)
+      },
+    ])
+    menu.popup()
+    return true
+  },
+  async removeFile(event, filePath) {
+    try {
+      const result = await superagent.post('http://127.0.0.1:8000/api/library/remove').send({
+        path: filePath
+      }).type('json').responseType('json')
+      return result
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
   async getOutputFolder() {
     const { canceled, filePaths } = await dialog.showOpenDialog(
       window,

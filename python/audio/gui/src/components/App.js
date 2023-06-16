@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import '../assets/css/App.css'
 import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote } from '@phosphor-icons/react'
 import * as Tone from 'tone'
+import {Howl, Howler} from 'howler';
 
 
 function App() {
@@ -23,7 +24,7 @@ function App() {
   const [lyrics, setLyrics] = React.useState(null)
 
   // Media Player
-  const [player, setPlayer] = React.useState(new Tone.Player())
+  const [player, setPlayer] = React.useState()
   // Synth
   const [synth, setSynth] = React.useState(new Tone.Synth().toDestination())
 
@@ -40,7 +41,7 @@ function App() {
 
   useEffect(() => {
     console.log('useEffect')
-    player.toDestination()
+    // player.toDestination()
     getVoices()
     getLibrary()
   }, [player])
@@ -49,16 +50,6 @@ function App() {
     window.api.getLibrary().then((res) => {
       console.log("getLibrary", res)
       setLibrary(res)
-    }
-    ).catch((err) => {
-      console.log(err)
-    })
-  }
-
-  const cleanLibrary = () => {
-    window.api.cleanLibrary().then((res) => {
-      console.log("cleanLibrary", res)
-      getLibrary()
     }
     ).catch((err) => {
       console.log(err)
@@ -109,11 +100,14 @@ function App() {
     // })
   }
 
-  const open_file = (event) => {
+  const openFile = (event) => {
     console.log('open_file')
     setIsLoading(true)
-    setSelectedFile(`file://${event.target.value}`)
-    player.load(event.target.value)
+    setSelectedFile(`${event.target.value}`)
+    setPlayer(new Howl({
+      src: [`${event.target.value}`],
+      html5: true,
+    }))
     synth.triggerAttackRelease("C3", "8n");
     setIsLoading(false)
   }
@@ -176,7 +170,7 @@ function App() {
   }
   const play = () => {
     console.log('play')
-    player.start()
+    player.play()
     setIsPlaying(true)
     setIsPaused(false)
   }
@@ -204,6 +198,20 @@ function App() {
     })
   }
 
+  const open_context_menu = (event, filePath) => {
+    event.preventDefault()
+    return window.api.open_context_menu(filePath).then((res) => {
+      console.log(res)
+      // Get files from getLibrary
+      // Set the selected file
+      setIsLoading(false)
+
+    }).catch((err) => {
+      console.log(err)
+      setIsLoading(false)
+    })
+  }
+
   const templates = {
     now_playing: () => {
       if (selectedFile && metadata) {
@@ -220,11 +228,6 @@ function App() {
       }
     },
     playback_controls: () => {
-      if (selectedFile) {
-      return (
-        <audio src={selectedFile.path} controls></audio>
-      )
-      }
       const shouldShowPlayButton = (!isPlaying && !isPaused) || (isPlaying && isPaused) || (isPaused && !isPlaying);
       const shouldShowPauseButton = isPlaying && !isPaused;
       if (selectedFile) {
@@ -401,7 +404,7 @@ function App() {
           <button onClick={set_output_folder}>Set output folder</button>
           {/* Filter non-audio files */}
         </div>
-        <form onChange={update_file} className='files'>
+        <form onChange={updateFile} className='files'>
           {outputFolder.folderContent ? outputFolder.folderContent.map((path, index) => {
             return (
               <div className="tag" key={index}>
@@ -432,7 +435,7 @@ function App() {
 
     
 
-  const update_file = (event) => {
+  const updateFile = (event) => {
     console.log('update_file')
     const mode = event.target.mode.value
     console.log("mode", mode)
@@ -465,14 +468,28 @@ function App() {
             <div className="flex row">
               <h3>Library</h3>
               <button onClick={selectFile}>Add file</button>
-              <button onClick={cleanLibrary}>Clean library</button>
             </div>
-            <form onChange={open_file} className='files'>
+            <form onChange={openFile} className='files'>
               {library ? library.map((file, index) => {
                 return (
-                  <div className="tag" key={index}>
+                  <div className="tag" key={index} onContextMenu={(event) => open_context_menu(event, file.path)}>
                     <input type="radio" id={file.name} name="file" value={file.path} />
                     <label htmlFor={file.name}>{file.name}</label>
+                    {/* {menu.popup({
+                      label: 'Open',
+                      click: () => {
+                        console.log('open')
+                        setSelectedFile(`file://${file.path}`)
+                        player.load(file.path)
+                      }
+                    })}
+                    {menu.popup({
+                      label: 'Remove',
+                      click: () => {
+                        console.log('remove')
+                        removeFile(file.path)
+                      }
+                    })} */}
                   </div>
                 )
               }) : null}

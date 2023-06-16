@@ -12,7 +12,7 @@ from tkinter.ttk import Combobox, Progressbar
 import subprocess
 import webbrowser
 import whisper
-from pygame import mixer
+# from pygame import mixer
 from fastapi import FastAPI, File, UploadFile
 from typing import Union
 from pydantic import BaseModel
@@ -42,6 +42,10 @@ class FileClass(BaseModel):
     path: str
     class Config:
         frozen = True
+class FilePath(BaseModel):
+    path: str
+    class Config:
+        frozen = True
 # Set up the whisper model
 model = whisper.load_model("base")
 
@@ -51,7 +55,7 @@ audio_file_ext = ""
 audio_file_original = ""
 in_dir = "./in/"
 out_dir = "./out/"
-mixer.init()
+# mixer.init()
 
 # Get the current date and time
 now = lambda: datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -135,27 +139,18 @@ def separate(SeparationRequest: SeparationRequest):
 
 @app.post("/api/open/")
 def open_file(FileRequest: FileRequest):
-    # Declare the global variables
-    global audio_file_path
-    global audio_file_name
-    global audio_file_ext
+    # Return the file name, file path, and bpm
+    file_path = FileRequest.filePath
+    file_name = os.path.basename(FileRequest.filePath).split(".")[0]
+    file_ext = os.path.basename(FileRequest.filePath).split(".")[1]
+    tempo,beats = librosa.beat.beat_track()
 
-    # Open the file dialog
- 
-
-    # Check if a file was opened
-    # if FileRequest.filePath == "":
-    #     return
-
-    # Set the audio file path and name variables
-    audio_file_path = FileRequest.filePath
-    audio_file_name = os.path.basename(audio_file_path).split(".")[0]
-    audio_file_ext = os.path.basename(audio_file_path).split(".")[1]
-
-    print(audio_file_path)
-    # Return a success response
-    return {"message": "Successfully opened " + audio_file_name}
-
+    # print(file_path)
+    # print(file_name)
+    # print(file_ext)
+    # print("Opening file...")
+    # print("File opened")
+    return {"name": file_name, "path": file_path, "ext": file_ext}
 @app.get("/api/voices/")
 def get_voices():
     voices = []
@@ -169,30 +164,6 @@ def get_library():
     with open("./gui/library.json") as f:
         library = json.load(f)
     return library
-
-@app.post("/api/library/clean")
-def clean_library():
-    # Get the library
-    with open("./gui/library.json") as f:
-        library = json.load(f)
-
-    # Check for duplicates
-    for file in library:
-        for file2 in library:
-            if file["path"] == file2["path"] and file != file2:
-                library.remove(file2)
-
-
-                    # Check if the file exists
-    for file in library:
-        if not os.path.exists(file["path"]):
-            library.remove(file)
-    
-    # Write the library to the json file
-    with open("./gui/library.json", "w") as f:
-        json.dump(library, f)
-
-    return {"message": "Successfully cleaned library"}
 
 @app.post("/api/library/")
 def add_to_library(File: FileClass):
@@ -217,13 +188,23 @@ def add_to_library(File: FileClass):
     
     return {"message": "Successfully added " + os.path.basename(File.path) + " to library"}
 
-@app.delete("/api/library/")
-def clear_library():
-    # Clear the library
-    library = []
-    with open("./gui/library.json", "w") as f:
-        json.dump(library, f)
-    return {"message": "Successfully cleared library"}
+@app.post("/api/library/remove")
+def remove_from_library(File: FilePath):
+    print(File.path)
+    # Check if file path is provided
+    if File.path == "":
+        return {"message": "No file path provided"}
+    # Get the library
+    with open("./gui/library.json") as file:
+        library = json.load(file)
+
+    # Check if the file is in the library
+    for file in library:
+        if file["path"] == File.path:
+            library.remove(file)
+            return {"message": "Successfully removed " + os.path.basename(File.path) + " from library"}
+    
+    return {"message": "File is not in library"}
 
 @app.post("/api/lyrics/")
 def generate_lyrics(filePath: FileRequest):
