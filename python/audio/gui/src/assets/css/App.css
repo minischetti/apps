@@ -338,12 +338,17 @@ hr {
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
-    border-radius: 1rem 1rem 0 0;
+    /* border-radius: 1rem 1rem 0 0; */
     border-right: 2px solid hsla(0, 0%, 100%, 0.1);
     color: white;
     /* background-color: hsla(0, 0%, 100%, 0.1); */
     backdrop-filter: blur(10px);
-    overflow: scroll;
+    overflow: auto;
+}
+
+.sidebar.right {
+    border-right: none;
+    border-left: 2px solid hsla(0, 0%, 100%, 0.1);
 }
 
 .sidebar .flex.row {
@@ -386,11 +391,6 @@ hr {
     background-image: linear-gradient(to bottom right, var(--accent-primary) 0%, var(--accent-secondary) 100%);
     transition: all 0.25s ease-in-out;
     top: 0.5rem;
-}
-
-.sidebar.right {
-    border-right: none;
-    border-left: 2px solid hsla(0, 0%, 100%, 0.1);
 }
 
 .main {

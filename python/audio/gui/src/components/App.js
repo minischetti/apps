@@ -13,7 +13,7 @@ function App() {
   const [isLoading, setIsLoading] = React.useState(false)
 
   // Files
-  const [files, setFiles] = React.useState([])
+  const [library, setLibrary] = React.useState([])
   const [selectedFile, setSelectedFile] = React.useState(null)
   const [originalFile, setOriginalFile] = React.useState(null)
   const [mode, setMode] = React.useState('original')
@@ -48,7 +48,7 @@ function App() {
   const getLibrary = () => {
     window.api.getLibrary().then((res) => {
       console.log("getLibrary", res)
-      setFiles(res)
+      setLibrary(res)
     }
     ).catch((err) => {
       console.log(err)
@@ -87,12 +87,14 @@ function App() {
   }
 
 
-  const select_file = () => {
+  const selectFile = () => {
     setIsLoading(true)
     console.log('select_file')
     return window.api.selectFile().then((res) => {
       console.log(res)
+      // Get files from getLibrary
       getLibrary()
+      // Set the selected file
       setIsLoading(false)
 
     }).catch((err) => {
@@ -207,7 +209,7 @@ function App() {
       if (selectedFile && metadata) {
         return (
           <div className="now-playing">
-            {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" className="album-art" onClick={select_file} /> : <FileArrowUp className="file_upload_button" onClick={select_file} />}
+            {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" className="album-art" onClick={selectFile} /> : <FileArrowUp className="file_upload_button" onClick={selectFile} />}
             <div className="now-playing-info">
               {metadata.common.title ? <h3>{metadata.common.title}</h3> : <h3>{selectedFile.name}</h3>}
               {metadata.common.album ? <p>{metadata.common.album}</p> : null}
@@ -462,11 +464,11 @@ function App() {
           <div className="files">
             <div className="flex row">
               <h3>Library</h3>
-              <button onClick={select_file}>Add file</button>
+              <button onClick={selectFile}>Add file</button>
               <button onClick={cleanLibrary}>Clean library</button>
             </div>
             <form onChange={open_file} className='files'>
-              {files ? files.map((file, index) => {
+              {library ? library.map((file, index) => {
                 return (
                   <div className="tag" key={index}>
                     <input type="radio" id={file.name} name="file" value={file.path} />

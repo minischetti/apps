@@ -193,11 +193,12 @@ def clean_library():
         json.dump(library, f)
 
     return {"message": "Successfully cleaned library"}
+
 @app.post("/api/library/")
 def add_to_library(File: FileClass):
     # Get the library
-    with open("./gui/library.json") as f:
-        library = json.load(f)
+    with open("./gui/library.json") as file:
+        library = json.load(file)
     
     # Check if the file is already in the library
     for file in library:
@@ -211,8 +212,8 @@ def add_to_library(File: FileClass):
     })
 
     # Write the library to the json file
-    with open("./gui/library.json", "w") as f:
-        json.dump(library, f)
+    with open("./gui/library.json", "w") as file:
+        json.dump(library, file)
     
     return {"message": "Successfully added " + os.path.basename(File.path) + " to library"}
 
