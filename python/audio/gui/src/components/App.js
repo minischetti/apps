@@ -1,12 +1,15 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import '../assets/css/App.css'
 import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote } from '@phosphor-icons/react'
 import * as Tone from 'tone'
-import {Howl, Howler} from 'howler';
+import { Howl, Howler } from 'howler';
+import WaveSurfer from 'wavesurfer.js'
+
 
 
 function App() {
+  const wavesurfer = useRef(null);
   // Playback
   const [isPlaying, setIsPlaying] = React.useState(false)
   const [isPaused, setIsPaused] = React.useState(false)
@@ -16,8 +19,6 @@ function App() {
   // Files
   const [library, setLibrary] = React.useState([])
   const [selectedFile, setSelectedFile] = React.useState(null)
-  const [originalFile, setOriginalFile] = React.useState(null)
-  const [mode, setMode] = React.useState('original')
   const [metadata, setMetadata] = React.useState(null)
 
   // Lyrics
@@ -103,11 +104,30 @@ function App() {
   const openFile = (event) => {
     console.log('open_file')
     setIsLoading(true)
-    setSelectedFile(`${event.target.value}`)
+    setSelectedFile(`file://${event.target.value}`)
     setPlayer(new Howl({
       src: [`${event.target.value}`],
       html5: true,
     }))
+    wavesurfer.current = WaveSurfer.create({
+      container: '#waveform',
+      waveColor: 'violet',
+      progressColor: 'purple',
+      barWidth: 3,
+      barRadius: 3,
+      responsive: true,
+      cursorWidth: 1,
+      cursorColor: '#fff',
+      normalize: true,
+      partialRender: true,
+      width: 500,
+    });
+    wavesurfer.current.load(`${event.target.value}`)
+    wavesurfer.current.on('ready', function () {
+      console.log('ready')
+      setIsLoading(false)
+    });
+
     synth.triggerAttackRelease("C3", "8n");
     setIsLoading(false)
   }
@@ -170,20 +190,21 @@ function App() {
   }
   const play = () => {
     console.log('play')
-    player.play()
+    wavesurfer.current.play()
     setIsPlaying(true)
     setIsPaused(false)
   }
 
   const pause = () => {
     console.log('pause')
-    player.stop()
+    wavesurfer.current.pause()
     setIsPaused(true)
     setIsPlaying(false)
   }
 
   const stop = () => {
     console.log('stop')
+    wavesurfer.current.stop()
     setIsPlaying(false)
     setIsPaused(false)
   }
@@ -233,8 +254,10 @@ function App() {
       if (selectedFile) {
         return (
           <div className='playback-controls'>
-            {shouldShowPlayButton ? <Play className="orb" onClick={play} /> : null}
-            {shouldShowPauseButton ? <Pause className="orb" onClick={pause} /> : null}
+            <div>
+              {shouldShowPlayButton ? <Play className="orb" onClick={play} /> : null}
+              {shouldShowPauseButton ? <Pause className="orb" onClick={pause} /> : null}
+            </div>
           </div>
         )
       }
@@ -371,15 +394,16 @@ function App() {
       if (selectedFile) {
         return (
           <div className="main">
+            <h3>Workbench</h3>
             <div className='section'>
-              <h2>Effects</h2>
+              <h4>Effects</h4>
               <div className="controls">
                 {templates.pitch_controls()}
                 {templates.speed_controls()}
               </div>
             </div>
             <div className='section'>
-              <h2>Tools</h2>
+              <h4>Tools</h4>
               <div className="controls">
                 {templates.separate_controls()}
                 {templates.voice_changer_controls()}
@@ -391,7 +415,7 @@ function App() {
       } else {
         return (
           <div className="main">
-            <h2>Open a file to get started</h2>
+            <h2>Select a file in your library to get started</h2>
           </div>
         )
       }
@@ -399,22 +423,22 @@ function App() {
     output_folder: () => {
       return (
         <div className="output">
-        <div className="flex row">
-          <h3>Output</h3>
-          <button onClick={set_output_folder}>Set output folder</button>
-          {/* Filter non-audio files */}
-        </div>
-        <form onChange={updateFile} className='files'>
-          {outputFolder.folderContent ? outputFolder.folderContent.map((path, index) => {
-            return (
-              <div className="tag" key={index}>
-                <input type="radio" id={path} name="file" value={path} />
-                <label htmlFor={path}>{path}</label>
+          <div className="flex row">
+            <h3>Output</h3>
+            <button onClick={set_output_folder}>Set output folder</button>
+            {/* Filter non-audio files */}
+          </div>
+          <form onChange={openFile} className='files'>
+            {outputFolder.folderContent ? outputFolder.folderContent.map((file, index) => {
+              return (
+                <div className="tag" key={index}>
+                  <input type="radio" id={file.name} name="file" value={file.path} />
+                  <label htmlFor={file.name}>{file.name}</label>
                 </div>
-            )
-          }) : null}
-        </form>
-      </div>
+              )
+            }) : null}
+          </form>
+        </div>
       )
     },
   }
@@ -433,14 +457,11 @@ function App() {
     })
   }
 
-    
+
 
   const updateFile = (event) => {
     console.log('update_file')
-    const mode = event.target.mode.value
-    console.log("mode", mode)
-    console.log(res)
-    setSelectedFile(`file://${res}`)
+    setSelectedFile(`file://${event.target.value}`)
     player.load(res)
   }
 
@@ -502,7 +523,7 @@ function App() {
 
 
         {templates.body()}
-                <div className="sidebar right">
+        <div className="sidebar right">
           {templates.output_folder()}
         </div>
       </div>
@@ -510,6 +531,8 @@ function App() {
         {templates.now_playing()}
         <div className="playback">
           {templates.playback_controls()}
+          <div id="waveform">
+        </div>
         </div>
       </div>
     </div>

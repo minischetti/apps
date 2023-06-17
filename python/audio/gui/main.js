@@ -36,7 +36,7 @@ const handlers = {
     try {
       const result = await superagent.post('http://127.0.0.1:8000/api/library/remove').send({
         path: filePath
-      }).type('json').responseType('json')
+      })
       return result
     } catch (err) {
       console.error(err);
@@ -56,8 +56,15 @@ const handlers = {
       if (filePaths.length > 0) {
         const folderPath = path.resolve(filePaths[0])
         const folderContent = fs.readdirSync(folderPath)
+        const folderContentWithPaths = folderContent.map(file => {
+          return {
+            name: file,
+            path: path.resolve(join(folderPath, file))
+          }
+        })
+
         // Show only audio files
-        return { folderPath, folderContent }
+        return { folderPath, folderContent: folderContentWithPaths }
       }
     }
   },
