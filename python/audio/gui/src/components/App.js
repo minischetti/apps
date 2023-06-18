@@ -312,8 +312,8 @@ function App() {
         return (
           <form onSubmit={changePitch} className='pitch-controls control' onChange={() => synth.triggerAttackRelease("C3", "32n")}>
             <div className="control-header">
-              <MusicNote size={32} />
-              <h3>Pitch</h3>
+              <MusicNote size={24} />
+              <h4>Pitch</h4>
             </div>
             <input name="pitch" type="range" min="-12" max="12" defaultValue="0" step="1" onChange={(e) => setPitch(e.target.value)} />
             <p>{pitch} semitone(s)</p>
@@ -329,8 +329,8 @@ function App() {
         return (
           <form className='speed-controls control' onChange={() => synth.triggerAttackRelease("C3", "32n")}>
             <div className="control-header">
-              <Gauge size={32} />
-              <h3>Speed</h3>
+              <Gauge size={24} />
+              <h4>Speed</h4>
             </div>
             <input type="range" min="0.1" max="2" defaultValue="1" step="0.1" onChange={(e) => setSpeed(e.target.value)} />
             <p>{speed}x</p>
@@ -368,8 +368,8 @@ function App() {
         return (
           <div className='separate-controls control'>
             <div className="control-header">
-              <ArrowsOutLineHorizontal size={32} />
-              <h3>Isolate</h3>
+              <ArrowsOutLineHorizontal size={24} />
+              <h4>Isolate</h4>
             </div>
             <form onSubmit={isolate} onChange={() => synth.triggerAttackRelease("C3", "32n")}>
               <div className="modes">
@@ -395,8 +395,8 @@ function App() {
         return (
           <div className='voice-changer-controls control'>
             <div className="control-header">
-              <MicrophoneStage size={32} />
-              <h3>Voice Changer</h3>
+              <MicrophoneStage size={24} />
+              <h4>Voice Changer</h4>
             </div>
             <form onSubmit={changeVoice} onChange={() => synth.triggerAttackRelease("C3", "32n")}>
               <div className="voices">
@@ -441,8 +441,8 @@ function App() {
           <h3>Workbench</h3>
           {templates.now_playing()}
           <div className="flex row">
-          {templates.playback_controls()}
-          <div id="waveform">
+            {templates.playback_controls()}
+            <div id="waveform">
             </div>
           </div>
 

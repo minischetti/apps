@@ -29,7 +29,7 @@ screen and (prefers-color-scheme: no-preference) {
 
 html, body {
     font-family: 'Poppins', sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 400;
 }
 
@@ -73,6 +73,11 @@ button {
     background-color: hsla(0, 0%, 100%, 0.1);
     border-radius: 0.25rem;
     gap: 0.5rem;
+}
+
+p {
+    margin: 0;
+    font-size: 12px;
 }
 
 /* select {
@@ -208,6 +213,9 @@ button:active {
     color: white;
 }
 
+.now-playing-info {
+    font-size: 12px;
+}
 .file_upload_button {
     width: 100px;
     height: 100px;
