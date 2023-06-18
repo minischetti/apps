@@ -236,14 +236,15 @@ button:active {
 .footer {
     /* position: fixed; */
     bottom: 0;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    display: flex;
+    /* grid-template-columns: 1fr auto 1fr; */
     gap: 1rem;
     align-items: center;
     width: 100%;
     background-color: hsla(0, 0%, 100%, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 1rem 1rem 0 0;
+    padding: 1rem 0;
 }
 
 .flex {
@@ -314,6 +315,15 @@ button:active {
 }
 
 .control-footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    border-top: 2px solid hsla(0, 0%, 100%, 0.1);
+    padding-top: 1rem;
+}
+
+.control-body {
     display: flex;
     align-items: center;
     gap: 1rem;

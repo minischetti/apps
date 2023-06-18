@@ -31,6 +31,7 @@
     "postpackage": "electron-packager ./ --out=./builds"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.24.3",
     "@phosphor-icons/react": "^2.0.9",
     "got": "^13.0.0",
     "music-metadata": "^7.13.0",

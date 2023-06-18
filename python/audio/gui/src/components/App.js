@@ -1,14 +1,54 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import '../assets/css/App.css'
-import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote } from '@phosphor-icons/react'
+import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox } from '@phosphor-icons/react'
 import * as Tone from 'tone'
 import { Howl, Howler } from 'howler';
 import WaveSurfer from 'wavesurfer.js'
+import { useFloating, offset, flip, shift, useHover, useClick, useDismiss, useRole } from '@floating-ui/react';
 
+function Popover() {
+  const [isOpen, setIsOpen] = useState(false);
 
+  const { refs, floatingStyles, context } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+    middleware: [offset(10), flip(), shift()],
+    whileElementsMounted: autoUpdate,
+  });
+
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+  const role = useRole(context);
+
+  // Merge all the interactions into prop getters
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    click,
+    dismiss,
+    role,
+  ]);
+  return (
+    <>
+      <button ref={refs.setReference} {...getReferenceProps()}>
+        Reference element
+      </button>
+      {isOpen && (
+        <FloatingFocusManager context={context} modal={false}>
+          <div
+            ref={refs.setFloating}
+            style={floatingStyles}
+            {...getFloatingProps()}
+          >
+            Popover element
+          </div>
+        </FloatingFocusManager>
+      )}
+    </>
+  );
+}
 
 function App() {
+  // Refs
   const wavesurfer = useRef(null);
   // Playback
   const [isPlaying, setIsPlaying] = React.useState(false)
@@ -105,10 +145,10 @@ function App() {
     console.log('open_file')
     setIsLoading(true)
     setSelectedFile(`file://${event.target.value}`)
-    setPlayer(new Howl({
-      src: [`${event.target.value}`],
-      html5: true,
-    }))
+    // setPlayer(new Howl({
+    //   src: [`${event.target.value}`],
+    //   html5: true,
+    // }))
     wavesurfer.current = WaveSurfer.create({
       container: '#waveform',
       waveColor: 'violet',
@@ -235,14 +275,14 @@ function App() {
 
   const templates = {
     now_playing: () => {
-      if (selectedFile && metadata) {
+      if (selectedFile && selectedFile.metadata) {
         return (
           <div className="now-playing">
             {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" className="album-art" onClick={selectFile} /> : <FileArrowUp className="file_upload_button" onClick={selectFile} />}
             <div className="now-playing-info">
-              {metadata.common.title ? <h3>{metadata.common.title}</h3> : <h3>{selectedFile.name}</h3>}
-              {metadata.common.album ? <p>{metadata.common.album}</p> : null}
-              {metadata.common.artist ? <p>{metadata.common.artist}</p> : null}
+              {selectedFile.metadata.common.title ? <h3>{selectedFile.metadata.common.title}</h3> : <h3>{selectedFile.name}</h3>}
+              {selectedFile.metadata.common.album ? <p>{selectedFile.metadata.common.album}</p> : null}
+              {selectedFile.metadata.common.artist ? <p>{selectedFile.metadata.common.artist}</p> : null}
             </div>
           </div>
         )
@@ -391,34 +431,14 @@ function App() {
       }
     },
     body: () => {
-      if (selectedFile) {
-        return (
-          <div className="main">
-            <h3>Workbench</h3>
-            <div className='section'>
-              <h4>Effects</h4>
-              <div className="controls">
-                {templates.pitch_controls()}
-                {templates.speed_controls()}
-              </div>
-            </div>
-            <div className='section'>
-              <h4>Tools</h4>
-              <div className="controls">
-                {templates.separate_controls()}
-                {templates.voice_changer_controls()}
-              </div>
-            </div>
-            {templates.lyrics()}
+      return (
+        <div className="main">
+          <h3>Workbench</h3>
+          <div id="waveform">
           </div>
-        )
-      } else {
-        return (
-          <div className="main">
-            <h2>Select a file in your library to get started</h2>
-          </div>
-        )
-      }
+          {templates.now_playing()}
+        </div>
+      )
     },
     output_folder: () => {
       return (
@@ -441,28 +461,6 @@ function App() {
         </div>
       )
     },
-  }
-
-  const input_knob_listener = () => {
-    console.log('input_knob_listener')
-    const knob = document.querySelector('.input-knob')
-    knob.addEventListener('mousedown', (e) => {
-      console.log('mousedown')
-      const knobRect = knob.getBoundingClientRect()
-      const knobCenterX = knobRect.left + knobRect.width / 2
-      const knobCenterY = knobRect.top + knobRect.height / 2
-      const angle = Math.atan2(e.clientY - knobCenterY, e.clientX - knobCenterX) * 180 / Math.PI
-      console.log(angle)
-      knob.style.transform = `rotate(${angle}deg)`
-    })
-  }
-
-
-
-  const updateFile = (event) => {
-    console.log('update_file')
-    setSelectedFile(`file://${event.target.value}`)
-    player.load(res)
   }
 
   return (
@@ -496,45 +494,43 @@ function App() {
                   <div className="tag" key={index} onContextMenu={(event) => open_context_menu(event, file.path)}>
                     <input type="radio" id={file.name} name="file" value={file.path} />
                     <label htmlFor={file.name}>{file.name}</label>
-                    {/* {menu.popup({
-                      label: 'Open',
-                      click: () => {
-                        console.log('open')
-                        setSelectedFile(`file://${file.path}`)
-                        player.load(file.path)
-                      }
-                    })}
-                    {menu.popup({
-                      label: 'Remove',
-                      click: () => {
-                        console.log('remove')
-                        removeFile(file.path)
-                      }
-                    })} */}
                   </div>
                 )
               }) : null}
             </form>
           </div>
         </div>
-        {/* <div className="input-knob" onClick={input_knob_listener}>
-          <div className="knob"></div>
-        </div> */}
-
-
         {templates.body()}
         <div className="sidebar right">
           {templates.output_folder()}
         </div>
       </div>
       <div className='footer'>
-        {templates.now_playing()}
-        <div className="playback">
-          {templates.playback_controls()}
-          <div id="waveform">
+          <div className="controls">
+            <div className="control-section">
+              <div className="control-header">
+                <h3>Effects</h3>
+              </div>
+              <div className="control-body">
+                {templates.pitch_controls()}
+                {templates.speed_controls()}
+              </div>
+            </div>
+
+            <div className="control-section">
+              <div className="control-header">
+                <h3>Workflows</h3>
+              </div>
+              <div className="control-body">
+              {templates.separate_controls()}
+            {templates.voice_changer_controls()}
+              </div>
+            </div>
+            <div className="controls-section">
+
+            </div>
+          </div>
         </div>
-        </div>
-      </div>
     </div>
   )
 }

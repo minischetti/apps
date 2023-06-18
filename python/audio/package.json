@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@floating-ui/react": "^0.24.3",
     "howler": "^2.2.3",
     "music-metadata": "^8.1.4"
   }
