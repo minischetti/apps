@@ -108,7 +108,7 @@ function App() {
     setPlayer(player)
     setPitchShift(pitchShift)
     const analyzer = new Tone.Analyser('waveform', 128);
-    player.connect(analyzer); 
+    player.connect(analyzer);
 
 
     // Set up Tone.js PitchShift
@@ -237,7 +237,7 @@ function App() {
     event.preventDefault()
     console.log('separate')
     const mode = event.target.mode.value
-    window.api.separate(selectedFile, mode).then((res) => {
+    window.api.isolate(selectedFile, mode).then((res) => {
       console.log(res)
     }).catch((err) => {
       console.log(err)
@@ -334,7 +334,7 @@ function App() {
       const shouldShowPauseButton = isPlaying && !isPaused;
       if (selectedFile) {
         return (
-          <div className='playback-controls'>
+          <div className='flex center'>
             <div>
               {shouldShowPlayButton ? <Play className="orb" onClick={play} /> : null}
               {shouldShowPauseButton ? <Pause className="orb" onClick={pause} /> : null}
@@ -478,11 +478,6 @@ function App() {
       return (
         <div className="main">
           <h3>Workbench</h3>
-          {templates.now_playing()}
-          <div className="flex row">
-            {templates.playback_controls()}
-            <div id="waveform"></div>
-          </div>
           <div className="controls">
             <div className="control-section">
               <div className="control-section-header">
@@ -537,13 +532,13 @@ function App() {
       }
       return (
         <div className={classes.join(' ')}>
-          <div className="files">
+          <div className="library">
             <div className="flex row center no-select">
               {showLibrary ? <CaretLeft size={32} onClick={() => setShowLibrary(false)} /> : <CaretRight size={32} onClick={() => setShowLibrary(true)} />}
               <h3>Library</h3>
               {showLibrary ? <button onClick={selectFile}>Add file</button> : null}
             </div>
-            {showLibrary ? <form onChange={openFile} className='files'>
+            {showLibrary ? <form onChange={openFile} className='library'>
               {library ? library.map((file, index) => {
                 return (
                   <div className="tag" key={index} onContextMenu={(event) => open_context_menu(event, file.path)}>
@@ -554,6 +549,7 @@ function App() {
               }) : null}
             </form> : null}
           </div>
+          {templates.output_folder()}
           {/* <div className="resize"
             onMouseDown={() => window.addEventListener('mousemove', resize_width_of_sidebar)}>
           </div> */}
@@ -582,9 +578,17 @@ function App() {
       </div>
       <div className="app-body">
         {templates.library()}
+        <div className="test">
+
         {templates.body()}
-        <div className="sidebar right">
-          {templates.output_folder()}
+        <div className="footer">
+
+            <div className="flex row">
+              {templates.now_playing()}
+              <div id="waveform"></div>
+            </div>
+            {templates.playback_controls()}
+          </div>
         </div>
       </div>
     </div>

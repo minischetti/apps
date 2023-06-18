@@ -245,6 +245,7 @@ function createWindow() {
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
       webSecurity: false,
+      titleBarStyle: 'hidden',
     }
   })
 

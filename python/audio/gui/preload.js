@@ -14,7 +14,7 @@ contextBridge.exposeInMainWorld('api', {
     getLyrics: (filePath) => ipcRenderer.invoke('getLyrics', filePath),
 
     // Separate
-    separate: (filePath, mode) => ipcRenderer.invoke('separate', filePath, mode),
+    isolate: (filePath, mode) => ipcRenderer.invoke('isolate', filePath, mode),
 
     // Voice
     changeVoice: (filePath, voice) => ipcRenderer.invoke('changeVoice', filePath, voice),
