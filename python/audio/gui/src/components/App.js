@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 
 import '../assets/css/App.css'
-import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox, Hamburger, Files, ArrowLeft, CaretLeft, CaretRight } from '@phosphor-icons/react'
+import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox, Hamburger, Files, ArrowLeft, CaretLeft, CaretRight, Clock, SpeakerNone } from '@phosphor-icons/react'
 import * as Tone from 'tone'
 import { Howl, Howler } from 'howler';
 import WaveSurfer from 'wavesurfer.js'
@@ -74,6 +74,7 @@ function App() {
   const [pitchBlend, setPitchBlend] = React.useState(1)
   const [pitchShift, setPitchShift] = React.useState(null)
   const [speed, setSpeed] = React.useState(1)
+  const [beatsPerMinute, setBeatsPerMinute] = React.useState(120)
 
   const [voices, setVoices] = React.useState([])
 
@@ -102,9 +103,12 @@ function App() {
     });
     const player = new Tone.Player();
     const pitchShift = new Tone.PitchShift().toDestination();
+    // Transport
     player.connect(pitchShift);
     setPlayer(player)
     setPitchShift(pitchShift)
+    const analyzer = new Tone.Analyser('waveform', 128);
+    player.connect(analyzer); 
 
 
     // Set up Tone.js PitchShift
@@ -179,7 +183,9 @@ function App() {
       console.log(res)
       setSelectedFile(res)
       player.load(`file://${res.path}`)
-      Tone.Transport.start()
+
+      player.sync()
+
     }).catch((err) => {
       console.log(err)
     })
@@ -217,14 +223,16 @@ function App() {
     console.log("speed", speed)
     // computedPlaybackRate(t) = playbackRate(t) * pow(2, detune(t) / 1200)
     player.playbackRate = speed * Math.pow(2, pitch / 1200)
-    // player.pitch = speed * Math.pow(2, pitch / 1200)
-    // console.log("player.pitch", player.pitch)
-    // window.api.changeSpeed(selectedFile, speed).then((res) => {
-    //   console.log(res)
-    // }).catch((err) => {
-    //   console.log(err)
-    // })
   }
+  const changeBeatsPerMinute = (event) => {
+    event.preventDefault()
+    console.log('changeBeatsPerMinute')
+    const bpm = event.target.value
+    console.log("bpm", bpm)
+    Tone.Transport.bpm.value = bpm
+    setBeatsPerMinute(bpm)
+  }
+
   const isolate = (event) => {
     event.preventDefault()
     console.log('separate')
@@ -250,13 +258,16 @@ function App() {
     console.log('play')
     // wavesurfer.current.play()
     player.start()
+    Tone.Transport.start()
+
+
     setIsPlaying(true)
     setIsPaused(false)
   }
 
   const pause = () => {
     console.log('pause')
-    player.stop()
+    Tone.Transport.pause()
     setIsPaused(true)
     setIsPlaying(false)
   }
@@ -264,8 +275,19 @@ function App() {
   const stop = () => {
     console.log('stop')
     // wavesurfer.current.stop()
+    player.stop()
     setIsPlaying(false)
     setIsPaused(false)
+  }
+
+  const mute = () => {
+    console.log('mute')
+    player.volume.value = -100
+  }
+
+  const volume = (event) => {
+    console.log('volume')
+    player.volume.value = event.target.value
   }
 
   const getVoices = () => {
@@ -316,7 +338,10 @@ function App() {
             <div>
               {shouldShowPlayButton ? <Play className="orb" onClick={play} /> : null}
               {shouldShowPauseButton ? <Pause className="orb" onClick={pause} /> : null}
+              {/* <Stop className="orb" onClick={stop} /> */}
+              {/* <SpeakerNone className="orb" onClick={mute} /> */}
             </div>
+            <input name="volume" type="range" min="-50" max="0" step="1" defaultValue="0" onChange={volume} />
           </div>
         )
       }
@@ -344,6 +369,18 @@ function App() {
           </div>
           <input type="range" min="0.1" max="2" defaultValue="1" step="0.1" onChange={(e) => setSpeed(e.target.value)} />
           <p>{speed}x</p>
+        </form>
+      )
+    },
+    bpm_controls: () => {
+      return (
+        <form className='bpm-controls control' onChange={changeBeatsPerMinute}>
+          <div className="control-header">
+            <Clock size={24} />
+            <h4>BPM</h4>
+          </div>
+          <input type="range" min="60" max="180" defaultValue="120" step="1" />
+          <p>{beatsPerMinute} BPM</p>
         </form>
       )
     },
@@ -455,6 +492,7 @@ function App() {
               <div className="flex">
                 {templates.pitch_controls()}
                 {templates.speed_controls()}
+                {templates.bpm_controls()}
               </div>
             </div>
           </div>
