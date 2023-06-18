@@ -438,6 +438,12 @@ function App() {
           </div>
           {templates.now_playing()}
           {templates.playback_controls()}
+          <div className="controls">
+            {templates.pitch_controls()}
+            {templates.speed_controls()}
+            {templates.separate_controls()}
+            {templates.voice_changer_controls()}
+          </div>
         </div>
       )
     },
@@ -506,32 +512,6 @@ function App() {
           {templates.output_folder()}
         </div>
       </div>
-      <div className='footer'>
-          <div className="controls">
-            <div className="control-section">
-              <div className="control-header">
-                <h3>Effects</h3>
-              </div>
-              <div className="control-body">
-                {templates.pitch_controls()}
-                {templates.speed_controls()}
-              </div>
-            </div>
-
-            <div className="control-section">
-              <div className="control-header">
-                <h3>Workflows</h3>
-              </div>
-              <div className="control-body">
-              {templates.separate_controls()}
-            {templates.voice_changer_controls()}
-              </div>
-            </div>
-            <div className="controls-section">
-
-            </div>
-          </div>
-        </div>
     </div>
   )
 }
