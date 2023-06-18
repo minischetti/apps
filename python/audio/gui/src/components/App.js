@@ -83,6 +83,19 @@ function App() {
   useEffect(() => {
     console.log('useEffect')
     // player.toDestination()
+    wavesurfer.current = WaveSurfer.create({
+      container: '#waveform',
+      waveColor: 'violet',
+      progressColor: 'purple',
+      barWidth: 3,
+      barRadius: 3,
+      responsive: true,
+      cursorWidth: 1,
+      cursorColor: '#fff',
+      normalize: true,
+      partialRender: true,
+      width: 500,
+    });
     getVoices()
     getLibrary()
   }, [player])
@@ -149,19 +162,6 @@ function App() {
     //   src: [`${event.target.value}`],
     //   html5: true,
     // }))
-    wavesurfer.current = WaveSurfer.create({
-      container: '#waveform',
-      waveColor: 'violet',
-      progressColor: 'purple',
-      barWidth: 3,
-      barRadius: 3,
-      responsive: true,
-      cursorWidth: 1,
-      cursorColor: '#fff',
-      normalize: true,
-      partialRender: true,
-      width: 500,
-    });
     wavesurfer.current.load(`${event.target.value}`)
     wavesurfer.current.on('ready', function () {
       console.log('ready')
@@ -437,6 +437,7 @@ function App() {
           <div id="waveform">
           </div>
           {templates.now_playing()}
+          {templates.playback_controls()}
         </div>
       )
     },
