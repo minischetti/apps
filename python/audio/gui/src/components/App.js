@@ -541,7 +541,7 @@ function App() {
             {showLibrary ? <form onChange={openFile} className='library'>
               {library ? library.map((file, index) => {
                 return (
-                  <div className="tag" key={index} onContextMenu={(event) => open_context_menu(event, file.path)}>
+                  <div className="tag" key={index} tabIndex={0} onContextMenu={(event) => open_context_menu(event, file.path)}>
                     <input type="radio" id={file.name} name="file" value={file.path} />
                     <label htmlFor={file.name}>{file.name}</label>
                   </div>

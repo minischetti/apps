@@ -245,10 +245,29 @@ function createWindow() {
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
       webSecurity: false,
-      titleBarStyle: 'hidden',
-    }
+    },
+    // frame: false,
+    // // transparent: true,
+    // titleBarStyle: 'hidden',
+    // titleBarOverlay: {
+    //   color: '#001',
+    //   symbolColor: '#fff',
+    // },
+    autoHideMenuBar: true,
+    backgroundColor: '#001',
+    show: false,
+    vibrancy: 'dark',
   })
 
+  var splash = new BrowserWindow({
+    width: 500,
+    height: 300,
+    // transparent: true,
+    backgroundColor: '#001',
+    frame: false,
+    alwaysOnTop: true,
+    resizable: false,
+  });
   // and load the index.html of the app.
   let indexPath
 
@@ -267,12 +286,19 @@ function createWindow() {
     })
   }
 
+  splash.loadFile(path.join(__dirname, 'dist', 'splash.html'),)
   window.loadURL(indexPath)
 
-  // Don't show until we are ready and loaded
   window.once('ready-to-show', () => {
     window.show()
+    splash.destroy()
   })
+
+  // setTimeout(() => {
+  //   splash.destroy()
+  //   window.show()
+  // }, 2000);
+
 
   // Emitted when the window is closed.
   window.on('closed', function () {
