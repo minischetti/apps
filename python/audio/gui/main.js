@@ -54,7 +54,7 @@ const handlers = {
       return
     } else {
       if (filePaths.length > 0) {
-        const folderPath = path.resolve(filePaths[0])
+      const folderPath = path.resolve(filePaths[0])
         const folderContent = fs.readdirSync(folderPath)
         const folderContentWithPaths = folderContent.map(file => {
           return {
@@ -119,6 +119,46 @@ const handlers = {
         metadata
       }
       return file
+    } catch (err) {
+      console.error(err);
+    }
+  },
+  async setLibraryPath(event) {
+    try {
+      const { canceled, filePaths } = await dialog.showOpenDialog(window,
+        {
+          properties: ['openDirectory']
+        })
+      if (canceled) return
+      const folderPath = path.resolve(filePaths[0])
+      // const result = await superagent.post('http://127.0.0.1:8000/api/library/set')
+      //   .send({ path })
+      // get the files in the path
+      const files = fs.readdirSync(folderPath)
+      // filter out non-audio files
+      const audioFiles = files.filter(file => {
+        const ext = path.extname(file)
+        return ['.mp3', '.wav', '.flac', '.ogg'].includes(ext)
+      })
+
+      // get metadata for each file
+      const metadata = await Promise.all(audioFiles.map(async file => {
+        const filePath = path.resolve(join(folderPath, file))
+        const metadata = await parseFile(filePath)
+        const cover = selectCover(metadata.common.picture)
+        metadata.img = cover
+        return metadata
+      }))
+      // create an array of objects with file name, path and metadata
+      const filesWithMetadata = audioFiles.map((file, index) => {
+        return {
+          name: file,
+          path: path.resolve(join(folderPath, file)),
+          metadata: metadata[index]
+        }
+      })
+      // send the files to the server
+      return filesWithMetadata
     } catch (err) {
       console.error(err);
     }

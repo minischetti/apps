@@ -34,6 +34,7 @@
     "@floating-ui/react": "^0.24.3",
     "@phosphor-icons/react": "^2.0.9",
     "got": "^13.0.0",
+    "howler": "^2.2.3",
     "music-metadata": "^7.13.0",
     "music-metadata-browser": "^2.5.10",
     "pizzicato": "^0.6.4",

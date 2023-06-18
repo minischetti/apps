@@ -4,6 +4,7 @@ const { contextBridge, ipcRenderer } = electron;
 contextBridge.exposeInMainWorld('api', {
     // File
     selectFile: () => ipcRenderer.invoke('selectFile'),
+    setLibraryPath: (path) => ipcRenderer.invoke('setLibraryPath', path),
     getOutputFolder: () => ipcRenderer.invoke('getOutputFolder'),
     getLibrary: () => ipcRenderer.invoke('getLibrary'),
     cleanLibrary: () => ipcRenderer.invoke('cleanLibrary'),

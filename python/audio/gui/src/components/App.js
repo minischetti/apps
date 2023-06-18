@@ -117,7 +117,7 @@ function App() {
     // speedShift.wet.value = 0;
     // player.connect(speedShift);
     getVoices()
-    getLibrary()
+    // getLibrary()
   }, [])
 
 
@@ -153,13 +153,14 @@ function App() {
   }
 
 
-  const selectFile = () => {
+  const setLibraryPath = () => {
     setIsLoading(true)
     console.log('select_file')
-    return window.api.selectFile().then((res) => {
+    return window.api.setLibraryPath().then((res) => {
       console.log(res)
       // Get files from getLibrary
-      getLibrary()
+      // getLibrary()
+      setLibrary(res)
       // Set the selected file
       setIsLoading(false)
 
@@ -319,7 +320,7 @@ function App() {
       if (selectedFile && selectedFile.metadata) {
         return (
           <div className="now-playing">
-            {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" className="album-art" onClick={selectFile} /> : <FileArrowUp className="file_upload_button" onClick={selectFile} />}
+            {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" className="album-art" onClick={setLibrary} /> : <FileArrowUp className="file_upload_button" onClick={setLibrary} />}
             <div className="now-playing-info">
               {selectedFile.metadata.common.title ? <h3>{selectedFile.metadata.common.title}</h3> : <h3>{selectedFile.name}</h3>}
               {selectedFile.metadata.common.album ? <p>{selectedFile.metadata.common.album}</p> : null}
@@ -536,7 +537,7 @@ function App() {
             <div className="flex row center no-select">
               {showLibrary ? <CaretLeft size={32} onClick={() => setShowLibrary(false)} /> : <CaretRight size={32} onClick={() => setShowLibrary(true)} />}
               <h3>Library</h3>
-              {showLibrary ? <button onClick={selectFile}>Add file</button> : null}
+              {showLibrary ? <button onClick={setLibraryPath}>Set library folder</button> : null}
             </div>
             {showLibrary ? <form onChange={openFile} className='library'>
               {library ? library.map((file, index) => {
