@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 
 import '../assets/css/App.css'
-import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox } from '@phosphor-icons/react'
+import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox, Hamburger, Files, ArrowLeft, CaretLeft, CaretRight } from '@phosphor-icons/react'
 import * as Tone from 'tone'
 import { Howl, Howler } from 'howler';
 import WaveSurfer from 'wavesurfer.js'
@@ -76,6 +76,8 @@ function App() {
   const [speed, setSpeed] = React.useState(1)
 
   const [voices, setVoices] = React.useState([])
+
+  const [showLibrary, setShowLibrary] = React.useState(true)
   // Format
   const [outputFolder, setOutputFolder] = React.useState({
     folderPath: null,
@@ -177,6 +179,7 @@ function App() {
       console.log(res)
       setSelectedFile(res)
       player.load(`file://${res.path}`)
+      Tone.Transport.start()
     }).catch((err) => {
       console.log(err)
     })
@@ -189,29 +192,17 @@ function App() {
     synth.triggerAttackRelease("C3", "8n");
     setIsLoading(false)
   }
-  
+
 
   const changePitch = (event) => {
     event.preventDefault()
+    console.log('changePitch')
     synth.triggerAttackRelease("C3", "32n")
     const nSteps = event.target.value
     console.log("nSteps", nSteps)
     setPitch(nSteps)
 
     pitchShift.pitch = nSteps;
-    // player.start()
-    // window.api.adjustPitch(selectedFile, pitch).then((res) => {
-    //   console.log(res)
-    //   setSelectedFile(res)
-    //   player.load(res)
-    // }).catch((err) => {
-    //   console.log(err)
-    // })
-    // let buf
-    // const buffer = new Tone.Buffer(res, () => {
-    //   buf = buffer.get()
-    //   console.log("buf", buf.body)
-    // })
   }
   const changePitchBlend = (event) => {
     event.preventDefault()
@@ -224,7 +215,10 @@ function App() {
     console.log('changeSpeed')
     const speed = event.target.value
     console.log("speed", speed)
-    player.playbackRate = speed
+    // computedPlaybackRate(t) = playbackRate(t) * pow(2, detune(t) / 1200)
+    player.playbackRate = speed * Math.pow(2, pitch / 1200)
+    // player.pitch = speed * Math.pow(2, pitch / 1200)
+    // console.log("player.pitch", player.pitch)
     // window.api.changeSpeed(selectedFile, speed).then((res) => {
     //   console.log(res)
     // }).catch((err) => {
@@ -328,34 +322,30 @@ function App() {
       }
     },
     pitch_controls: () => {
-      if (selectedFile) {
-        return (
-          <form className='pitch-controls control'>
-            <div className="control-header">
-              <MusicNote size={24} />
-              <h4>Pitch</h4>
-            </div>
-            <input name="pitch" type="range" min="-12" max="12" step="1" defaultValue="0" onChange={changePitch} />
-            <p>{pitch} semitone(s)</p>
-            <input disabled name="blend" type="range" min="0" max="1" step="0.1" defaultValue="1" onChange={changePitchBlend} />
-            <p>Blend: {pitchBlend}</p>
-          </form>
-        )
-      }
+      return (
+        <form className='pitch-controls control'>
+          <div className="control-header">
+            <MusicNote size={24} />
+            <h4>Pitch</h4>
+          </div>
+          <input name="pitch" type="range" min="-12" max="12" step="1" defaultValue="0" onChange={changePitch} />
+          <p>{pitch} semitone(s)</p>
+          <input disabled name="blend" type="range" min="0" max="1" step="0.1" defaultValue="1" onChange={changePitchBlend} />
+          <p>Blend: {pitchBlend}</p>
+        </form>
+      )
     },
     speed_controls: () => {
-      if (selectedFile) {
-        return (
-          <form className='speed-controls control' onChange={changeSpeed}>
-            <div className="control-header">
-              <Gauge size={24} />
-              <h4>Speed</h4>
-            </div>
-            <input type="range" min="0.1" max="2" defaultValue="1" step="0.1" onChange={(e) => setSpeed(e.target.value)} />
-            <p>{speed}x</p>
-          </form>
-        )
-      }
+      return (
+        <form className='speed-controls control' onChange={changeSpeed}>
+          <div className="control-header">
+            <Gauge size={24} />
+            <h4>Speed</h4>
+          </div>
+          <input type="range" min="0.1" max="2" defaultValue="1" step="0.1" onChange={(e) => setSpeed(e.target.value)} />
+          <p>{speed}x</p>
+        </form>
+      )
     },
     separate_controls: () => {
       const modes = [
@@ -380,58 +370,54 @@ function App() {
           value: 'other'
         }
       ]
-      if (selectedFile) {
-        return (
-          <div className='separate-controls control'>
-            <div className="control-header">
-              <ArrowsOutLineHorizontal size={24} />
-              <h4>Isolate</h4>
-            </div>
-            <form onSubmit={isolate} onChange={() => synth.triggerAttackRelease("C3", "32n")} className='flex'>
-              <div className="modes">
-                {modes.map((mode, index) => {
-                  return (
-                    <div className="tag mode" key={index} tabIndex={0}>
-                      <input defaultChecked={index == 0} type="radio" id={mode.value} name="mode" value={mode.value} />
-                      <label htmlFor={mode.value}>{mode.name}</label>
-                    </div>
-                  )
-                })}
-              </div>
-              <div className="control-footer">
-                <button>Start<ArrowRight /></button>
-              </div>
-            </form>
+      return (
+        <div className='separate-controls control'>
+          <div className="control-header">
+            <ArrowsOutLineHorizontal size={24} />
+            <h4>Isolate</h4>
           </div>
-        )
-      }
+          <form onSubmit={isolate} onChange={() => synth.triggerAttackRelease("C3", "32n")} className='flex column'>
+            <div className="modes">
+              {modes.map((mode, index) => {
+                return (
+                  <div className="tag mode" key={index} tabIndex={0}>
+                    <input defaultChecked={index == 0} type="radio" id={mode.value} name="mode" value={mode.value} />
+                    <label htmlFor={mode.value}>{mode.name}</label>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="control-footer">
+              <button>Start<ArrowRight /></button>
+            </div>
+          </form>
+        </div>
+      )
     },
     voice_changer_controls: () => {
-      if (selectedFile) {
-        return (
-          <div className='voice-changer-controls control'>
-            <div className="control-header">
-              <MicrophoneStage size={24} />
-              <h4>Voice Changer</h4>
-            </div>
-            <form onSubmit={changeVoice} onChange={() => synth.triggerAttackRelease("C3", "32n")} className='flex'>
-              <div className="voices">
-                {voices.map((voice, index) => {
-                  return (
-                    <div className="tag voice" key={index} tabIndex={0}>
-                      <input defaultChecked={index == 0} type="radio" id={voice} name="voice" value={voice.value} />
-                      <label htmlFor={voice}>{voice}</label>
-                    </div>
-                  )
-                })}
-              </div>
-              <div className="control-footer">
-                <button>Change</button>
-              </div>
-            </form>
+      return (
+        <div className='voice-changer-controls control'>
+          <div className="control-header">
+            <MicrophoneStage size={24} />
+            <h4>Voice Changer</h4>
           </div>
-        )
-      }
+          <form onSubmit={changeVoice} onChange={() => synth.triggerAttackRelease("C3", "32n")} className='flex column'>
+            <div className="voices">
+              {voices.map((voice, index) => {
+                return (
+                  <div className="tag voice" key={index} tabIndex={0}>
+                    <input defaultChecked={index == 0} type="radio" id={voice} name="voice" value={voice.value} />
+                    <label htmlFor={voice}>{voice}</label>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="control-footer">
+              <button>Change</button>
+            </div>
+          </form>
+        </div>
+      )
     },
     lyrics: () => {
       if (selectedFile && lyrics) {
@@ -458,14 +444,29 @@ function App() {
           {templates.now_playing()}
           <div className="flex row">
             {templates.playback_controls()}
-            <div id="waveform">
-            </div>
+            <div id="waveform"></div>
           </div>
           <div className="controls">
-            {templates.pitch_controls()}
-            {templates.speed_controls()}
-            {templates.separate_controls()}
-            {templates.voice_changer_controls()}
+            <div className="control-section">
+              <div className="control-section-header">
+                <h3>Effects</h3>
+                <div className="divider"></div>
+              </div>
+              <div className="flex">
+                {templates.pitch_controls()}
+                {templates.speed_controls()}
+              </div>
+            </div>
+          </div>
+          <div className="control-section">
+            <div className="control-section-header">
+              <h3>Workflows</h3>
+              <div className="divider"></div>
+            </div>
+            <div className="flex">
+              {templates.separate_controls()}
+              {templates.voice_changer_controls()}
+            </div>
           </div>
         </div>
       )
@@ -491,7 +492,45 @@ function App() {
         </div>
       )
     },
+    library: () => {
+      const classes = ['sidebar']
+      if (showLibrary) {
+        classes.push('show')
+      }
+      return (
+        <div className={classes.join(' ')}>
+          <div className="files">
+            <div className="flex row center no-select">
+              {showLibrary ? <CaretLeft size={32} onClick={() => setShowLibrary(false)} /> : <CaretRight size={32} onClick={() => setShowLibrary(true)} />}
+              <h3>Library</h3>
+              {showLibrary ? <button onClick={selectFile}>Add file</button> : null}
+            </div>
+            {showLibrary ? <form onChange={openFile} className='files'>
+              {library ? library.map((file, index) => {
+                return (
+                  <div className="tag" key={index} onContextMenu={(event) => open_context_menu(event, file.path)}>
+                    <input type="radio" id={file.name} name="file" value={file.path} />
+                    <label htmlFor={file.name}>{file.name}</label>
+                  </div>
+                )
+              }) : null}
+            </form> : null}
+          </div>
+          {/* <div className="resize"
+            onMouseDown={() => window.addEventListener('mousemove', resize_width_of_sidebar)}>
+          </div> */}
+        </div>
+      )
+    },
   }
+
+  const resize_width_of_sidebar = (event) => {
+    event.preventDefault()
+    const sidebar = document.querySelector('.sidebar')
+    const new_width = window.innerWidth + event.clientX
+    sidebar.style.width = `${new_width}px`
+  }
+
 
   return (
     <div className='app-content'>
@@ -503,33 +542,8 @@ function App() {
           </div>
         </div>
       </div>
-      {/* {["original", "output"].map((mode, index) => {
-        return (
-          <div className="tag" key={index}>
-            <input defaultChecked={index == 0} type="radio" id={mode} name="mode" value={folder} />
-            <label htmlFor={mode}>{mode}</label>
-          </div>
-        )
-      })} */}
       <div className="app-body">
-        <div className="sidebar">
-          <div className="files">
-            <div className="flex row">
-              <h3>Library</h3>
-              <button onClick={selectFile}>Add file</button>
-            </div>
-            <form onChange={openFile} className='files'>
-              {library ? library.map((file, index) => {
-                return (
-                  <div className="tag" key={index} onContextMenu={(event) => open_context_menu(event, file.path)}>
-                    <input type="radio" id={file.name} name="file" value={file.path} />
-                    <label htmlFor={file.name}>{file.name}</label>
-                  </div>
-                )
-              }) : null}
-            </form>
-          </div>
-        </div>
+        {templates.library()}
         {templates.body()}
         <div className="sidebar right">
           {templates.output_folder()}
