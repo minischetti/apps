@@ -255,6 +255,7 @@ button:active {
 
 .flex.row {
     flex-direction: row;
+    gap: 1rem;
 }
 
 .voices {

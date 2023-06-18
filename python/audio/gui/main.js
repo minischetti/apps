@@ -107,10 +107,39 @@ const handlers = {
       }
     }
   },
+  async openFile(event, filePath) {
+    try {
+      console.log(filePath)
+      const metadata = await parseFile(filePath)
+      const cover = selectCover(metadata.common.picture)
+      metadata.img = cover
+      const file = {
+        name: path.basename(filePath),
+        path: filePath,
+        metadata
+      }
+      return file
+    } catch (err) {
+      console.error(err);
+    }
+  },
   async getLibrary() {
     try {
       const result = await superagent.get('http://127.0.0.1:8000/api/library/').send()
-      return result.body
+      const library = result.body
+      const metadata = await Promise.all(library.map(async file => {
+        const metadata = await parseFile(file.path)
+        const cover = selectCover(metadata.common.picture)
+        metadata.img = cover
+        return metadata
+      }))
+      const files = library.map((file, index) => {
+        return {
+          ...file,
+          metadata: metadata[index]
+        }
+      })
+      return files
     } catch (err) {
       console.error(err);
     }

@@ -157,7 +157,12 @@ function App() {
   const openFile = (event) => {
     console.log('open_file')
     setIsLoading(true)
-    setSelectedFile(`file://${event.target.value}`)
+    // setSelectedFile(`file://${event.target.value}`)
+    window.api.openFile(event.target.value).then((res) => {
+      setSelectedFile(res)
+    }).catch((err) => {
+      console.log(err)
+    })
     // setPlayer(new Howl({
     //   src: [`${event.target.value}`],
     //   html5: true,
@@ -434,10 +439,13 @@ function App() {
       return (
         <div className="main">
           <h3>Workbench</h3>
-          <div id="waveform">
-          </div>
           {templates.now_playing()}
+          <div className="flex row">
           {templates.playback_controls()}
+          <div id="waveform">
+            </div>
+          </div>
+
           <div className="controls">
             {templates.pitch_controls()}
             {templates.speed_controls()}
