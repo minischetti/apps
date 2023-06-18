@@ -245,8 +245,6 @@ function createWindow() {
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
       webSecurity: false,
-      transparent: true,
-      frame: false,
     }
   })
 

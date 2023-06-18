@@ -65,12 +65,14 @@ function App() {
   const [lyrics, setLyrics] = React.useState(null)
 
   // Media Player
-  const [player, setPlayer] = React.useState()
+  const [player, setPlayer] = React.useState(null)
   // Synth
   const [synth, setSynth] = React.useState(new Tone.Synth().toDestination())
 
   // Effects
   const [pitch, setPitch] = React.useState(0)
+  const [pitchBlend, setPitchBlend] = React.useState(1)
+  const [pitchShift, setPitchShift] = React.useState(null)
   const [speed, setSpeed] = React.useState(1)
 
   const [voices, setVoices] = React.useState([])
@@ -96,9 +98,22 @@ function App() {
       partialRender: true,
       width: 500,
     });
+    const player = new Tone.Player();
+    const pitchShift = new Tone.PitchShift().toDestination();
+    player.connect(pitchShift);
+    setPlayer(player)
+    setPitchShift(pitchShift)
+
+
+    // Set up Tone.js PitchShift
+    // Set up Tone.js Speed
+    // const speedShift = new Tone.Speed().toDestination();
+    // speedShift.wet.value = 0;
+    // player.connect(speedShift);
     getVoices()
     getLibrary()
-  }, [player])
+  }, [])
+
 
   const getLibrary = () => {
     window.api.getLibrary().then((res) => {
@@ -159,7 +174,9 @@ function App() {
     setIsLoading(true)
     // setSelectedFile(`file://${event.target.value}`)
     window.api.openFile(event.target.value).then((res) => {
+      console.log(res)
       setSelectedFile(res)
+      player.load(`file://${res.path}`)
     }).catch((err) => {
       console.log(err)
     })
@@ -168,49 +185,51 @@ function App() {
     //   html5: true,
     // }))
     wavesurfer.current.load(`${event.target.value}`)
-    wavesurfer.current.on('ready', function () {
-      console.log('ready')
-      setIsLoading(false)
-    });
 
     synth.triggerAttackRelease("C3", "8n");
     setIsLoading(false)
   }
+  
 
   const changePitch = (event) => {
     event.preventDefault()
-    console.log('changePitch')
-    const nSteps = event.target.pitch.value
+    synth.triggerAttackRelease("C3", "32n")
+    const nSteps = event.target.value
     console.log("nSteps", nSteps)
     setPitch(nSteps)
+
+    pitchShift.pitch = nSteps;
     // player.start()
-    window.api.adjustPitch(selectedFile, pitch).then((res) => {
-      console.log(res)
-      setSelectedFile(res)
-      player.load(res)
-    }).catch((err) => {
-      console.log(err)
-    })
+    // window.api.adjustPitch(selectedFile, pitch).then((res) => {
+    //   console.log(res)
+    //   setSelectedFile(res)
+    //   player.load(res)
+    // }).catch((err) => {
+    //   console.log(err)
+    // })
     // let buf
     // const buffer = new Tone.Buffer(res, () => {
     //   buf = buffer.get()
     //   console.log("buf", buf.body)
     // })
-
-
-
-    //   setPlayer(new Tone.Player(res).toDestination())
+  }
+  const changePitchBlend = (event) => {
+    event.preventDefault()
+    const nSteps = event.target.value
+    console.log("nSteps", nSteps)
+    setPitchBlend(nSteps)
+  }
+  const changeSpeed = (event) => {
+    event.preventDefault()
+    console.log('changeSpeed')
+    const speed = event.target.value
+    console.log("speed", speed)
+    player.playbackRate = speed
+    // window.api.changeSpeed(selectedFile, speed).then((res) => {
+    //   console.log(res)
     // }).catch((err) => {
     //   console.log(err)
     // })
-  }
-  const changeSpeed = () => {
-    console.log('changeSpeed')
-    window.api.changeSpeed(selectedFile, speed).then((res) => {
-      console.log(res)
-    }).catch((err) => {
-      console.log(err)
-    })
   }
   const isolate = (event) => {
     event.preventDefault()
@@ -235,21 +254,22 @@ function App() {
   }
   const play = () => {
     console.log('play')
-    wavesurfer.current.play()
+    // wavesurfer.current.play()
+    player.start()
     setIsPlaying(true)
     setIsPaused(false)
   }
 
   const pause = () => {
     console.log('pause')
-    wavesurfer.current.pause()
+    player.stop()
     setIsPaused(true)
     setIsPlaying(false)
   }
 
   const stop = () => {
     console.log('stop')
-    wavesurfer.current.stop()
+    // wavesurfer.current.stop()
     setIsPlaying(false)
     setIsPaused(false)
   }
@@ -310,16 +330,15 @@ function App() {
     pitch_controls: () => {
       if (selectedFile) {
         return (
-          <form onSubmit={changePitch} className='pitch-controls control' onChange={() => synth.triggerAttackRelease("C3", "32n")}>
+          <form className='pitch-controls control'>
             <div className="control-header">
               <MusicNote size={24} />
               <h4>Pitch</h4>
             </div>
-            <input name="pitch" type="range" min="-12" max="12" defaultValue="0" step="1" onChange={(e) => setPitch(e.target.value)} />
+            <input name="pitch" type="range" min="-12" max="12" step="1" defaultValue="0" onChange={changePitch} />
             <p>{pitch} semitone(s)</p>
-            <div className="control-footer">
-              <button>Change</button>
-            </div>
+            <input disabled name="blend" type="range" min="0" max="1" step="0.1" defaultValue="1" onChange={changePitchBlend} />
+            <p>Blend: {pitchBlend}</p>
           </form>
         )
       }
@@ -327,16 +346,13 @@ function App() {
     speed_controls: () => {
       if (selectedFile) {
         return (
-          <form className='speed-controls control' onChange={() => synth.triggerAttackRelease("C3", "32n")}>
+          <form className='speed-controls control' onChange={changeSpeed}>
             <div className="control-header">
               <Gauge size={24} />
               <h4>Speed</h4>
             </div>
             <input type="range" min="0.1" max="2" defaultValue="1" step="0.1" onChange={(e) => setSpeed(e.target.value)} />
             <p>{speed}x</p>
-            <div className="control-footer">
-              <button onClick={changeSpeed}>Change</button>
-            </div>
           </form>
         )
       }
@@ -371,7 +387,7 @@ function App() {
               <ArrowsOutLineHorizontal size={24} />
               <h4>Isolate</h4>
             </div>
-            <form onSubmit={isolate} onChange={() => synth.triggerAttackRelease("C3", "32n")}>
+            <form onSubmit={isolate} onChange={() => synth.triggerAttackRelease("C3", "32n")} className='flex'>
               <div className="modes">
                 {modes.map((mode, index) => {
                   return (
@@ -398,7 +414,7 @@ function App() {
               <MicrophoneStage size={24} />
               <h4>Voice Changer</h4>
             </div>
-            <form onSubmit={changeVoice} onChange={() => synth.triggerAttackRelease("C3", "32n")}>
+            <form onSubmit={changeVoice} onChange={() => synth.triggerAttackRelease("C3", "32n")} className='flex'>
               <div className="voices">
                 {voices.map((voice, index) => {
                   return (
@@ -445,7 +461,6 @@ function App() {
             <div id="waveform">
             </div>
           </div>
-
           <div className="controls">
             {templates.pitch_controls()}
             {templates.speed_controls()}
