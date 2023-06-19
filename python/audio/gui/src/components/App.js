@@ -192,7 +192,6 @@ function App() {
         ...res,
         coverBlob: URL.createObjectURL(new Blob([res.metadata.cover.data], { type: 'image/jpeg' }))
       })
-      console.log(URL.createObjectURL(new Blob([res.metadata.cover.data], { type: 'image/jpeg' })))
       stop()
       player.load(`file://${res.path}`)
 
@@ -346,9 +345,9 @@ function App() {
           <div className="now-playing">
             {selectedFile ? <img src={selectedFile.coverBlob} alt="album art" className="album-art" /> : <FileArrowUp className="file_upload_button" />}
             <div className="now-playing-info">
-              {selectedFile.metadata.common.title ? <h3>{selectedFile.metadata.common.title}</h3> : <h3>{selectedFile.name}</h3>}
-              {selectedFile.metadata.common.album ? <p>{selectedFile.metadata.common.album}</p> : null}
-              {selectedFile.metadata.common.artist ? <p>{selectedFile.metadata.common.artist}</p> : null}
+              {selectedFile.metadata.common.title ? <h3 className="bold">{selectedFile.metadata.common.title}</h3> : <h3>{selectedFile.name}</h3>}
+              {selectedFile.metadata.common.album ? <p className="bold">{selectedFile.metadata.common.album}</p> : null}
+              {selectedFile.metadata.common.artist ? <p className="italic">{selectedFile.metadata.common.artist}</p> : null}
             </div>
           </div>
         )
@@ -497,18 +496,18 @@ function App() {
 
       return (
         <form onSubmit={trainVoice}>
-                  {/* Train your own voice model */}
-                  <h4>Train an AI voice</h4>
-                  <ul>
-                    <li>1. Record 5-10 minutes of your voice</li>
-                    <li>2. Split the audio into sections, each 10 second or less</li>
-                    <li>3. Upload at least 5 audio files</li>
-                    <li>4. Train your voice model</li>
-                  </ul>
-                  <input type="text" name="voice" placeholder="Name" />
-                  {/* <input type="file" name="files" multiple /> */}
-                  <button>Train</button>
-                </form>
+          {/* Train your own voice model */}
+          <h4>Train an AI voice</h4>
+          <ul>
+            <li>1. Record 5-10 minutes of your voice</li>
+            <li>2. Split the audio into sections, each 10 second or less</li>
+            <li>3. Upload at least 5 audio files</li>
+            <li>4. Train your voice model</li>
+          </ul>
+          <input type="text" name="voice" placeholder="Name" />
+          {/* <input type="file" name="files" multiple /> */}
+          <button>Train</button>
+        </form>
       )
     },
     lyrics: () => {
@@ -591,7 +590,7 @@ function App() {
               }) : "Library folder not selected"}
             </form> : `${library.length} files`}
           </div>
-          {templates.output_folder()}
+          {/* {templates.output_folder()} */}
           {/* <div className="resize"
             onMouseDown={() => window.addEventListener('mousemove', resize_width_of_sidebar)}>
           </div> */}
@@ -624,8 +623,11 @@ function App() {
 
           {templates.body()}
           <div className="footer">
-
             <div className="flex row">
+
+
+            </div>
+            <div className="flex row space-between border-top">
               {templates.now_playing()}
               {templates.playback_controls()}
               {/* <div id="waveform"></div> */}

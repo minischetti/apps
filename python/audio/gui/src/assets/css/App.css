@@ -209,6 +209,23 @@ button:active {
 .now-playing-info {
     font-size: 12px;
 }
+
+.bold {
+    font-weight: bold;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+.border-top {
+    border-top: 2px solid hsla(0, 0%, 100%, 0.1);
+}
+
 .file_upload_button {
     width: 100px;
     height: 100px;
@@ -297,6 +314,8 @@ button:active {
     cursor: pointer;
     font-weight: 400;
     transition: all 0.25s ease-in-out;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .tag input:checked + label {
@@ -343,6 +362,8 @@ button:active {
 }
 
 .album-art {
+    width: 100px;
+    height: 100px;
     border-radius: 1rem;
 }
 
