@@ -1,13 +1,59 @@
 import React, { useState, useEffect, useRef } from 'react'
 
 import '../assets/css/App.css'
-import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox, Hamburger, Files, ArrowLeft, CaretLeft, CaretRight, Clock, SpeakerNone } from '@phosphor-icons/react'
+import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox, Hamburger, Files, ArrowLeft, CaretLeft, CaretRight, Clock, SpeakerNone, Folder, CaretDown, CaretUp } from '@phosphor-icons/react'
 import * as Tone from 'tone'
 import { Howl, Howler } from 'howler';
 import WaveSurfer from 'wavesurfer.js'
-import { useFloating, offset, flip, shift, useHover, useClick, useDismiss, useRole } from '@floating-ui/react';
+import { useFloating, offset, flip, shift, useHover, useClick, useDismiss, useRole, autoUpdate, useInteractions, FloatingFocusManager } from '@floating-ui/react';
 
-function Popover() {
+function Accordion({ title, children, border = true }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const accordion = {
+    border: border ? '1px solid #ccc' : 'none',
+    borderRadius: 4,
+    display: 'flex',
+    flex: 1,
+  };
+
+
+  const styles = {
+    accordion: {
+      border: border ? '1px solid #ccc' : 'none',
+      borderRadius: 4,
+      display: "flex",
+      flexDirection: "column"
+    },
+    title: {
+      border: 'none',
+      borderRadius: 4,
+      color: '#333',
+      cursor: 'pointer',
+      display: 'flex',
+      flex: 1,
+      fontSize: 16,
+      fontWeight: 'bold',
+      padding: 10,
+      textAlign: 'left',
+    },
+  };
+
+  return (
+    <div className="accordion" style={styles.accordion}>
+      <button
+        className="accordion__button"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div styles={styles.title}>{title}</div>
+        {isOpen ? <CaretUp /> : <CaretDown />}
+      </button>
+      {isOpen && <div className="accordion__content">{children}</div>}
+    </div>
+  );
+}
+
+function Popover({ children }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const { refs, floatingStyles, context } = useFloating({
@@ -16,6 +62,7 @@ function Popover() {
     middleware: [offset(10), flip(), shift()],
     whileElementsMounted: autoUpdate,
   });
+
 
   const click = useClick(context);
   const dismiss = useDismiss(context);
@@ -39,7 +86,7 @@ function Popover() {
             style={floatingStyles}
             {...getFloatingProps()}
           >
-            Popover element
+            {children}
           </div>
         </FloatingFocusManager>
       )}
@@ -183,6 +230,7 @@ function App() {
     window.api.openFile(event.target.value).then((res) => {
       console.log(res)
       setSelectedFile(res)
+      stop()
       player.load(`file://${res.path}`)
 
       player.sync()
@@ -236,9 +284,10 @@ function App() {
 
   const isolate = (event) => {
     event.preventDefault()
-    console.log('separate')
+    console.log('isolate')
     const mode = event.target.mode.value
-    window.api.isolate(selectedFile, mode).then((res) => {
+    console.log(selectedFile)
+    window.api.isolate(selectedFile.path, mode).then((res) => {
       console.log(res)
     }).catch((err) => {
       console.log(err)
@@ -535,9 +584,9 @@ function App() {
         <div className={classes.join(' ')}>
           <div className="library">
             <div className="flex row center no-select">
-              {showLibrary ? <CaretLeft size={32} onClick={() => setShowLibrary(false)} /> : <CaretRight size={32} onClick={() => setShowLibrary(true)} />}
+              {showLibrary ? <CaretDown size={32} onClick={() => setShowLibrary(false)} /> : <CaretRight size={32} onClick={() => setShowLibrary(true)} />}
               <h3>Library</h3>
-              {showLibrary ? <button onClick={setLibraryPath}>Set library folder</button> : null}
+              {showLibrary ? <button onClick={setLibraryPath}><Folder/><CaretDown/></button> : null}
             </div>
             {showLibrary ? <form onChange={openFile} className='library'>
               {library ? library.map((file, index) => {

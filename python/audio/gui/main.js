@@ -232,12 +232,12 @@ const handlers = {
       console.error(err);
     }
   },
-  async separate(event, filePath, mode) {
+  async isolate(event, filePath, mode) {
     try {
       console.log("filePath", filePath)
       console.log("mode", mode)
       // set response type to blob
-      const result = await superagent.post('http://127.0.0.1:8000/api/separate/').send(
+      const result = await superagent.post('http://127.0.0.1:8000/api/isolate/').send(
         { filePath, mode }
       )
       console.log(result)
@@ -286,13 +286,6 @@ function createWindow() {
       preload: join(__dirname, 'preload.js'),
       webSecurity: false,
     },
-    // frame: false,
-    // // transparent: true,
-    // titleBarStyle: 'hidden',
-    // titleBarOverlay: {
-    //   color: '#001',
-    //   symbolColor: '#fff',
-    // },
     autoHideMenuBar: true,
     backgroundColor: '#001',
     show: false,

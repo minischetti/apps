@@ -6,11 +6,7 @@ import librosa
 import soundfile
 import os
 import demucs.separate
-from tkinter import * 
-from tkinter import filedialog
-from tkinter.ttk import Combobox, Progressbar
 import subprocess
-import webbrowser
 import whisper
 # from pygame import mixer
 from fastapi import FastAPI, File, UploadFile
@@ -83,6 +79,22 @@ def write_sound_file(data, sample_rate, operation_name, file_path, file_name, fi
     # Make the output directory if it doesn't exist
     print("Saving...")
     output_path = file_name + ".aa." + file_ext
+
+    # Check if the directory exists
+    if not os.path.exists(out_dir_now()):
+        print("Making directory " + out_dir_now())
+        os.makedirs(out_dir_now())
+
+    # Check if the file already exists
+    if os.path.exists(out_dir_now() + output_path):
+        count = 1
+        print("File already exists")
+        output_path = file_name + "." + str(count) + ".aa." + file_ext
+        # Increment the count until the file doesn't exist
+        while os.path.exists(out_dir_now() + output_path):
+            count += 1
+            output_path = file_name + "." + str(count) + ".aa." + file_ext
+    print("Saving as " + output_path)
     # output_dir = out_dir + file_name + "/" + operation_name + "/"
     # print(output_dir)
     # if not os.path.exists(output_dir):
@@ -112,23 +124,23 @@ def time_stretch(SpeedRequest: SpeedRequest):
     write_sound_file(result, sr, "time_stretch" + str(SpeedRequest.speed), file_name, file_ext)
     return {"message": "Successfully saved " + file_name + "." + file_ext}
 
-class SeparationRequest(BaseModel):
+class IsolationRequest(BaseModel):
     filePath: str
     mode: str
     class Config:
         frozen = True
 separation_options = ["All", "Vocals", "Drums", "Bass", "Other"]
-@app.post("/api/separate/")
-def separate(SeparationRequest: SeparationRequest):
-    file_path = SeparationRequest.filePath
-    file_name = os.path.basename(SeparationRequest.filePath).split(".")[0]
-    file_ext = os.path.basename(SeparationRequest.filePath).split(".")[1]
+@app.post("/api/isolate/")
+def isolate(IsolationRequest: IsolationRequest):
+    file_path = IsolationRequest.filePath
+    file_name = os.path.basename(IsolationRequest.filePath).split(".")[0]
+    file_ext = os.path.basename(IsolationRequest.filePath).split(".")[1]
     # Construct the command
     command = ["python", "-m", "demucs", "-o=" + out_dir_now(), file_path]
 
     # Add the isolate track option if it is not set to "All"
-    if SeparationRequest.mode != separation_options[0].lower():
-        command.append("--two-stems=" + SeparationRequest.mode.lower())
+    if IsolationRequest.mode != separation_options[0].lower():
+        command.append("--two-stems=" + IsolationRequest.mode.lower())
 
     print(command)
     print("Separating tracks...")
