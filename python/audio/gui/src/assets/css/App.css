@@ -156,6 +156,8 @@ button:active {
     padding: 0.5rem 1rem;
     border-bottom: 2px solid hsla(0, 0%, 100%, 0.1);
     backdrop-filter: blur(10px);
+    -webkit-app-region: drag;
+    user-select: none;
 }
 
 .app-body {

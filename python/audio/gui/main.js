@@ -297,6 +297,12 @@ function createWindow() {
     backgroundColor: '#001',
     show: false,
     vibrancy: 'dark',
+    frame: false,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#001',
+      symbolColor: '#fff',
+    },
   })
 
   var splash = new BrowserWindow({
