@@ -158,7 +158,7 @@ const handlers = {
         }
       })
       // send the files to the server
-      return filesWithMetadata
+      return { folderPath, files: filesWithMetadata }
     } catch (err) {
       console.error(err);
     }

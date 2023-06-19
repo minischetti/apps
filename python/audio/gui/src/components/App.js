@@ -53,7 +53,7 @@ function Accordion({ title, children, border = true }) {
   );
 }
 
-function Popover({ children }) {
+function Popover({ title, children }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const { refs, floatingStyles, context } = useFloating({
@@ -77,7 +77,8 @@ function Popover({ children }) {
   return (
     <>
       <button ref={refs.setReference} {...getReferenceProps()}>
-        Reference element
+        <div>{title}</div>
+        {isOpen ? <CaretUp /> : <CaretDown />}
       </button>
       {isOpen && (
         <FloatingFocusManager context={context} modal={false}>
@@ -105,6 +106,7 @@ function App() {
 
   // Files
   const [library, setLibrary] = React.useState([])
+  const [libraryLocation, setLibraryLocation] = React.useState(null)
   const [selectedFile, setSelectedFile] = React.useState(null)
   const [metadata, setMetadata] = React.useState(null)
 
@@ -135,19 +137,19 @@ function App() {
   useEffect(() => {
     console.log('useEffect')
     // player.toDestination()
-    wavesurfer.current = WaveSurfer.create({
-      container: '#waveform',
-      waveColor: 'violet',
-      progressColor: 'purple',
-      barWidth: 3,
-      barRadius: 3,
-      responsive: true,
-      cursorWidth: 1,
-      cursorColor: '#fff',
-      normalize: true,
-      partialRender: true,
-      width: 500,
-    });
+    // wavesurfer.current = WaveSurfer.create({
+    //   container: '#waveform',
+    //   waveColor: 'violet',
+    //   progressColor: 'purple',
+    //   barWidth: 3,
+    //   barRadius: 3,
+    //   responsive: true,
+    //   cursorWidth: 1,
+    //   cursorColor: '#fff',
+    //   normalize: true,
+    //   partialRender: true,
+    //   width: 500,
+    // });
     const player = new Tone.Player();
     const pitchShift = new Tone.PitchShift().toDestination();
     // Transport
@@ -207,7 +209,8 @@ function App() {
       console.log(res)
       // Get files from getLibrary
       // getLibrary()
-      setLibrary(res)
+      setLibrary(res.files)
+      setLibraryLocation(res.folderPath)
       // Set the selected file
       setIsLoading(false)
 
@@ -242,7 +245,7 @@ function App() {
     //   src: [`${event.target.value}`],
     //   html5: true,
     // }))
-    wavesurfer.current.load(`${event.target.value}`)
+    // wavesurfer.current.load(`${event.target.value}`)
 
     synth.triggerAttackRelease("C3", "8n");
     setIsLoading(false)
@@ -309,8 +312,6 @@ function App() {
     // wavesurfer.current.play()
     player.start()
     Tone.Transport.start()
-
-
     setIsPlaying(true)
     setIsPaused(false)
   }
@@ -369,7 +370,7 @@ function App() {
       if (selectedFile && selectedFile.metadata) {
         return (
           <div className="now-playing">
-            {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" className="album-art" onClick={setLibrary} /> : <FileArrowUp className="file_upload_button" onClick={setLibrary} />}
+            {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" className="album-art" /> : <FileArrowUp className="file_upload_button" />}
             <div className="now-playing-info">
               {selectedFile.metadata.common.title ? <h3>{selectedFile.metadata.common.title}</h3> : <h3>{selectedFile.name}</h3>}
               {selectedFile.metadata.common.album ? <p>{selectedFile.metadata.common.album}</p> : null}
@@ -392,6 +393,18 @@ function App() {
               {/* <SpeakerNone className="orb" onClick={mute} /> */}
             </div>
             <input name="volume" type="range" min="-50" max="0" step="1" defaultValue="0" onChange={volume} />
+            <div style={{ display: "flex", gap: "1rem" }}>
+              <Popover title="Pitch">
+                {templates.pitch_controls()}
+              </Popover>
+              <Popover title="Speed">
+                {templates.speed_controls()}
+              </Popover>
+              <Popover title="BPM">
+                {templates.bpm_controls()}
+              </Popover>
+            </div>
+
           </div>
         )
       }
@@ -530,25 +543,10 @@ function App() {
           <h3>Workbench</h3>
           <div className="controls">
             <div className="control-section">
-              <div className="control-section-header">
-                <h3>Effects</h3>
-                <div className="divider"></div>
-              </div>
               <div className="flex">
-                {templates.pitch_controls()}
-                {templates.speed_controls()}
-                {templates.bpm_controls()}
+                {templates.separate_controls()}
+                {templates.voice_changer_controls()}
               </div>
-            </div>
-          </div>
-          <div className="control-section">
-            <div className="control-section-header">
-              <h3>Workflows</h3>
-              <div className="divider"></div>
-            </div>
-            <div className="flex">
-              {templates.separate_controls()}
-              {templates.voice_changer_controls()}
             </div>
           </div>
         </div>
@@ -586,18 +584,19 @@ function App() {
             <div className="flex row center no-select">
               {showLibrary ? <CaretDown size={32} onClick={() => setShowLibrary(false)} /> : <CaretRight size={32} onClick={() => setShowLibrary(true)} />}
               <h3>Library</h3>
-              {showLibrary ? <button onClick={setLibraryPath}><Folder/><CaretDown/></button> : null}
+              <button onClick={setLibraryPath}><Folder /><CaretDown /></button>
             </div>
+            <div>{libraryLocation}</div>
             {showLibrary ? <form onChange={openFile} className='library'>
-              {library ? library.map((file, index) => {
+              {library && library.length ? library.map((file, index) => {
                 return (
                   <div className="tag" key={index} tabIndex={0} onContextMenu={(event) => open_context_menu(event, file.path)}>
                     <input type="radio" id={file.name} name="file" value={file.path} />
                     <label htmlFor={file.name}>{file.name}</label>
                   </div>
                 )
-              }) : null}
-            </form> : null}
+              }) : "Library folder not selected"}
+            </form> : `${library.length} files`}
           </div>
           {templates.output_folder()}
           {/* <div className="resize"
@@ -630,14 +629,14 @@ function App() {
         {templates.library()}
         <div className="test">
 
-        {templates.body()}
-        <div className="footer">
+          {templates.body()}
+          <div className="footer">
 
             <div className="flex row">
               {templates.now_playing()}
-              <div id="waveform"></div>
+              {templates.playback_controls()}
+              {/* <div id="waveform"></div> */}
             </div>
-            {templates.playback_controls()}
           </div>
         </div>
       </div>
