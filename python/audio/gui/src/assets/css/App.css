@@ -98,37 +98,10 @@ p {
     font-size: 12px;
 }
 
-/* select {
-    all: unset;
-    display: flex;
-    appearance: none;
-    font-family: sans-serif;
-    padding: 0.5rem 1rem;
-    font-size: 0.75rem;
-    user-select: none;
-    align-items: center;
-    background-color: hsla(0, 0%, 100%, 0.1);
-    border-radius: 0.25rem;
-}
-
-option {
-    all: unset;
-    display: flex;
-    appearance: none;
-    font-family: sans-serif;
-    padding: 0.5rem 1rem;
-    font-size: 0.75rem;
-    user-select: none;
-    align-items: center;
-    background-color: hsla(0, 0%, 100%, 0.1);
-    border-radius: 0.25rem;
-    color: black;
-} */
-
 ::selection {
     background-color: var(--accent-primary);
     color: white;
-}
+} 
 
 button svg {
     width: 1rem;

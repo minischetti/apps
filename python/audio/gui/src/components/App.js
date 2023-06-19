@@ -6,52 +6,8 @@ import * as Tone from 'tone'
 import { Howl, Howler } from 'howler';
 import WaveSurfer from 'wavesurfer.js'
 import { useFloating, offset, flip, shift, useHover, useClick, useDismiss, useRole, autoUpdate, useInteractions, FloatingFocusManager } from '@floating-ui/react';
-
-function Accordion({ title, children, border = true }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const accordion = {
-    border: border ? '1px solid #ccc' : 'none',
-    borderRadius: 4,
-    display: 'flex',
-    flex: 1,
-  };
-
-
-  const styles = {
-    accordion: {
-      border: border ? '1px solid #ccc' : 'none',
-      borderRadius: 4,
-      display: "flex",
-      flexDirection: "column"
-    },
-    title: {
-      border: 'none',
-      borderRadius: 4,
-      color: '#333',
-      cursor: 'pointer',
-      display: 'flex',
-      flex: 1,
-      fontSize: 16,
-      fontWeight: 'bold',
-      padding: 10,
-      textAlign: 'left',
-    },
-  };
-
-  return (
-    <div className="accordion" style={styles.accordion}>
-      <button
-        className="accordion__button"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <div styles={styles.title}>{title}</div>
-        {isOpen ? <CaretUp /> : <CaretDown />}
-      </button>
-      {isOpen && <div className="accordion__content">{children}</div>}
-    </div>
-  );
-}
+const { selectCover, parseBlob, parseBuffer } = require('music-metadata-browser');
+import * as mm from 'music-metadata-browser'
 
 function Popover({ title, children }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -204,7 +160,7 @@ function App() {
 
   const setLibraryPath = () => {
     setIsLoading(true)
-    console.log('select_file')
+    console.log('setLibraryPath')
     return window.api.setLibraryPath().then((res) => {
       console.log(res)
       // Get files from getLibrary
@@ -230,9 +186,13 @@ function App() {
     console.log('open_file')
     setIsLoading(true)
     // setSelectedFile(`file://${event.target.value}`)
-    window.api.openFile(event.target.value).then((res) => {
+    window.api.openFile(event.target.value).then(async (res) => {
       console.log(res)
-      setSelectedFile(res)
+      setSelectedFile({
+        ...res,
+        coverBlob: URL.createObjectURL(new Blob([res.metadata.cover.data], { type: 'image/jpeg' }))
+      })
+      console.log(URL.createObjectURL(new Blob([res.metadata.cover.data], { type: 'image/jpeg' })))
       stop()
       player.load(`file://${res.path}`)
 
@@ -351,6 +311,20 @@ function App() {
     })
   }
 
+
+  const trainVoice = (event) => {
+    event.preventDefault()
+    console.log('trainVoice')
+    console.log(event.target.voice.value)
+    // console.log(event.target.files.value)
+
+    window.api.trainVoice(event.target.voice.value).then((res) => {
+      console.log(res)
+    }).catch((err) => {
+      console.error(err)
+    })
+  }
+
   const open_context_menu = (event, filePath) => {
     event.preventDefault()
     return window.api.open_context_menu(filePath).then((res) => {
@@ -370,7 +344,7 @@ function App() {
       if (selectedFile && selectedFile.metadata) {
         return (
           <div className="now-playing">
-            {selectedFile ? <img src="https://via.placeholder.com/100" alt="album art" className="album-art" /> : <FileArrowUp className="file_upload_button" />}
+            {selectedFile ? <img src={selectedFile.coverBlob} alt="album art" className="album-art" /> : <FileArrowUp className="file_upload_button" />}
             <div className="now-playing-info">
               {selectedFile.metadata.common.title ? <h3>{selectedFile.metadata.common.title}</h3> : <h3>{selectedFile.name}</h3>}
               {selectedFile.metadata.common.album ? <p>{selectedFile.metadata.common.album}</p> : null}
@@ -519,6 +493,24 @@ function App() {
         </div>
       )
     },
+    voice_training_controls: () => {
+
+      return (
+        <form onSubmit={trainVoice}>
+                  {/* Train your own voice model */}
+                  <h4>Train an AI voice</h4>
+                  <ul>
+                    <li>1. Record 5-10 minutes of your voice</li>
+                    <li>2. Split the audio into sections, each 10 second or less</li>
+                    <li>3. Upload at least 5 audio files</li>
+                    <li>4. Train your voice model</li>
+                  </ul>
+                  <input type="text" name="voice" placeholder="Name" />
+                  {/* <input type="file" name="files" multiple /> */}
+                  <button>Train</button>
+                </form>
+      )
+    },
     lyrics: () => {
       if (selectedFile && lyrics) {
         return (
@@ -546,6 +538,7 @@ function App() {
               <div className="flex">
                 {templates.separate_controls()}
                 {templates.voice_changer_controls()}
+                {templates.voice_training_controls()}
               </div>
             </div>
           </div>

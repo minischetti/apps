@@ -1,6 +1,8 @@
+from ast import List
 import datetime
 import io
 import json
+import shutil
 import sys
 import librosa
 import soundfile
@@ -274,3 +276,51 @@ def change_voice(VoiceRequest: VoiceRequest):
     command = ["svc", "infer", "--no-auto-predict-f0", "-m", model_data, "-c", model_config, "-o", out_dir_now() + audio_file_name + "_" + VoiceRequest.voice + ".wav", VoiceRequest.filePath]
     subprocess.run(command, shell=True)
     return {"message": "Successfully changed voice to " + VoiceRequest.voice}
+
+
+class TrainRequest(BaseModel):
+    voice: str
+    samplesPath: str
+    class Config:
+        frozen = True
+@app.post("/api/train/")
+def train_voice(TrainRequest: TrainRequest):
+
+    # Check if the model already exists
+    for models in os.listdir("./models"):
+        if TrainRequest.voice in models:
+            print("Voice already exists")
+            return {"message": "Voice already exists"}
+        
+    print("Training voice " + TrainRequest.voice)
+    print(TrainRequest.files)
+
+    # Create the dataset_raw folder
+    os.mkdir("./dataset_raw")
+
+    # Create a folder for the voice
+    os.mkdir("./dataset_raw/" + TrainRequest.voice)
+
+    # Move the files to the voice folder
+    files = os.listdir(TrainRequest.samplesPath)
+    for file in files:
+        shutil.move(TrainRequest.samplesPath + "/" + file, "./dataset_raw/" + TrainRequest.voice + "/" + file)
+    
+    # Run svc pre-resample
+    command = ["svc", "pre-resample"]
+    subprocess.run(command, shell=True)
+
+    # Run svc pre-config
+    command = ["svc", "pre-config"]
+    subprocess.run(command, shell=True)
+
+    # Run svc pre-hubert
+    command = ["svc", "pre-hubert"]
+    subprocess.run(command, shell=True)
+
+    # Run svc train -t
+    command = ["svc", "train", "-t"]
+    subprocess.run(command, shell=True)
+
+
+

@@ -6,8 +6,9 @@ const path = require('path')
 const url = require('url')
 const { join } = require('path')
 const superagent = require('superagent');
-const { parseFile, selectCover } = require('music-metadata');
 const fs = require('fs')
+const { Blob } = require('buffer')
+const { parseFile, selectCover } = require('music-metadata')
 
 
 
@@ -22,6 +23,28 @@ let files = []
 let dev = false
 
 const handlers = {
+  async trainVoice(voice) {
+    try {
+      const { canceled, filePaths } = await dialog.showOpenDialog({
+        properties: ['openDirectory']
+      })
+      if (canceled) {
+        return
+      } else {
+        if (filePaths.length > 0) {
+          const samplesPath = path.resolve(filePaths[0])
+          const result = await superagent.post('http://127.0.0.1:8000/api/train').send({
+            voice,
+            samplesPath
+          })
+          return result
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
   async open_context_menu(event, filePath) {
     const menu = Menu.buildFromTemplate([
       {
@@ -54,7 +77,7 @@ const handlers = {
       return
     } else {
       if (filePaths.length > 0) {
-      const folderPath = path.resolve(filePaths[0])
+        const folderPath = path.resolve(filePaths[0])
         const folderContent = fs.readdirSync(folderPath)
         const folderContentWithPaths = folderContent.map(file => {
           return {
@@ -75,14 +98,9 @@ const handlers = {
     } else {
       if (filePaths.length > 0) {
         const filePath = path.resolve(filePaths[0])
-        console.log(filePath)
-        const metadata = await parseFile(filePath)
-        const cover = selectCover(metadata.common.picture)
-        metadata.img = cover
         const file = {
           name: path.basename(filePath),
           path: filePath,
-          metadata
         }
         await superagent.post('http://127.0.0.1:8000/api/library/').send({
           name: file.name,
@@ -111,12 +129,15 @@ const handlers = {
     try {
       console.log(filePath)
       const metadata = await parseFile(filePath)
-      const cover = selectCover(metadata.common.picture)
-      metadata.img = cover
       const file = {
         name: path.basename(filePath),
         path: filePath,
-        metadata
+        file: fs.readFileSync(filePath),
+        metadata: {
+          ...metadata,
+          cover: selectCover(metadata.common.picture),
+          coverBase64: selectCover(metadata.common.picture).toString('base64'),
+        }
       }
       return file
     } catch (err) {
@@ -133,7 +154,7 @@ const handlers = {
       const folderPath = path.resolve(filePaths[0])
       // const result = await superagent.post('http://127.0.0.1:8000/api/library/set')
       //   .send({ path })
-      // get the files in the path
+      // get the files in the path  
       const files = fs.readdirSync(folderPath)
       // filter out non-audio files
       const audioFiles = files.filter(file => {
@@ -141,24 +162,14 @@ const handlers = {
         return ['.mp3', '.wav', '.flac', '.ogg'].includes(ext)
       })
 
-      // get metadata for each file
-      const metadata = await Promise.all(audioFiles.map(async file => {
-        const filePath = path.resolve(join(folderPath, file))
-        const metadata = await parseFile(filePath)
-        const cover = selectCover(metadata.common.picture)
-        metadata.img = cover
-        return metadata
-      }))
-      // create an array of objects with file name, path and metadata
-      const filesWithMetadata = audioFiles.map((file, index) => {
+      const filesWithPaths = audioFiles.map(file => {
         return {
           name: file,
-          path: path.resolve(join(folderPath, file)),
-          metadata: metadata[index]
+          path: path.resolve(join(folderPath, file))
         }
       })
-      // send the files to the server
-      return { folderPath, files: filesWithMetadata }
+
+      return { folderPath, files: filesWithPaths }
     } catch (err) {
       console.error(err);
     }
@@ -167,16 +178,10 @@ const handlers = {
     try {
       const result = await superagent.get('http://127.0.0.1:8000/api/library/').send()
       const library = result.body
-      const metadata = await Promise.all(library.map(async file => {
-        const metadata = await parseFile(file.path)
-        const cover = selectCover(metadata.common.picture)
-        metadata.img = cover
-        return metadata
-      }))
-      const files = library.map((file, index) => {
+      const files = library.map(file => {
         return {
-          ...file,
-          metadata: metadata[index]
+          name: os.path.basename(file.path),
+          path: file.path,
         }
       })
       return files

@@ -19,6 +19,7 @@ contextBridge.exposeInMainWorld('api', {
 
     // Voice
     changeVoice: (filePath, voice) => ipcRenderer.invoke('changeVoice', filePath, voice),
+    trainVoice: (voice) => ipcRenderer.invoke('changeVoice', voice),
     getVoices: () => ipcRenderer.invoke('getVoices'),
     open_context_menu: () => ipcRenderer.invoke('open_context_menu'),
     openFile: (filePath) => ipcRenderer.invoke('openFile', filePath),
