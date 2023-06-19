@@ -6,8 +6,6 @@ import * as Tone from 'tone'
 import { Howl, Howler } from 'howler';
 import WaveSurfer from 'wavesurfer.js'
 import { useFloating, offset, flip, shift, useHover, useClick, useDismiss, useRole, autoUpdate, useInteractions, FloatingFocusManager } from '@floating-ui/react';
-const { selectCover, parseBlob, parseBuffer } = require('music-metadata-browser');
-import * as mm from 'music-metadata-browser'
 
 function Popover({ title, children }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -190,7 +188,7 @@ function App() {
       console.log(res)
       setSelectedFile({
         ...res,
-        coverBlob: URL.createObjectURL(new Blob([res.metadata.cover.data], { type: 'image/jpeg' }))
+        coverBlob: URL.createObjectURL(new Blob([res?.metadata?.cover?.data], { type: 'image/jpeg' }))
       })
       stop()
       player.load(`file://${res.path}`)
@@ -260,7 +258,8 @@ function App() {
     console.log('changeVoice')
     const voice = event.target.voice.value
     console.log("voice", voice)
-    window.api.changeVoice(selectedFile, voice).then((res) => {
+
+    window.api.changeVoice(selectedFile.path, voice).then((res) => {
       console.log(res)
     }).catch((err) => {
       console.log(err)
@@ -479,7 +478,7 @@ function App() {
               {voices.map((voice, index) => {
                 return (
                   <div className="tag voice" key={index} tabIndex={0}>
-                    <input defaultChecked={index == 0} type="radio" id={voice} name="voice" value={voice.value} />
+                    <input defaultChecked={index == 0} type="radio" id={voice} name="voice" value={voice} />
                     <label htmlFor={voice}>{voice}</label>
                   </div>
                 )
@@ -623,10 +622,6 @@ function App() {
 
           {templates.body()}
           <div className="footer">
-            <div className="flex row">
-
-
-            </div>
             <div className="flex row space-between border-top">
               {templates.now_playing()}
               {templates.playback_controls()}

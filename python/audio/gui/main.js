@@ -131,12 +131,11 @@ const handlers = {
       const metadata = await parseFile(filePath)
       const file = {
         name: path.basename(filePath),
-        path: filePath,
+        path: path.resolve(filePath),
         file: fs.readFileSync(filePath),
         metadata: {
           ...metadata,
           cover: selectCover(metadata.common.picture),
-          coverBase64: selectCover(metadata.common.picture).toString('base64'),
         }
       }
       return file
