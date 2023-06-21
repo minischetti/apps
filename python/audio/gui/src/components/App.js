@@ -62,7 +62,6 @@ function App() {
   const [library, setLibrary] = React.useState([])
   const [libraryLocation, setLibraryLocation] = React.useState(null)
   const [selectedFile, setSelectedFile] = React.useState(null)
-  const [metadata, setMetadata] = React.useState(null)
 
   // Lyrics
   const [lyrics, setLyrics] = React.useState(null)
@@ -583,7 +582,7 @@ function App() {
                 return (
                   <div className="tag" key={index} tabIndex={0} onContextMenu={(event) => open_context_menu(event, file.path)}>
                     <input type="radio" id={file.name} name="file" value={file.path} />
-                    <label htmlFor={file.name}>{file.name}</label>
+                    <label htmlFor={file.name}>{file.metadata.common.title ? file.metadata.common.title : file.name}</label>
                   </div>
                 )
               }) : "Library folder not selected"}

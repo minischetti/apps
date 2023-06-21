@@ -168,7 +168,18 @@ const handlers = {
         }
       })
 
-      return { folderPath, files: filesWithPaths }
+      const filesWithMetadata = await Promise.all(filesWithPaths.map(async file => {
+        const metadata = await parseFile(file.path)
+        return {
+          ...file,
+          metadata: {
+            ...metadata,
+            cover: selectCover(metadata.common.picture),
+          }
+        }
+      }))
+
+      return { folderPath, files: filesWithMetadata }
     } catch (err) {
       console.error(err);
     }
