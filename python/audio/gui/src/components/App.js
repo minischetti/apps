@@ -531,6 +531,9 @@ function App() {
       return (
         <div className="main">
           <div className="header">
+              <div className="background-art-container">
+                {selectedFile.coverBlob ? <img src={selectedFile.coverBlob} alt="album art" className="background-art" /> : null}
+              </div>
             <div className="flex row space-between">
               {templates.now_playing()}
               {templates.playback_controls()}
@@ -598,7 +601,7 @@ function App() {
             {showLibrary ? <form onChange={openFile} className='library list'>
               {library && library.length ? library.map((file, index) => {
                 return (
-                  <div className="item" key={index} tabIndex={0} onContextMenu={(event) => open_context_menu(event, file.path)}>
+                  <div className="item" key={index} tabIndex={0}>
                     <input type="radio" id={file.name} name="file" value={file.path} />
                     <label htmlFor={file.name}>
                       <div>{file.metadata.common.title ? file.metadata.common.title : file.name}</div>

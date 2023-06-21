@@ -393,6 +393,25 @@ button:active {
     border-radius: 1rem;
 }
 
+.background-art-container {
+    position: relative;
+    width: 100%;
+    height: 25vh;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.background-art {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    /* background-color: hsla(0, 0%, 100%, 0.1); */
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+}
+
 hr {
     border: 0;
     height: 2px;
