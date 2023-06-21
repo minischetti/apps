@@ -356,7 +356,7 @@ function App() {
       const shouldShowPauseButton = isPlaying && !isPaused;
       if (selectedFile) {
         return (
-          <div className='flex center'>
+          <div className='flex center pad'>
             <div>
               {shouldShowPlayButton ? <Play className="orb" onClick={play} /> : null}
               {shouldShowPauseButton ? <Pause className="orb" onClick={pause} /> : null}
@@ -448,7 +448,7 @@ function App() {
             <h4>Isolate</h4>
           </div>
           <form onSubmit={isolate} onChange={() => synth.triggerAttackRelease("C3", "32n")} className='flex column'>
-            <div className="modes">
+            <div className="tags">
               {modes.map((mode, index) => {
                 return (
                   <div className="tag mode" key={index} tabIndex={0}>
@@ -473,7 +473,7 @@ function App() {
             <h4>Voice Changer</h4>
           </div>
           <form onSubmit={changeVoice} onChange={() => synth.triggerAttackRelease("C3", "32n")} className='flex column'>
-            <div className="voices">
+            <div className="tags">
               {voices.map((voice, index) => {
                 return (
                   <div className="tag voice" key={index} tabIndex={0}>
@@ -530,7 +530,13 @@ function App() {
       if (selectedFile) {
       return (
         <div className="main">
-          <h3>Workbench</h3>
+          <div className="header">
+            <div className="flex row space-between">
+              {templates.now_playing()}
+              {templates.playback_controls()}
+              {/* <div id="waveform"></div> */}
+            </div>
+          </div>
           <div className="controls">
             <div className="control-section">
               <div className="flex">
@@ -545,8 +551,7 @@ function App() {
       } else {
         return (
           <div className="main">
-            <h3>Workbench</h3>
-            <div class="icon-bg">
+            <div className="icon-bg">
               <FileAudio size={32} />
               <p>Select a file to get started</p>
             </div>
@@ -584,10 +589,11 @@ function App() {
         <div className={classes.join(' ')}>
           <div className="library">
             <div className="flex row center no-select">
-              {showLibrary ? <CaretDown size={32} onClick={() => setShowLibrary(false)} /> : <CaretRight size={32} onClick={() => setShowLibrary(true)} />}
+              {/* {showLibrary ? <CaretDown size={32} onClick={() => setShowLibrary(false)} /> : <CaretRight size={32} onClick={() => setShowLibrary(true)} />} */}
               <h3>Library</h3>
               <button onClick={setLibraryPath}><Folder />Set library folder</button>
             </div>
+            <div className='divider'></div>
             {/* <div>{libraryLocation}</div> */}
             {showLibrary ? <form onChange={openFile} className='library list'>
               {library && library.length ? library.map((file, index) => {
@@ -639,17 +645,7 @@ function App() {
       </div>
       <div className="app-body">
         {templates.library()}
-        <div className="test">
-
-          {templates.body()}
-          {selectedFile ? <div className="footer">
-            <div className="flex row space-between border-top">
-              {templates.now_playing()}
-              {templates.playback_controls()}
-              {/* <div id="waveform"></div> */}
-            </div>
-          </div> : null}
-        </div> 
+        {templates.body()}
       </div>
     </div>
   )

@@ -191,11 +191,6 @@ button:active {
     box-shadow: 0 0 1rem var(--accent-primary);
 }
 
-.modes {
-    display: flex;
-    flex-wrap: wrap;
-}
-
 .now-playing {
     display: flex;
     align-items: center;
@@ -285,7 +280,7 @@ button:active {
     flex-direction: column;
 }
 
-.voices {
+.tags {
     display: flex;
     flex-wrap:wrap;
     gap: 1rem;
@@ -511,7 +506,6 @@ hr {
 .divider {
     border-top: 2px solid hsla(0, 0%, 100%, 0.1);
     width: 100%;
-    margin: 1rem 0;
 }
 
 .bg {
@@ -564,10 +558,6 @@ hr {
     display: none;
 }
 
-.test {
-    flex: 1;
-}
-
 .icon-bg {
     /* background-color: hsla(0, 0%, 100%, 0.1); */
     display: flex;
@@ -580,4 +570,8 @@ hr {
     font-size: 0.75rem;
     user-select: none;
     transition: all 0.25s ease-in-out;
+}
+
+.pad {
+    padding: 1rem;
 }
