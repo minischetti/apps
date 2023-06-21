@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 
 import '../assets/css/App.css'
-import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox, Hamburger, Files, ArrowLeft, CaretLeft, CaretRight, Clock, SpeakerNone, Folder, CaretDown, CaretUp, MusicNoteSimple } from '@phosphor-icons/react'
+import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox, Hamburger, Files, ArrowLeft, CaretLeft, CaretRight, Clock, SpeakerNone, Folder, CaretDown, CaretUp, MusicNoteSimple, Playlist } from '@phosphor-icons/react'
 import * as Tone from 'tone'
 import { Howl, Howler } from 'howler';
 import WaveSurfer from 'wavesurfer.js'
@@ -60,7 +60,6 @@ function App() {
 
   // Files
   const [library, setLibrary] = React.useState([])
-  const [libraryLocation, setLibraryLocation] = React.useState(null)
   const [selectedFile, setSelectedFile] = React.useState(null)
 
   // Lyrics
@@ -155,7 +154,8 @@ function App() {
   }
 
 
-  const setLibraryPath = () => {
+  const setLibraryPath = (event) => {
+    event.preventDefault()
     setIsLoading(true)
     console.log('setLibraryPath')
     return window.api.setLibraryPath().then((res) => {
@@ -163,7 +163,6 @@ function App() {
       // Get files from getLibrary
       // getLibrary()
       setLibrary(res.files)
-      setLibraryLocation(res.folderPath)
       // Set the selected file
       setIsLoading(false)
 
@@ -575,18 +574,28 @@ function App() {
             <div className="flex row center no-select">
               {showLibrary ? <CaretDown size={32} onClick={() => setShowLibrary(false)} /> : <CaretRight size={32} onClick={() => setShowLibrary(true)} />}
               <h3>Library</h3>
-              <button onClick={setLibraryPath}><Folder /><CaretDown /></button>
+              <button onClick={setLibraryPath}><Folder />Set library folder</button>
             </div>
             {/* <div>{libraryLocation}</div> */}
-            {showLibrary ? <form onChange={openFile} className='library'>
+            {showLibrary ? <form onChange={openFile} className='library list'>
               {library && library.length ? library.map((file, index) => {
                 return (
-                  <div className="tag" key={index} tabIndex={0} onContextMenu={(event) => open_context_menu(event, file.path)}>
+                  <div className="item" key={index} tabIndex={0} onContextMenu={(event) => open_context_menu(event, file.path)}>
                     <input type="radio" id={file.name} name="file" value={file.path} />
-                    <label htmlFor={file.name}>{file.metadata.common.title ? file.metadata.common.title : file.name}</label>
+                    <label htmlFor={file.name}>
+                      <div>{file.metadata.common.title ? file.metadata.common.title : file.name}</div>
+                      {/* <div>{file.metadata.common.album ? file.metadata.common.album : ''}</div>
+                      <div>{file.metadata.common.artist ? file.metadata.common.artist : ''}</div> */}
+                    </label>
                   </div>
                 )
-              }) : "Library folder not selected"}
+              }) : 
+                <div className="icon-bg">
+                  <Playlist size={32} />
+                  <p>Library folder not selected</p>
+                  <button onClick={setLibraryPath}><Folder />Set library folder</button>
+                </div>
+              }
             </form> : `${library.length} files`}
           </div>
           {/* {templates.output_folder()} */}
