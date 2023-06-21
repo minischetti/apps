@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 
 import '../assets/css/App.css'
-import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox, Hamburger, Files, ArrowLeft, CaretLeft, CaretRight, Clock, SpeakerNone, Folder, CaretDown, CaretUp, MusicNoteSimple, Playlist } from '@phosphor-icons/react'
+import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox, Hamburger, Files, ArrowLeft, CaretLeft, CaretRight, Clock, SpeakerNone, Folder, CaretDown, CaretUp, MusicNoteSimple, Playlist, FileAudio } from '@phosphor-icons/react'
 import * as Tone from 'tone'
 import { Howl, Howler } from 'howler';
 import WaveSurfer from 'wavesurfer.js'
@@ -527,6 +527,7 @@ function App() {
       }
     },
     body: () => {
+      if (selectedFile) {
       return (
         <div className="main">
           <h3>Workbench</h3>
@@ -541,6 +542,17 @@ function App() {
           </div>
         </div>
       )
+      } else {
+        return (
+          <div className="main">
+            <h3>Workbench</h3>
+            <div class="icon-bg">
+              <FileAudio size={32} />
+              <p>Select a file to get started</p>
+            </div>
+          </div>
+        )
+      }
     },
     output_folder: () => {
       return (
@@ -630,14 +642,14 @@ function App() {
         <div className="test">
 
           {templates.body()}
-          <div className="footer">
+          {selectedFile ? <div className="footer">
             <div className="flex row space-between border-top">
               {templates.now_playing()}
               {templates.playback_controls()}
               {/* <div id="waveform"></div> */}
             </div>
-          </div>
-        </div>
+          </div> : null}
+        </div> 
       </div>
     </div>
   )
