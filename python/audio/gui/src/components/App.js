@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 
 import '../assets/css/App.css'
-import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox, Hamburger, Files, ArrowLeft, CaretLeft, CaretRight, Clock, SpeakerNone, Folder, CaretDown, CaretUp } from '@phosphor-icons/react'
+import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox, Hamburger, Files, ArrowLeft, CaretLeft, CaretRight, Clock, SpeakerNone, Folder, CaretDown, CaretUp, MusicNoteSimple } from '@phosphor-icons/react'
 import * as Tone from 'tone'
 import { Howl, Howler } from 'howler';
 import WaveSurfer from 'wavesurfer.js'
@@ -185,9 +185,10 @@ function App() {
     // setSelectedFile(`file://${event.target.value}`)
     window.api.openFile(event.target.value).then(async (res) => {
       console.log(res)
+      const coverBlob = res.metadata?.cover?.data ? URL.createObjectURL(new Blob([res.metadata.cover.data], { type: 'image/jpeg' })) : null
       setSelectedFile({
         ...res,
-        coverBlob: URL.createObjectURL(new Blob([res?.metadata?.cover?.data], { type: 'image/jpeg' }))
+        coverBlob
       })
       stop()
       player.load(`file://${res.path}`)
@@ -341,7 +342,7 @@ function App() {
       if (selectedFile && selectedFile.metadata) {
         return (
           <div className="now-playing">
-            {selectedFile ? <img src={selectedFile.coverBlob} alt="album art" className="album-art" /> : <FileArrowUp className="file_upload_button" />}
+            {selectedFile.coverBlob ? <img src={selectedFile.coverBlob} alt="album art" className="album-art" /> : <MusicNoteSimple className="album-art" />}
             <div className="now-playing-info">
               {selectedFile.metadata.common.title ? <h3 className="bold">{selectedFile.metadata.common.title}</h3> : <h3>{selectedFile.name}</h3>}
               {selectedFile.metadata.common.album ? <p className="bold">{selectedFile.metadata.common.album}</p> : null}
@@ -576,7 +577,7 @@ function App() {
               <h3>Library</h3>
               <button onClick={setLibraryPath}><Folder /><CaretDown /></button>
             </div>
-            <div>{libraryLocation}</div>
+            {/* <div>{libraryLocation}</div> */}
             {showLibrary ? <form onChange={openFile} className='library'>
               {library && library.length ? library.map((file, index) => {
                 return (
