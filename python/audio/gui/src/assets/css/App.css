@@ -221,6 +221,10 @@ button:active {
     border-top: 2px solid hsla(0, 0%, 100%, 0.1);
 }
 
+.border-bottom {
+    border-bottom: 2px solid hsla(0, 0%, 100%, 0.1);
+}
+
 .file_upload_button {
     width: 100px;
     height: 100px;
@@ -394,11 +398,15 @@ button:active {
 }
 
 .background-art-container {
-    position: relative;
+    position: absolute;
     width: 100%;
-    height: 25vh;
+    height: 100vh;
     border-radius: 1rem;
     overflow: hidden;
+    z-index: -1;
+    filter: blur(10px);
+    opacity: 0.1;
+    transform: scale(1.25);
 }
 
 .background-art {
@@ -496,6 +504,8 @@ hr {
 }
 
 .main {
+    position: relative;
+    overflow: hidden;
     flex: 1;
     display: flex;
     flex-direction: column;

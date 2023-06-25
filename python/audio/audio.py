@@ -131,7 +131,7 @@ class IsolationRequest(BaseModel):
     mode: str
     class Config:
         frozen = True
-separation_options = ["All", "Vocals", "Drums", "Bass", "Other"]
+isolation_options = ["All", "Vocals", "Drums", "Bass", "Other"]
 @app.post("/api/isolate/")
 def isolate(IsolationRequest: IsolationRequest):
     file_path = IsolationRequest.filePath
@@ -141,7 +141,7 @@ def isolate(IsolationRequest: IsolationRequest):
     command = ["python", "-m", "demucs", "-o=" + out_dir_now(), file_path]
 
     # Add the isolate track option if it is not set to "All"
-    if IsolationRequest.mode != separation_options[0].lower():
+    if IsolationRequest.mode != isolation_options[0].lower():
         command.append("--two-stems=" + IsolationRequest.mode.lower())
 
     print(command)
@@ -149,7 +149,6 @@ def isolate(IsolationRequest: IsolationRequest):
     # Run the command
     subprocess.run(command, shell=True)
     return {"message": "Separation complete"}
-    print("Separation complete")
 
 @app.post("/api/open/")
 def open_file(FileRequest: FileRequest):

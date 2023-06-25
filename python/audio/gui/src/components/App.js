@@ -3,8 +3,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import '../assets/css/App.css'
 import { FileArrowUp, Pause, Play, Stop, Spinner, ArrowsOutLineHorizontal, ArrowRight, MicrophoneStage, Gauge, MusicNote, Toolbox, Hamburger, Files, ArrowLeft, CaretLeft, CaretRight, Clock, SpeakerNone, Folder, CaretDown, CaretUp, MusicNoteSimple, Playlist, FileAudio } from '@phosphor-icons/react'
 import * as Tone from 'tone'
-import { Howl, Howler } from 'howler';
-import WaveSurfer from 'wavesurfer.js'
 import { useFloating, offset, flip, shift, useHover, useClick, useDismiss, useRole, autoUpdate, useInteractions, FloatingFocusManager } from '@floating-ui/react';
 
 function Popover({ title, children }) {
@@ -88,6 +86,7 @@ function App() {
 
   useEffect(() => {
     console.log('useEffect')
+
     // player.toDestination()
     // wavesurfer.current = WaveSurfer.create({
     //   container: '#waveform',
@@ -108,17 +107,7 @@ function App() {
     player.connect(pitchShift);
     setPlayer(player)
     setPitchShift(pitchShift)
-    const analyzer = new Tone.Analyser('waveform', 128);
-    player.connect(analyzer);
-
-
-    // Set up Tone.js PitchShift
-    // Set up Tone.js Speed
-    // const speedShift = new Tone.Speed().toDestination();
-    // speedShift.wet.value = 0;
-    // player.connect(speedShift);
     getVoices()
-    // getLibrary()
   }, [])
 
 
@@ -243,13 +232,16 @@ function App() {
 
   const isolate = (event) => {
     event.preventDefault()
+    setIsLoading(true)
     console.log('isolate')
     const mode = event.target.mode.value
     console.log(selectedFile)
     window.api.isolate(selectedFile.path, mode).then((res) => {
       console.log(res)
+      setIsLoading(false)
     }).catch((err) => {
       console.log(err)
+      setIsLoading(false)
     })
   }
   const changeVoice = (event) => {
@@ -491,7 +483,6 @@ function App() {
       )
     },
     voice_training_controls: () => {
-
       return (
         <form onSubmit={trainVoice}>
           {/* Train your own voice model */}
@@ -531,9 +522,9 @@ function App() {
       return (
         <div className="main">
           <div className="header">
-              <div className="background-art-container">
+              {/* <div className="background-art-container">
                 {selectedFile.coverBlob ? <img src={selectedFile.coverBlob} alt="album art" className="background-art" /> : null}
-              </div>
+              </div> */}
             <div className="flex row space-between">
               {templates.now_playing()}
               {templates.playback_controls()}

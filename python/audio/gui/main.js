@@ -107,21 +107,6 @@ const handlers = {
           path: file.path,
         })
         return file
-
-        // console.log(filePath)
-        // await superagent.get('http://127.0.0.1:8000/api/')
-        //   .then(res => {
-        //     console.log(res)
-        //   })
-        //   .catch(err => {
-        //     console.log(err)
-        //   })
-        // try {
-        //   // set response type to blob
-        //   const result = await superagent.post('http://127.0.0.1:8000/api/open/').send({ fileContent });
-        // } catch (err) {
-        //   console.error(err);
-        // }
       }
     }
   },
@@ -313,6 +298,7 @@ function createWindow() {
     },
   })
 
+  // Create the splash window.
   var splash = new BrowserWindow({
     width: 500,
     height: 300,
@@ -322,9 +308,10 @@ function createWindow() {
     alwaysOnTop: true,
     resizable: false,
   });
-  // and load the index.html of the app.
+
   let indexPath
 
+  // Determine the correct index.html file based on dev vs prod
   if (dev && process.argv.indexOf('--noDevServer') === -1) {
     indexPath = url.format({
       protocol: 'http:',
@@ -340,19 +327,13 @@ function createWindow() {
     })
   }
 
-  splash.loadFile(path.join(__dirname, 'dist', 'splash.html'),)
+  splash.loadFile(path.join(__dirname, 'src', 'splash.html'),)
   window.loadURL(indexPath)
 
   window.once('ready-to-show', () => {
     window.show()
     splash.destroy()
   })
-
-  // setTimeout(() => {
-  //   splash.destroy()
-  //   window.show()
-  // }, 2000);
-
 
   // Emitted when the window is closed.
   window.on('closed', function () {

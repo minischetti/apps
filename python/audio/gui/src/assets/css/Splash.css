@@ -1,28 +1,17 @@
-/* Splash.css */
-@media screen and (prefers-color-scheme: light),
-screen and (prefers-color-scheme: no-preference) {
-
-    /* Light theme */
-    body {
-        color: #000;
-        background-color: #fff;
-    }
+html, body {
+    overflow: hidden;
+    user-select: none;
+    height: 100%;
 }
-
-@media screen and (prefers-color-scheme: dark) {
-
-    /* Dark theme */
-    body {
-        color: #fff;
-        /* background: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #fd1892 100%) fixed no-repeat; */
-        background-color: #001;
-    }
-}
-
-.splash {
+body {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+}
+.splash {
+    color: white;
+    font-family: "Poppins", sans-serif;
+    overflow: hidden;
+    font-size: 2.4rem;
+    font-weight: bold;
 }
