@@ -272,7 +272,7 @@ def change_voice(VoiceRequest: VoiceRequest):
     print("Changing voice to " + VoiceRequest.voice)
     print(model_config)
     print(model_data)
-    command = ["svc", "infer", "--no-auto-predict-f0", "-m", model_data, "-c", model_config, "-o", out_dir_now() + audio_file_name + "_" + VoiceRequest.voice + ".wav", VoiceRequest.filePath]
+    command = ["svc", "infer", "--no-auto-predict-f0", "--f0-method", "crepe", "--db-thresh", "-50", "-m", model_data, "-c", model_config, "-o", out_dir_now() + audio_file_name + "_" + VoiceRequest.voice + ".wav", VoiceRequest.filePath]
     subprocess.run(command, shell=True)
     return {"message": "Successfully changed voice to " + VoiceRequest.voice}
 

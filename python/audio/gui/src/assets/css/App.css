@@ -6,27 +6,6 @@
     --gradient: linear-gradient(to bottom right, var(--accent-primary) 0%, var(--accent-secondary) 100%);
 }
 
-
-@media screen and (prefers-color-scheme: light),
-screen and (prefers-color-scheme: no-preference) {
-
-    /* Light theme */
-    body {
-        color: #000;
-        background-color: #fff;
-    }
-}
-
-@media screen and (prefers-color-scheme: dark) {
-
-    /* Dark theme */
-    body {
-        color: #fff;
-        /* background: linear-gradient(to bottom right, #b827fc 0%, #2c90fc 25%, #fd1892 100%) fixed no-repeat; */
-        background-color: #001;
-    }
-}
-
 * {
     box-sizing: border-box;
 }
@@ -35,6 +14,7 @@ html, body {
     font-family: 'Poppins', sans-serif;
     font-size: 14px;
     font-weight: 400;
+    color: white;
 }
 
 h1 {
