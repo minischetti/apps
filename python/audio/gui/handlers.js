@@ -8,7 +8,7 @@ const { Blob } = require('buffer')
 const { parseFile, selectCover } = require('music-metadata')
 const { spawn } = require('child_process')
 
-const handlers = (window) => ({
+const handlers = {
   async trainVoice(voice) {
     try {
       const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -115,7 +115,7 @@ const handlers = (window) => ({
   },
   async setLibraryPath(event) {
     try {
-      const { canceled, filePaths } = await dialog.showOpenDialog(window,
+      const { canceled, filePaths } = await dialog.showOpenDialog(
         {
           properties: ['openDirectory']
         })
@@ -274,6 +274,6 @@ const handlers = (window) => ({
       console.error(err);
     }
   },
-})
+}
 
 module.exports = handlers
