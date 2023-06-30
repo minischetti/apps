@@ -292,9 +292,9 @@ function App() {
 
   const getVoices = () => {
     console.log('getVoices')
-    window.api.getVoices().then((res) => {
-      console.log('voices', res.voices)
-      setVoices(res.voices)
+    window.api.getVoices().then((voices) => {
+      console.log('voices', voices)
+      setVoices(voices)
     }).catch((err) => {
       console.log(err)
     })
@@ -536,7 +536,7 @@ function App() {
               <div className="flex">
                 {templates.separate_controls()}
                 {templates.voice_changer_controls()}
-                {templates.voice_training_controls()}
+                {/* {templates.voice_training_controls()} */}
               </div>
             </div>
           </div>
