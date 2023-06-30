@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1688096534491" clover="3.2.0">
-  <project timestamp="1688096534491" name="All files">
+<coverage generated="1688096671782" clover="3.2.0">
+  <project timestamp="1688096671782" name="All files">
     <metrics statements="276" coveredstatements="90" conditionals="29" coveredconditionals="25" methods="25" coveredmethods="12" elements="330" coveredelements="127" complexity="0" loc="276" ncloc="276" packages="1" files="1" classes="1"/>
     <file name="handlers.js" path="E:\git\apps\python\audio\gui\handlers.js">
       <metrics statements="276" coveredstatements="90" conditionals="29" coveredconditionals="25" methods="25" coveredmethods="12"/>
@@ -270,15 +270,15 @@
       <line num="264" count="2" type="stmt"/>
       <line num="265" count="1" type="stmt"/>
       <line num="266" count="1" type="cond" truecount="4" falsecount="0"/>
-      <line num="267" count="1" type="stmt"/>
-      <line num="268" count="1" type="stmt"/>
-      <line num="269" count="1" type="stmt"/>
-      <line num="270" count="1" type="stmt"/>
-      <line num="271" count="1" type="stmt"/>
+      <line num="267" count="2" type="stmt"/>
+      <line num="268" count="2" type="stmt"/>
+      <line num="269" count="2" type="stmt"/>
+      <line num="270" count="2" type="stmt"/>
+      <line num="271" count="2" type="stmt"/>
       <line num="272" count="0" type="cond" truecount="0" falsecount="1"/>
       <line num="273" count="0" type="stmt"/>
-      <line num="274" count="1" type="stmt"/>
-      <line num="275" count="1" type="stmt"/>
+      <line num="274" count="2" type="stmt"/>
+      <line num="275" count="2" type="stmt"/>
       <line num="276" count="1" type="stmt"/>
     </file>
   </project>

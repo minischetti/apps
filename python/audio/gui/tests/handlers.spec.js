@@ -105,7 +105,8 @@ describe('Main', () => {
             it('should return a promise', () => {
                 expect(handlers.getVoices()).toBeInstanceOf(Promise);
             });
-            xit('should return an array', () => {
+            it('should return an array', () => {
+                readdirSync.mockReturnValueOnce(['model1', 'model2']);
                 expect(handlers.getVoices()).resolves.toBeInstanceOf(Array);
             });
         });
