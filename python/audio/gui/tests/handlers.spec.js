@@ -4,6 +4,8 @@ jest.mock('path', () => ({
     resolve: jest.fn(),
     join: jest.fn(),
     basename: jest.fn(),
+    // extname: jest.fn(),
+    ...jest.requireActual('path'),
 }));
 
 jest.mock('electron', () => ({
@@ -46,7 +48,17 @@ jest.mock('music-metadata', () => ({
 
 jest.mock('fs', () => ({
     readFileSync: jest.fn(),
+    readdirSync: jest.fn(),
 }));
+
+jest.mock('child_process', () => ({
+    spawn: jest.fn(),
+}));
+
+import {spawn} from 'child_process';
+import {readdirSync, readFileSync} from 'fs';
+import path from 'path';
+
 
 describe('Main', () => {
     it('should be true', () => {
@@ -86,6 +98,40 @@ describe('Main', () => {
                 expect(handlers.openFile("event", "filePath")).resolves.toHaveProperty('metadata.cover');
             });
         });
+        describe('handlers.getVoices', () => {
+            it('should be a function', () => {
+                expect(handlers.getVoices).toBeInstanceOf(Function);
+            });
+            it('should return a promise', () => {
+                expect(handlers.getVoices()).toBeInstanceOf(Promise);
+            });
+            xit('should return an array', () => {
+                expect(handlers.getVoices()).resolves.toBeInstanceOf(Array);
+            });
+        });
+        describe('handlers.changeVoice', () => {
+            const model_data = 'model.pth';
+            const model_config = 'config.json';
+            const voice = 'model1';
+            const filePath = 'path/to/file.wav';
+            beforeEach(() => {
+                readdirSync.mockReturnValueOnce(['model1', 'model2']);
+                readdirSync.mockReturnValueOnce([model_config, model_data]);
+            });
+            it('should be a function', () => {
+                expect(handlers.changeVoice).toBeInstanceOf(Function);
+            });
+            it('should return a promise', () => {
+                expect(handlers.changeVoice('event', 'filePath', 'model1')).toBeInstanceOf(Promise);
+            });
+            it('should call svc', () => {
+                handlers.changeVoice('event', filePath, 'model1');
+                expect(spawn).toHaveBeenCalled();
+                // TODO: Check for these with finer-grained tests for flexibility
+                expect(spawn).toHaveBeenCalledWith('svc', ["infer", "--no-auto-predict-f0", "--f0-method", "crepe", "--db-thresh", "-50", "-m", model_data, "-c", model_config, "-o", + voice + ".wav", filePath]);
+            });
+        }
+        );
     });
 }
 );

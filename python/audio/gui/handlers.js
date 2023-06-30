@@ -238,6 +238,7 @@ export const handlers = {
         const modelsPath = path.resolve('../models')
         // For each file in the models folder
         const models = fs.readdirSync(modelsPath)
+        // Check if the voice is in the models folder
         if (!models.includes(voice)) {
           console.error("Voice not found")
           return
@@ -262,7 +263,7 @@ export const handlers = {
         console.error(err);
       }
     },
-    async getVoices(event) {
+    async getVoices() {
       try {
         // Get the voices from the models folder
         const voicesPath = path.resolve('../models')
