@@ -55,10 +55,16 @@ jest.mock('child_process', () => ({
     spawn: jest.fn(),
 }));
 
+jest.mock('superagent', () => ({
+    post: jest.fn(() => ({
+        send: jest.fn(),
+    })),
+}));
+
 import {spawn} from 'child_process';
 import {readdirSync, readFileSync} from 'fs';
 import path from 'path';
-
+import superagent from 'superagent';
 
 describe('Main', () => {
     it('should be true', () => {
@@ -131,8 +137,19 @@ describe('Main', () => {
                 // TODO: Check for these with finer-grained tests for flexibility
                 expect(spawn).toHaveBeenCalledWith('svc', ["infer", "--no-auto-predict-f0", "--f0-method", "crepe", "--db-thresh", "-50", "-m", model_data, "-c", model_config, "-o", + voice + ".wav", filePath]);
             });
-        }
-        );
+        });
+        describe('handlers.isolate', () => {
+            it('should be a function', () => {
+                expect(handlers.isolate).toBeInstanceOf(Function);
+            });
+            it('should return a promise', () => {
+                expect(handlers.isolate()).toBeInstanceOf(Promise);
+            });
+            it('should make a post request to the isolate endpoint', () => {
+                handlers.isolate();
+                expect(superagent.post).toHaveBeenCalledWith('http://127.0.0.1:8000/api/isolate/');
+            });
+        });
     });
 }
 );
