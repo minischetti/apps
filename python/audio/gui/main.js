@@ -5,19 +5,14 @@ const { Menu, app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('path')
 const url = require('url')
 const { join } = require('path')
-const superagent = require('superagent');
-const fs = require('fs')
-const { Blob } = require('buffer')
-const { parseFile, selectCover } = require('music-metadata')
-const { spawn } = require('child_process')
-import {handlers} from './handlers'
+
 
 
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let window
-
+const handlers = require('./handlers')(window)
 let files = []
 
 

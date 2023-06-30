@@ -1,4 +1,4 @@
-import { handlers } from '../handlers';
+import handlers from '../handlers';
 // mock path
 jest.mock('path', () => ({
     resolve: jest.fn(),
