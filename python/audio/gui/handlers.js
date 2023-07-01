@@ -186,7 +186,9 @@ const handlers = {
         { filePath, nSteps }
       )
 
-      return path.resolve(result.body)
+      console.log(result)
+
+      return result.body
 
     } catch (err) {
       console.error(err);
@@ -251,14 +253,26 @@ const handlers = {
       console.log(files)
       // Get the model config file ending in .json
 
-      const model_config = files.filter(file => path.extname(file) === '.json')[0]
+      const model_config = path.resolve(join(voicePath, files.filter(file => path.extname(file) === '.json')[0]))
       console.log(model_config)
-      const model_data = files.filter(file => path.extname(file) === '.pth')[0]
+      const model_data = path.resolve(join(voicePath, files.filter(file => path.extname(file) === '.pth')[0]))
       console.log(model_data)
 
+      const outputFolder = path.resolve('../output')
+      if (!fs.existsSync(outputFolder)) {
+        fs.mkdirSync(outputFolder)
+      }
+      const outputFilePath = path.resolve(join(outputFolder, voice, path.basename(filePath) + ".wav"))
+
       spawn(
-        "svc", ["infer", "--no-auto-predict-f0", "--f0-method", "crepe", "--db-thresh", "-50", "-m", model_data, "-c", model_config, "-o", + voice + ".wav", filePath]
+        "svc",
+        ["infer", "--no-auto-predict-f0", "--f0-method", "crepe", "--db-thresh", "-50", "-m", model_data, "-c", model_config, "-o", outputFilePath, filePath],
+        {
+          stdio: 'inherit'
+        }
       )
+
+      return outputFilePath
 
     } catch (err) {
       console.error(err);

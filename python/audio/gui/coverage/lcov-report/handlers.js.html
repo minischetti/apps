@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.99% </span>
+                <span class="strong">40.54% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>106/279</span>
+                <span class='fraction'>118/291</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.99% </span>
+                <span class="strong">40.54% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>106/279</span>
+                <span class='fraction'>118/291</span>
             </div>
         
             
@@ -341,7 +341,19 @@
 <a name='L276'></a><a href='#L276'>276</a>
 <a name='L277'></a><a href='#L277'>277</a>
 <a name='L278'></a><a href='#L278'>278</a>
-<a name='L279'></a><a href='#L279'>279</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -585,6 +597,18 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -736,7 +760,7 @@ const handlers = {
   },
   async setLibraryPath<span class="fstat-no" title="function not covered" >(event) {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      const { canceled, filePaths } = await dialog.showOpenDialog(window,</span>
+<span class="cstat-no" title="statement not covered" >      const { canceled, filePaths } = await dialog.showOpenDialog(</span>
 <span class="cstat-no" title="statement not covered" >        {</span>
 <span class="cstat-no" title="statement not covered" >          properties: ['openDirectory']</span>
 <span class="cstat-no" title="statement not covered" >        })</span>
@@ -872,14 +896,26 @@ const handlers = {
       console.log(files)
       // Get the model config file ending in .json
 &nbsp;
-      const model_config = files.filter(file =&gt; path.extname(file) === '.json')[0]
+      const model_config = path.resolve(join(voicePath, files.filter(file =&gt; path.extname(file) === '.json')[0]))
       console.log(model_config)
-      const model_data = files.filter(file =&gt; path.extname(file) === '.pth')[0]
+      const model_data = path.resolve(join(voicePath, files.filter(file =&gt; path.extname(file) === '.pth')[0]))
       console.log(model_data)
 &nbsp;
+      const outputFolder = path.resolve('../output')
+      if (!fs.existsSync(outputFolder)) {
+        fs.mkdirSync(outputFolder)
+      }
+      const outputFilePath = path.resolve(join(outputFolder, voice, path.basename(filePath) + ".wav"))
+&nbsp;
       spawn(
-        "svc", ["infer", "--no-auto-predict-f0", "--f0-method", "crepe", "--db-thresh", "-50", "-m", model_data, "-c", model_config, "-o", + voice + ".wav", filePath]
+        "svc",
+        ["infer", "--no-auto-predict-f0", "--f0-method", "crepe", "--db-thresh", "-50", "-m", model_data, "-c", model_config, "-o", outputFilePath, filePath],
+        {
+          stdio: 'inherit'
+        }
       )
+&nbsp;
+      return outputFilePath
 <span class="cstat-no" title="statement not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span>
 <span class="cstat-no" title="statement not covered" >    } catch (err) {</span>
 <span class="cstat-no" title="statement not covered" >      console.error(err);</span>
@@ -904,7 +940,7 @@ module.exports = handlers</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-06-30T04:03:00.098Z
+                at 2023-07-01T01:42:30.402Z
             </div>
         <script src="prettify.js"></script>
         <script>

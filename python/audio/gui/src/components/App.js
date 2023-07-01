@@ -203,9 +203,15 @@ function App() {
     synth.triggerAttackRelease("C3", "32n")
     const nSteps = event.target.value
     console.log("nSteps", nSteps)
-    setPitch(nSteps)
-
-    pitchShift.pitch = nSteps;
+    window.api.adjustPitch(selectedFile.path, nSteps).then((res) => {
+      setPitch(nSteps)
+      // io.BytesIO(result)
+      // player.load(URL.createObjectURL(new Blob([res], { type: 'audio/mpeg' })))
+    }
+    ).catch((err) => {
+      console.log(err)
+    }
+    )
   }
   const changePitchBlend = (event) => {
     event.preventDefault()
@@ -379,10 +385,8 @@ function App() {
             <MusicNote size={24} />
             <h4>Pitch</h4>
           </div>
-          <input name="pitch" type="range" min="-12" max="12" step="1" defaultValue="0" onChange={changePitch} />
+          <input name="pitch" type="range" min="-12" max="12" step="1" defaultValue="0" onMouseUp={changePitch} />
           <p>{pitch} semitone(s)</p>
-          <input disabled name="blend" type="range" min="0" max="1" step="0.1" defaultValue="1" onChange={changePitchBlend} />
-          <p>Blend: {pitchBlend}</p>
         </form>
       )
     },
@@ -519,29 +523,29 @@ function App() {
     },
     body: () => {
       if (selectedFile) {
-      return (
-        <div className="main">
-          <div className="header">
+        return (
+          <div className="main">
+            <div className="header">
               {/* <div className="background-art-container">
                 {selectedFile.coverBlob ? <img src={selectedFile.coverBlob} alt="album art" className="background-art" /> : null}
               </div> */}
-            <div className="flex row space-between">
-              {templates.now_playing()}
-              {templates.playback_controls()}
-              {/* <div id="waveform"></div> */}
+              <div className="flex row space-between">
+                {templates.now_playing()}
+                {templates.playback_controls()}
+                {/* <div id="waveform"></div> */}
+              </div>
             </div>
-          </div>
-          <div className="controls">
-            <div className="control-section">
-              <div className="flex">
-                {templates.separate_controls()}
-                {templates.voice_changer_controls()}
-                {/* {templates.voice_training_controls()} */}
+            <div className="controls">
+              <div className="control-section">
+                <div className="flex">
+                  {templates.separate_controls()}
+                  {templates.voice_changer_controls()}
+                  {/* {templates.voice_training_controls()} */}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )
+        )
       } else {
         return (
           <div className="main">
@@ -601,11 +605,11 @@ function App() {
                     </label>
                   </div>
                 )
-              }) : 
+              }) :
                 <div className="icon-bg">
                   <Playlist size={32} />
                   <p>Library folder not selected</p>
-                  <button onClick={setLibraryPath}><Folder />Set library folder</button>
+                  {/* <button onClick={setLibraryPath}><Folder />Set library folder</button> */}
                 </div>
               }
             </form> : `${library.length} files`}

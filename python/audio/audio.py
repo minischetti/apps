@@ -14,6 +14,11 @@ import whisper
 from fastapi import FastAPI, File, UploadFile
 from typing import Union
 from pydantic import BaseModel
+import soundfile as soundfile
+import io
+
+from urllib.request import urlopen
+
 app = FastAPI()
 
 class FileRequest(BaseModel):
@@ -73,9 +78,21 @@ def pitch_shift(PitchRequest: PitchRequest):
 
     y, sr = librosa.load(file_path)
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=PitchRequest.nSteps)
+
+    memory_file = io.BytesIO()
+    memory_file.name = 'audio.wav'
+    soundfile.write(memory_file, result, sr, format="wav")
+    memory_file.seek(0)
+
+
+    return memory_file
+
+
+    
     # return io.BytesIO(result)
-    output = write_sound_file(result, sr, "pitch_shift" + str(PitchRequest.nSteps), file_path, file_name, file_ext)
-    return {"message": "Successfully saved " + file_name + "." + file_ext, "filePath": output}
+
+    # output = write_sound_file(result, sr, "pitch_shift" + str(PitchRequest.nSteps), file_path, file_name, file_ext)
+    # return {"message": "Successfully saved " + file_name + "." + file_ext, "filePath": output}
 
 def write_sound_file(data, sample_rate, operation_name, file_path, file_name, file_ext):
     # Make the output directory if it doesn't exist
@@ -158,66 +175,8 @@ def open_file(FileRequest: FileRequest):
     file_ext = os.path.basename(FileRequest.filePath).split(".")[1]
     tempo,beats = librosa.beat.beat_track()
 
-    # print(file_path)
-    # print(file_name)
-    # print(file_ext)
-    # print("Opening file...")
-    # print("File opened")
     return {"name": file_name, "path": file_path, "ext": file_ext}
-@app.get("/api/voices/")
-def get_voices():
-    voices = []
-    for models in os.listdir("./models"):
-        voices.append(models)
-    return {"voices": voices}
 
-@app.get("/api/library/")
-def get_library():
-    # library is a json file
-    with open("./gui/library.json") as f:
-        library = json.load(f)
-    return library
-
-@app.post("/api/library/")
-def add_to_library(File: FileClass):
-    # Get the library
-    with open("./gui/library.json") as file:
-        library = json.load(file)
-    
-    # Check if the file is already in the library
-    for file in library:
-        if file["path"] == File.path:
-            return {"message": "File is already in library"}
-
-    # Add the file to the library
-    library.append({
-        "name": os.path.basename(File.path),
-        "path": File.path
-    })
-
-    # Write the library to the json file
-    with open("./gui/library.json", "w") as file:
-        json.dump(library, file)
-    
-    return {"message": "Successfully added " + os.path.basename(File.path) + " to library"}
-
-@app.post("/api/library/remove")
-def remove_from_library(File: FilePath):
-    print(File.path)
-    # Check if file path is provided
-    if File.path == "":
-        return {"message": "No file path provided"}
-    # Get the library
-    with open("./gui/library.json") as file:
-        library = json.load(file)
-
-    # Check if the file is in the library
-    for file in library:
-        if file["path"] == File.path:
-            library.remove(file)
-            return {"message": "Successfully removed " + os.path.basename(File.path) + " from library"}
-    
-    return {"message": "File is not in library"}
 
 @app.post("/api/lyrics/")
 def generate_lyrics(filePath: FileRequest):
@@ -272,7 +231,13 @@ def change_voice(VoiceRequest: VoiceRequest):
     print("Changing voice to " + VoiceRequest.voice)
     print(model_config)
     print(model_data)
-    command = ["svc", "infer", "--no-auto-predict-f0", "--f0-method", "crepe", "--db-thresh", "-50", "-m", model_data, "-c", model_config, "-o", out_dir_now() + audio_file_name + "_" + VoiceRequest.voice + ".wav", VoiceRequest.filePath]
+    output_file_name = VoiceRequest.filePath.split(".")[0] + "_" + VoiceRequest.voice + ".wav"
+    # add a check to see if the file already exists and iterate the name
+    if os.path.exists(output_file_name):
+        print("File already exists")
+        output_file_name = VoiceRequest.filePath.split(".")[0] + "_" + VoiceRequest.voice + "_1.wav"
+
+    command = ["svc", "infer", "--no-auto-predict-f0", "--f0-method", "crepe", "--db-thresh", "-50", "-m", model_data, "-c", model_config, "-o", + VoiceRequest.voice + ".wav", VoiceRequest.filePath]
     subprocess.run(command, shell=True)
     return {"message": "Successfully changed voice to " + VoiceRequest.voice}
 

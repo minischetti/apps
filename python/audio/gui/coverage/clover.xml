@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1688097780107" clover="3.2.0">
-  <project timestamp="1688097780107" name="All files">
-    <metrics statements="279" coveredstatements="106" conditionals="106" coveredconditionals="68" methods="61" coveredmethods="34" elements="446" coveredelements="208" complexity="0" loc="279" ncloc="279" packages="1" files="1" classes="1"/>
+<coverage generated="1688175750412" clover="3.2.0">
+  <project timestamp="1688175750412" name="All files">
+    <metrics statements="291" coveredstatements="118" conditionals="106" coveredconditionals="68" methods="61" coveredmethods="34" elements="458" coveredelements="220" complexity="0" loc="291" ncloc="291" packages="1" files="1" classes="1"/>
     <file name="handlers.js" path="E:\git\apps\python\audio\gui\handlers.js">
-      <metrics statements="279" coveredstatements="106" conditionals="106" coveredconditionals="68" methods="61" coveredmethods="34"/>
+      <metrics statements="291" coveredstatements="118" conditionals="106" coveredconditionals="68" methods="61" coveredmethods="34"/>
       <line num="1" count="1" type="stmt"/>
       <line num="2" count="1" type="cond" truecount="44" falsecount="35"/>
       <line num="3" count="1" type="stmt"/>
@@ -265,24 +265,36 @@
       <line num="259" count="2" type="stmt"/>
       <line num="260" count="2" type="stmt"/>
       <line num="261" count="2" type="stmt"/>
-      <line num="262" count="0" type="cond" truecount="0" falsecount="1"/>
-      <line num="263" count="0" type="stmt"/>
-      <line num="264" count="0" type="stmt"/>
+      <line num="262" count="2" type="stmt"/>
+      <line num="263" count="2" type="stmt"/>
+      <line num="264" count="2" type="stmt"/>
       <line num="265" count="2" type="stmt"/>
-      <line num="266" count="1" type="stmt"/>
-      <line num="267" count="1" type="cond" truecount="4" falsecount="0"/>
+      <line num="266" count="2" type="stmt"/>
+      <line num="267" count="2" type="stmt"/>
       <line num="268" count="2" type="stmt"/>
       <line num="269" count="2" type="stmt"/>
       <line num="270" count="2" type="stmt"/>
       <line num="271" count="2" type="stmt"/>
       <line num="272" count="2" type="stmt"/>
-      <line num="273" count="0" type="cond" truecount="0" falsecount="1"/>
-      <line num="274" count="0" type="stmt"/>
-      <line num="275" count="2" type="stmt"/>
-      <line num="276" count="2" type="stmt"/>
-      <line num="277" count="1" type="stmt"/>
+      <line num="273" count="2" type="stmt"/>
+      <line num="274" count="0" type="cond" truecount="0" falsecount="1"/>
+      <line num="275" count="0" type="stmt"/>
+      <line num="276" count="0" type="stmt"/>
+      <line num="277" count="2" type="stmt"/>
       <line num="278" count="1" type="stmt"/>
-      <line num="279" count="1" type="stmt"/>
+      <line num="279" count="1" type="cond" truecount="4" falsecount="0"/>
+      <line num="280" count="2" type="stmt"/>
+      <line num="281" count="2" type="stmt"/>
+      <line num="282" count="2" type="stmt"/>
+      <line num="283" count="2" type="stmt"/>
+      <line num="284" count="2" type="stmt"/>
+      <line num="285" count="0" type="cond" truecount="0" falsecount="1"/>
+      <line num="286" count="0" type="stmt"/>
+      <line num="287" count="2" type="stmt"/>
+      <line num="288" count="2" type="stmt"/>
+      <line num="289" count="1" type="stmt"/>
+      <line num="290" count="1" type="stmt"/>
+      <line num="291" count="1" type="stmt"/>
     </file>
   </project>
 </coverage>

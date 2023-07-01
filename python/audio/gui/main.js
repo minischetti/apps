@@ -6,6 +6,7 @@ const path = require('path')
 const url = require('url')
 const { join } = require('path')
 const handlers = require('./handlers')
+const { spawn } = require('child_process')
 
 
 
@@ -101,6 +102,15 @@ app.on('ready', () => {
   for (const [event, handler] of Object.entries(handlers)) {
     ipcMain.handle(event, handler)
   }
+
+  // try {
+  // spawn('uvicorn', ['--reload', 'audio:app'], {
+  //   cwd: path.join(__dirname, '..'),
+  //   stdio: 'inherit',
+  // })
+  // } catch (err) {
+  //   console.error(err)
+  // }
 
   createWindow()
   app.on('activate', () => {

@@ -1,2 +1,5 @@
 out
 *.wav
+models
+__pycache__
+gui/coverage

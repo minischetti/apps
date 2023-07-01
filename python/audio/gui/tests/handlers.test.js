@@ -49,6 +49,8 @@ jest.mock('music-metadata', () => ({
 jest.mock('fs', () => ({
     readFileSync: jest.fn(),
     readdirSync: jest.fn(),
+    existsSync: jest.fn(),
+    mkdirSync: jest.fn(),
 }));
 
 jest.mock('child_process', () => ({
@@ -63,7 +65,7 @@ jest.mock('superagent', () => ({
 
 import {spawn} from 'child_process';
 import {readdirSync, readFileSync} from 'fs';
-import path from 'path';
+import path, { resolve } from 'path';
 import superagent from 'superagent';
 
 describe('Main', () => {
@@ -135,7 +137,13 @@ describe('Main', () => {
                 handlers.changeVoice('event', filePath, 'model1');
                 expect(spawn).toHaveBeenCalled();
                 // TODO: Check for these with finer-grained tests for flexibility
-                expect(spawn).toHaveBeenCalledWith('svc', ["infer", "--no-auto-predict-f0", "--f0-method", "crepe", "--db-thresh", "-50", "-m", model_data, "-c", model_config, "-o", + voice + ".wav", filePath]);
+                expect(spawn).toHaveBeenCalledWith(
+                    'svc',
+                    ["infer", "--no-auto-predict-f0", "--f0-method", "crepe", "--db-thresh", "-50", "-m", model_data, "-c", model_config, "-o", + voice + ".wav", filePath],
+                    {
+                        stdio: 'inherit',
+                    }
+                    );
             });
         });
         describe('handlers.isolate', () => {
