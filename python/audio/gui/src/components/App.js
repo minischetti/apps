@@ -203,10 +203,8 @@ function App() {
     synth.triggerAttackRelease("C3", "32n")
     const nSteps = event.target.value
     console.log("nSteps", nSteps)
+    setPitch(nSteps)
     window.api.adjustPitch(selectedFile.path, nSteps).then((res) => {
-      setPitch(nSteps)
-      // io.BytesIO(result)
-      // player.load(URL.createObjectURL(new Blob([res], { type: 'audio/mpeg' })))
     }
     ).catch((err) => {
       console.log(err)
@@ -265,15 +263,14 @@ function App() {
   const play = () => {
     console.log('play')
     // wavesurfer.current.play()
-    player.start()
-    Tone.Transport.start()
+    window.api.play()
     setIsPlaying(true)
     setIsPaused(false)
   }
 
   const pause = () => {
     console.log('pause')
-    Tone.Transport.pause()
+    window.api.pause()
     setIsPaused(true)
     setIsPlaying(false)
   }
@@ -487,8 +484,20 @@ function App() {
       )
     },
     voice_training_controls: () => {
+      const tasks = {
+        train: [
+          (event) => {
+            event.preventDefault()
+            window.api.chooseTrainingDirectory().then((res) => {
+              console.log(res)
+            }).catch((err) => {
+              console.log(err)
+            })
+          },
+        ]
+      }
       return (
-        <form onSubmit={trainVoice}>
+        <form>
           {/* Train your own voice model */}
           <h4>Train an AI voice</h4>
           <ul>
@@ -497,9 +506,10 @@ function App() {
             <li>3. Upload at least 5 audio files</li>
             <li>4. Train your voice model</li>
           </ul>
-          <input type="text" name="voice" placeholder="Name" />
+          {/* <input type="text" name="voice" placeholder="Name" /> */}
           {/* <input type="file" name="files" multiple /> */}
-          <button>Train</button>
+          <button onClick={tasks.train[0]}>Choose training directory</button>
+          <p>This directory should contain your samples.</p>
         </form>
       )
     },
@@ -540,7 +550,7 @@ function App() {
                 <div className="flex">
                   {templates.separate_controls()}
                   {templates.voice_changer_controls()}
-                  {/* {templates.voice_training_controls()} */}
+                  {templates.voice_training_controls()}
                 </div>
               </div>
             </div>

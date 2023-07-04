@@ -16,6 +16,7 @@ from typing import Union
 from pydantic import BaseModel
 import soundfile as soundfile
 import io
+import pygame
 
 from urllib.request import urlopen
 
@@ -52,17 +53,31 @@ class FilePath(BaseModel):
 # Set up the whisper model
 model = whisper.load_model("base")
 
-audio_file_path = ""
-audio_file_name = ""
-audio_file_ext = ""
-audio_file_original = ""
-in_dir = "./in/"
-out_dir = "./out/"
-# mixer.init()
+mixer = pygame.mixer
+mixer.init()
 
 # Get the current date and time
 now = lambda: datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-out_dir_now = lambda: out_dir + audio_file_name + "/"
+
+@app.post("/api/mixer/play")
+def play_mixer():
+    mixer.music.play()
+
+@app.post("/api/mixer/pause")
+def pause_mixer():
+    mixer.music.pause()
+
+@app.post("/api/mixer/stop")
+def stop_mixer():
+    mixer.music.stop()
+
+@app.post("/api/mixer/rewind")
+def rewind_mixer():
+    mixer.music.rewind()
+
+@app.post("/api/mixer/set_volume")
+def set_volume_mixer(volume: int):
+    mixer.music.set_volume(volume)
 
 
 @app.post("/api/pitch/")
@@ -80,12 +95,30 @@ def pitch_shift(PitchRequest: PitchRequest):
     result = librosa.effects.pitch_shift(y, sr=sr, n_steps=PitchRequest.nSteps)
 
     memory_file = io.BytesIO()
+    # set memory file format
     memory_file.name = 'audio.wav'
     soundfile.write(memory_file, result, sr, format="wav")
     memory_file.seek(0)
 
+    # audio = mixer.Sound(memory_file)
+    # audio_length = audio.get_length()
 
-    return memory_file
+    # current_position = mixer.music.get_pos()
+
+    # if current_position > 0:
+    #     current_position = 0
+
+    mixer.music.load(memory_file)
+    # why does this divide by 1000? because get_pos() returns milliseconds, and play() takes seconds
+    # if mixer.music.get_busy():
+    #     mixer.music.play(0, current_position / 1000.0)
+
+    # return {
+    #     'file': memory_file,
+    #     'data': soundfile.read(memory_file)[0].tolist(),
+    #     'filename': 'audio.wav',
+    #     'mimetype': 'audio/wav'
+    # }
 
 
     
@@ -155,7 +188,7 @@ def isolate(IsolationRequest: IsolationRequest):
     file_name = os.path.basename(IsolationRequest.filePath).split(".")[0]
     file_ext = os.path.basename(IsolationRequest.filePath).split(".")[1]
     # Construct the command
-    command = ["python", "-m", "demucs", "-o=" + out_dir_now(), file_path]
+    command = ["python", "-m", "demucs", file_path]
 
     # Add the isolate track option if it is not set to "All"
     if IsolationRequest.mode != isolation_options[0].lower():
@@ -173,7 +206,8 @@ def open_file(FileRequest: FileRequest):
     file_path = FileRequest.filePath
     file_name = os.path.basename(FileRequest.filePath).split(".")[0]
     file_ext = os.path.basename(FileRequest.filePath).split(".")[1]
-    tempo,beats = librosa.beat.beat_track()
+    # tempo,beats = librosa.beat.beat_track()
+    mixer.music.load(file_path)
 
     return {"name": file_name, "path": file_path, "ext": file_ext}
 

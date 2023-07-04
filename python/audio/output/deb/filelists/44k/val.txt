@@ -1,0 +1,2 @@
+dataset/44k/model/Vocals.flac.wav
+dataset/44k/model/Pat Benatar - We Belong - Mastered Acapella (HD).mp3.wav

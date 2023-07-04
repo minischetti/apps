@@ -6,10 +6,10 @@ const superagent = require('superagent');
 const fs = require('fs')
 const { Blob } = require('buffer')
 const { parseFile, selectCover } = require('music-metadata')
-const { spawn } = require('child_process')
+const { spawn, spawnSync } = require('child_process')
 
 const handlers = {
-  async trainVoice(voice) {
+  async chooseTrainingDirectory(event, voice) {
     try {
       const { canceled, filePaths } = await dialog.showOpenDialog({
         properties: ['openDirectory']
@@ -19,18 +19,48 @@ const handlers = {
       } else {
         if (filePaths.length > 0) {
           const samplesPath = path.resolve(filePaths[0])
-          const result = await superagent.post('http://127.0.0.1:8000/api/train').send({
-            voice,
-            samplesPath
+          const datasetRawPath = path.resolve(join(samplesPath, 'dataset_raw'))
+          const parentPath = path.resolve(join(samplesPath, '..'))
+          const parentPathName = path.basename(parentPath)
+
+          // Copy all files from samplesPath to datasetRawPath
+          const files = fs.readdirSync(samplesPath)
+          .filter(file => {
+            const ext = path.extname(file)
+            return ext === '.mp3' || ext === '.wav' || ext === '.ogg' || ext === '.flac'
           })
-          return result
+
+          if (files.length < 5) {
+            return
+          }
+
+          // Create dataset_raw folder if it doesn't exist
+          if (!fs.existsSync(datasetRawPath)) {
+            fs.mkdirSync(datasetRawPath)
+          }
+
+          // TODO: Implement custom naming
+          const datasetRawModelPath = path.resolve(join(datasetRawPath, "model"))
+          if (!fs.existsSync(datasetRawModelPath)) {
+            fs.mkdirSync(datasetRawModelPath)
+          }
+
+          files.forEach(file => {
+            fs.copyFileSync(path.resolve(join(samplesPath, file)), path.resolve(join(datasetRawModelPath, file)))
+          })
+
+          // TODO: If there is no dataset folder, run svc pre-resample
+          spawnSync("svc", ["pre-resample"], { stdio: 'inherit', cwd: samplesPath })
+
+          spawnSync("svc", ["pre-config"], { stdio: 'inherit', cwd: samplesPath })
+
+          spawnSync("svc", ["pre-hubert", "-fm", "crepe"], { stdio: 'inherit', cwd: samplesPath })
         }
       }
     } catch (err) {
       console.error(err);
     }
   },
-
   async open_context_menu(event, filePath) {
     const menu = Menu.buildFromTemplate([
       {
@@ -98,6 +128,9 @@ const handlers = {
   },
   async openFile(event, filePath) {
     try {
+      const result = await superagent.post('http://127.0.0.1:8000/api/open').send({
+        filePath
+      })
       const metadata = await parseFile(filePath)
       const file = {
         name: path.basename(filePath),
@@ -106,7 +139,8 @@ const handlers = {
         metadata: {
           ...metadata,
           cover: selectCover(metadata.common.picture),
-        }
+        },
+        response: result.body
       }
       return file
     } catch (err) {
@@ -270,7 +304,9 @@ const handlers = {
         {
           stdio: 'inherit'
         }
-      )
+      ).on('exit', function (code, signal) {
+        console.log('child process exited with ' + `code ${code} and signal ${signal}`);
+      });
 
       return outputFilePath
 
@@ -284,6 +320,23 @@ const handlers = {
       const voicesPath = path.resolve('../models')
       const voices = fs.readdirSync(voicesPath)
       return voices
+    } catch (err) {
+      console.error(err);
+    }
+  },
+  async play() {
+    try {
+      const result = await superagent.post('http://127.0.0.1:8000/api/mixer/play/').send()
+      return result.body
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
+  async pause() {
+    try {
+      const result = await superagent.post('http://127.0.0.1:8000/api/mixer/pause/').send()
+      return result.body
     } catch (err) {
       console.error(err);
     }

@@ -19,8 +19,15 @@ contextBridge.exposeInMainWorld('api', {
 
     // Voice
     changeVoice: (filePath, voice) => ipcRenderer.invoke('changeVoice', filePath, voice),
-    trainVoice: (voice) => ipcRenderer.invoke('changeVoice', voice),
+    trainVoice: (voice) => ipcRenderer.invoke('trainVoice', voice),
     getVoices: () => ipcRenderer.invoke('getVoices'),
     open_context_menu: () => ipcRenderer.invoke('open_context_menu'),
     openFile: (filePath) => ipcRenderer.invoke('openFile', filePath),
+    play: () => ipcRenderer.invoke('play'),
+    pause: () => ipcRenderer.invoke('pause'),
+    stop: () => ipcRenderer.invoke('stop'),
+    rewind: () => ipcRenderer.invoke('rewind'),
+    set_volume: (volume) => ipcRenderer.invoke('set_volume', volume),
+    chooseTrainingDirectory: (voice) => ipcRenderer.invoke('chooseTrainingDirectory', voice),
+    
 })
