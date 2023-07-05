@@ -33,6 +33,15 @@ module.exports = {
   // Indicates which provider should be used to instrument code for coverage
   coverageProvider: "v8",
 
+
+  // Combine coverage info from multiple into one report
+  coverageReporters: [
+    "json",
+    "text",
+    "lcov",
+    "clover"
+  ],
+
   // A list of reporter names that Jest uses when writing coverage reports
   // coverageReporters: [
   //   "json",
@@ -59,7 +68,7 @@ module.exports = {
   // forceCoverageMatch: [],
 
   // A path to a module which exports an async function that is triggered once before all test suites
-  // globalSetup: undefined,
+  // globalSetup: ()
 
   // A path to a module which exports an async function that is triggered once after all test suites
   // globalTeardown: undefined,

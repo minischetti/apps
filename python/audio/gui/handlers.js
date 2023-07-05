@@ -7,6 +7,8 @@ const fs = require('fs')
 const { Blob } = require('buffer')
 const { parseFile, selectCover } = require('music-metadata')
 const { spawn, spawnSync } = require('child_process')
+const helpers = require('./helpers')
+const crypto = require('crypto')
 
 const handlers = {
   async chooseTrainingDirectory(event, voice) {
@@ -24,30 +26,20 @@ const handlers = {
           const parentPathName = path.basename(parentPath)
 
           // Copy all files from samplesPath to datasetRawPath
-          const files = fs.readdirSync(samplesPath)
-            .filter(file => {
-              const ext = path.extname(file)
-              return ext === '.mp3' || ext === '.wav' || ext === '.ogg' || ext === '.flac'
-            })
+          const files = helpers.getAudioFiles(samplesPath)
 
           if (files.length < 5) {
-            return
+            return false
           }
 
           // Create dataset_raw folder if it doesn't exist
-          if (!fs.existsSync(datasetRawPath)) {
-            fs.mkdirSync(datasetRawPath)
-          }
+          helpers.createDirectoryIfNotExists(datasetRawPath)
 
           // TODO: Implement custom naming
-          const datasetRawModelPath = path.resolve(join(datasetRawPath, "model"))
-          if (!fs.existsSync(datasetRawModelPath)) {
-            fs.mkdirSync(datasetRawModelPath)
-          }
+          const datasetRawModelPath = helpers.getPath(datasetRawPath, "model")
+          helpers.createDirectoryIfNotExists(datasetRawModelPath)
 
-          files.forEach(file => {
-            fs.copyFileSync(path.resolve(join(samplesPath, file)), path.resolve(join(datasetRawModelPath, file)))
-          })
+          helpers.copyFiles(samplesPath, datasetRawPath)
 
           // TODO: If there is no dataset folder, run svc pre-resample
           spawnSync("svc", ["pre-resample"], { stdio: 'inherit', cwd: samplesPath })
