@@ -494,22 +494,33 @@ function App() {
               console.log(err)
             })
           },
+          (event) => {
+            event.preventDefault()
+            window.api.trainVoice().then((res) => {
+              console.log(res)
+            }).catch((err) => {
+              console.log(err)
+            })
+          }
         ]
       }
       return (
         <form>
           {/* Train your own voice model */}
           <h4>Train an AI voice</h4>
-          <ul>
-            <li>1. Record 5-10 minutes of your voice</li>
-            <li>2. Split the audio into sections, each 10 second or less</li>
-            <li>3. Upload at least 5 audio files</li>
-            <li>4. Train your voice model</li>
-          </ul>
+          <ol>
+            <li>Record 5-10 minutes of the voice you want to train</li>
+            <li>Split the audio into sections, each 10 second or less</li>
+            <li>
+              <button onClick={tasks.train[0]}>Choose training directory</button>
+              <p>This directory should contain the samples.</p>
+            </li>
+            <li>Train the voice model</li>
+          </ol>
           {/* <input type="text" name="voice" placeholder="Name" /> */}
           {/* <input type="file" name="files" multiple /> */}
-          <button onClick={tasks.train[0]}>Choose training directory</button>
-          <p>This directory should contain your samples.</p>
+
+
         </form>
       )
     },

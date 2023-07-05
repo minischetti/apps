@@ -25,10 +25,10 @@ const handlers = {
 
           // Copy all files from samplesPath to datasetRawPath
           const files = fs.readdirSync(samplesPath)
-          .filter(file => {
-            const ext = path.extname(file)
-            return ext === '.mp3' || ext === '.wav' || ext === '.ogg' || ext === '.flac'
-          })
+            .filter(file => {
+              const ext = path.extname(file)
+              return ext === '.mp3' || ext === '.wav' || ext === '.ogg' || ext === '.flac'
+            })
 
           if (files.length < 5) {
             return
@@ -292,11 +292,33 @@ const handlers = {
       const model_data = path.resolve(join(voicePath, files.filter(file => path.extname(file) === '.pth')[0]))
       console.log(model_data)
 
-      const outputFolder = path.resolve('../output')
+      const hash = crypto.createHash('md5').update({
+        model_config,
+        model_data,
+        voice
+      }).digest('hex')
+
+
+      const outputFolder = path.resolve(join(outputFolder, hash))
       if (!fs.existsSync(outputFolder)) {
         fs.mkdirSync(outputFolder)
       }
-      const outputFilePath = path.resolve(join(outputFolder, voice, path.basename(filePath) + ".wav"))
+
+
+
+      // Create a new file name with the number and the voice
+      const outputFilePath = path.resolve(
+        join(
+          outputFolder,
+          'output.wav'
+        )
+      )
+
+      if (fs.existsSync(outputFilePath)) {
+        console.log("File already exists")
+        return outputFilePath
+      }
+
 
       spawn(
         "svc",
